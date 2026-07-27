@@ -1,6 +1,11 @@
 #ifndef MENU_H
 #define MENU_H
-
+// Global Header Files
+#include<stdio.h>
+// Local Header Files
+#include "user.h"
+// Macros
+#define get_input _getch()
 // Function Prototypes
 int main_menu();
 int dashboard();

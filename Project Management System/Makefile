@@ -25,20 +25,20 @@ SRC = main.c \
 
 
 OBJ = build/main.o \
-	build/user.c \
-	build/auth.c \
-	build/validation.c \
-	build/menu.c \
-	build/utility.c \
-	build/id.c \
-	build/project.c \
-	build/task.c \
-	build/search.c \
-	build/report.c \
-	build/date.c \
-	build/error.c \
-	build/sort.c \
-	build/ui.c \
+	build/user.o \
+	build/auth.o \
+	build/validation.o \
+	build/menu.o \
+	build/utility.o \
+	build/id.o \
+	build/project.o \
+	build/task.o \
+	build/search.o \
+	build/report.o \
+	build/date.o \
+	build/error.o \
+	build/sort.o \
+	build/ui.o \
 
 TARGET = bin/projectmanagement.exe
 
