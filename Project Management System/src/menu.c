@@ -79,9 +79,6 @@ int project_management_dashboard()
     printf("|   [3]   -> Delete Project                                      |\n");
     printf("|   [4]   -> View All Projects                                   |\n");
     printf("|   [5]   -> Search Project                                      |\n");
-    printf("|   [6]   -> Change Project Status                               |\n");
-    printf("|   [7]   -> Change Project Priority                             |\n");
-    printf("|   [8]   -> Extend Project Deadline                             |\n");
     printf("|  [ESC]  -> Back                                                |\n");
     printf("+---------------------[PRESS YOUR CHOICE]------------------------+\n");
     // Take Input from user and validate that
@@ -89,7 +86,7 @@ int project_management_dashboard()
     do
     {
         choice = get_input;
-    } while (choice < '1' || &choice > '8');
+    } while (choice < '1' || choice > '5');
     switch (choice)
     {
     case '1':
@@ -107,15 +104,6 @@ int project_management_dashboard()
     case '5':
         search_project();
         break;
-    case '6':
-        change_project_status();
-        break;
-    case '7':
-        change_project_priority();
-        break;
-    case '8':
-        extend_project_deadline();
-        break;
     case ESC:
         dashboard();
         break;
@@ -125,6 +113,43 @@ int project_management_dashboard()
 
 int task_management_dashboard()
 {
+    clear_screen();
+    header_screen();
+    printf("+---------------------[ TASK MANAGEMENT ]------------------------+\n");
+    printf("|   [1]   -> Create Task                                         |\n");
+    printf("|   [2]   -> Update Task                                         |\n");
+    printf("|   [3]   -> Delete Task                                         |\n");
+    printf("|   [4]   -> View All Tasks                                      |\n");
+    printf("|   [5]   -> View Tasks by Project                               |\n");
+    printf("|  [ESC]  -> Back                                                |\n");
+    printf("+---------------------[PRESS YOUR CHOICE]------------------------+\n");
+    // Take Input from user and validate that
+    char choice;
+    do
+    {
+        choice = get_input;
+    } while (choice < '1' && choice > '5');
+    switch (choice)
+    {
+    case '1':
+        create_task();
+        break;
+    case '2':
+        update_task();
+        break;
+    case '3':
+        delete_task();
+        break;
+    case '4':
+        view_tasks();
+        break;
+    case '5':
+        view_tasks_by_project();
+        break;
+    case ESC:
+        dashboard();
+        break;
+    }
     return 0;
 }
 

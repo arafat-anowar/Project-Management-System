@@ -5,7 +5,7 @@ int create_project()
     return 0;
 }
 
-int view_project()
+int view_projects()
 {
     return 0;
 }

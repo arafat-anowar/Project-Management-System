@@ -20,7 +20,7 @@ int delete_task()
     return 0;
 }
 
-int search_task()
+int view_tasks_by_project()
 {
     return 0;
 }

@@ -3,7 +3,7 @@
 
 // Function Prototypes
 int create_project();
-int view_project();
+int view_projects();
 int update_project();
 int delete_project();
 int search_project();

@@ -7,6 +7,7 @@
 #include "auth.h"
 #include "project.h"
 #include "task.h"
+#include "utility.h"
 // Macros
 #define get_input _getch()
 #define ESC 27
