@@ -6,6 +6,7 @@
 #include "user.h"
 // Macros
 #define get_input _getch()
+#define ESC 27
 // Function Prototypes
 int main_menu();
 int dashboard();

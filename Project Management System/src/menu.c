@@ -26,15 +26,39 @@ int main_menu()
     case '3':
         change_password();
         break;
-    // case ESC:
-    // Terminate Program
+        // case ESC: // Terminate Program
     }
     return 0;
 }
 
 int dashboard()
 {
-    return 0;
+    clear_screen();
+    header_screen();
+    printf("+-------------------------[ DASHBOARD ]--------------------------+\n");
+    printf("|   [1]   -> Project Management                                  |\n");
+    printf("|   [2]   -> Task Managent                                       |\n");
+    printf("|   [3]   -> Search                                              |\n");
+    printf("|  [ESC]  -> Back                                                |\n");
+    printf("+----------------------[PRESS YOUR CHOICE]-----------------------+\n");
+    // Take Input from user and validate that
+    char choice;
+    do
+    {
+        choice = get_input;
+    } while (choice < '1' || choice > '3');
+    switch (choice)
+    {
+    case '1':
+        project_management_dashboard();
+        break;
+    case '2':
+        task_management_dashboard();
+        break;
+    case ESC:
+        main_menu();
+        break;
+    }
 }
 
 int project_management_dashboard()
