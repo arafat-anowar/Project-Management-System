@@ -65,6 +65,8 @@ int generate_user_id(char id[])
         return 0;
     }
 }
+
+
 int generate_project_id(char id[])
 {
     strcpy(id, "P1001");
@@ -135,6 +137,8 @@ int generate_project_id(char id[])
         return 0;
     }
 }
+
+
 int generate_task_id(char id[], char path[])
 {
     int found = 0;
@@ -203,6 +207,7 @@ int generate_task_id(char id[], char path[])
         return 0;
     }
 }
+
 
 int unique_task_id_generator(int id){
     struct task details;
