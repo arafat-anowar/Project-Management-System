@@ -1,13 +1,36 @@
+// Header File Guard
 #ifndef PROJECT_H
 #define PROJECT_H
 
+// Global Header Files
+#include <stdio.h>
+
+// Local Header Files
+#include "id.h"
+
+// Structure
+struct project
+{
+    char id[20];
+    char category[20];
+    char name[50];
+    char description[200];
+    char priority[20];
+    char status[20];
+    char progress[10];
+    char start_date[15];
+    char end_date[15];
+    char created_by[20];
+};
+
 // Function Prototypes
 int create_project();
-int view_project();
+int view_projects();
 int update_project();
 int delete_project();
 int search_project();
 int change_project_status();
 int change_project_priority();
 int extend_project_deadline();
+
 #endif
