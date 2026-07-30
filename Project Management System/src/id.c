@@ -53,11 +53,14 @@ int generate_user_id(char id[])
             }
             usr_id += digit;
         }
-        int tmp = ++usr_id;
-        for (int i = 0, j = id_len - 1; tmp != 0; i++, j--)
+        usr_id++;
+        int tmp = usr_id;
+        int j = (strlen(id) - 1);
+        while (tmp != 0)
         {
-            id[j] = ((tmp % 10) + '0');
-            tmp = tmp / 10;
+            id[j] = tmp % 10;
+            tmp /= 10;
+            j--;
         }
         return 0;
     }
@@ -94,7 +97,7 @@ int generate_project_id(char id[])
         token = strtok(NULL, ",");
         strcpy(details.end_date, token);
         token = strtok(NULL, ",");
-        strcpy(details.created_by, "mdarafatanowar");
+        strcpy(details.created_by, token);
     }
     if (found == 0)
     {
@@ -109,7 +112,7 @@ int generate_project_id(char id[])
             num_id[i] = (id[j] - '0');
         }
 
-        int usr_id = 0, id_len = strlen(id);
+        int project_id = 0, id_len = strlen(id);
         for (int i = 0; i <= id_len - 2; i++)
         {
             int digit = num_id[i];
@@ -117,18 +120,84 @@ int generate_project_id(char id[])
             {
                 digit *= 10;
             }
-            usr_id += digit;
+            project_id += digit;
         }
-        int tmp = ++usr_id;
-        for (int i = 0, j = id_len - 1; tmp != 0; i++, j--)
+        project_id++;
+        int tmp = project_id;
+        int j = (strlen(id) - 1);
+        while (tmp != 0)
         {
-            id[j] = ((tmp % 10) + '0');
-            tmp = tmp / 10;
+            id[j] = tmp % 10;
+            tmp /= 10;
+            j--;
         }
         return 0;
     }
 }
-int generate_task_id(char id[],char path[])
+int generate_task_id(char id[], char path[])
 {
-    return 0;
+    int found = 0;
+    struct task details;
+    strcpy(id, "T1001");
+    FILE *taskDBS_open;
+    taskDBS_open = fopen("database\\taskDBS.csv", "r");
+    char line[1500];
+    while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+    {
+        found = 1;
+        line[strcspn(line, "\n")] = '\0';
+        char *token;
+        details.unique_id = strtok(line, ",");
+        token = strtok(NULL, ",");
+        strcpy(details.project_id, token);
+        token = strtok(NULL, ",");
+        strcpy(details.id, token);
+        token = strtok(NULL, ",");
+        strcpy(details.name, token);
+        token = strtok(NULL, ",");
+        strcpy(details.description, token);
+        token = strtok(NULL, ",");
+        strcpy(details.priority, token);
+        token = strtok(NULL, ",");
+        strcpy(details.status, token);
+        token = strtok(NULL, ",");
+        strcpy(details.start_date, token);
+        token = strtok(NULL, ",");
+        strcpy(details.end_date, token);
+        token = strtok(NULL, ",");
+        strcpy(details.created_by, token);
+    }
+    if (found == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        strcpy(id, details.id);
+        int num_id[15];
+        for (int i = 0, j = 1; id[j] != '\0'; i++, j++)
+        {
+            num_id[i] = (id[j] - '0');
+        }
+        int task_id = 0, id_len = strlen(id);
+        for (int i = 0; i <= id_len - 2; i++)
+        {
+            int digit = num_id[i];
+            for (int j = i; j <= id_len - 3; j++)
+            {
+                digit = digit * 10;
+            }
+            task_id += digit;
+        }
+        task_id++;
+        int tmp = task_id;
+        int j = (strlen(id) - 1);
+        while (tmp != 0)
+        {
+            id[j] = tmp % 10;
+            tmp /= 10;
+            j--;
+        }
+        return 0;
+    }
 }
