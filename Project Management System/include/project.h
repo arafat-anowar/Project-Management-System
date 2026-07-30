@@ -4,6 +4,7 @@
 
 // Global Header Files
 #include <stdio.h>
+#include <string.h>
 
 // Local Header Files
 #include "id.h"
