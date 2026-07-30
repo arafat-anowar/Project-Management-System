@@ -3,13 +3,14 @@
 #define PROJECT_H
 
 // Global Header Files
-#include<stdio.h>
+#include <stdio.h>
 
 // Local Header Files
 #include "id.h"
 
 // Structure
-struct project{
+struct project
+{
     char id[20];
     char category[20];
     char name[50];

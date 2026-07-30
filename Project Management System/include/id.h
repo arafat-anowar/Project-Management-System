@@ -16,5 +16,6 @@
 int generate_user_id(char id[]);
 int generate_project_id(char id[]);
 int generate_task_id(char id[],char path[]);
+int unique_task_id_generator(int id);
 
 #endif

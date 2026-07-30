@@ -4,16 +4,16 @@
 
 // Global Header Files
 #include <stdio.h>
-#include<string.h>
+#include <string.h>
 
 // Local Header Files
 
-// Structures 
+// Structures
 struct task
 {
     int unique_id;
-    char project_id[15];
-    char id[15];
+    char project_id[20];
+    char task_id[20];
     char name[50];
     char description[200];
     char priority[20];

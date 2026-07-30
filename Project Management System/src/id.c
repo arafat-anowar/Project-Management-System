@@ -4,10 +4,10 @@ int generate_user_id(char id[])
 {
     strcpy(id, "U1001");
     int found = 0;
-    FILE *file_open_for_read_details = fopen("database\\userDBS.csv", "r");
+    FILE *userDBS_open = fopen("database\\userDBS.csv", "r");
     char line[210];
     struct r_account details;
-    while (fgets(line, sizeof(line), file_open_for_read_details) != NULL)
+    while (fgets(line, sizeof(line), userDBS_open) != NULL)
     {
 
         found = 1;
@@ -29,7 +29,7 @@ int generate_user_id(char id[])
         token = strtok(NULL, ",");
         strcpy(details.user_role, token);
     }
-    fclose(file_open_for_read_details);
+    fclose(userDBS_open);
     if (found == 0)
     {
         return 0;
@@ -99,6 +99,7 @@ int generate_project_id(char id[])
         token = strtok(NULL, ",");
         strcpy(details.created_by, token);
     }
+    fclose(projectDBS_open);
     if (found == 0)
     {
         return 0;
@@ -140,8 +141,8 @@ int generate_task_id(char id[], char path[])
     struct task details;
     strcpy(id, "T1001");
     FILE *taskDBS_open;
-    taskDBS_open = fopen("database\\taskDBS.csv", "r");
-    char line[1500];
+    taskDBS_open = fopen(path, "r");
+    char line[3000];
     while (fgets(line, sizeof(line), taskDBS_open) != NULL)
     {
         found = 1;
@@ -151,7 +152,7 @@ int generate_task_id(char id[], char path[])
         token = strtok(NULL, ",");
         strcpy(details.project_id, token);
         token = strtok(NULL, ",");
-        strcpy(details.id, token);
+        strcpy(details.task_id, token);
         token = strtok(NULL, ",");
         strcpy(details.name, token);
         token = strtok(NULL, ",");
@@ -167,13 +168,14 @@ int generate_task_id(char id[], char path[])
         token = strtok(NULL, ",");
         strcpy(details.created_by, token);
     }
+    fclose(taskDBS_open);
     if (found == 0)
     {
         return 0;
     }
     else
     {
-        strcpy(id, details.id);
+        strcpy(id, details.task_id);
         int num_id[15];
         for (int i = 0, j = 1; id[j] != '\0'; i++, j++)
         {
@@ -199,5 +201,47 @@ int generate_task_id(char id[], char path[])
             j--;
         }
         return 0;
+    }
+}
+
+int unique_task_id_generator(int id){
+    struct task details;
+    int found=0;
+    id=10001;
+    FILE *taskDBS_open;
+    taskDBS_open=fopen("database\\taskDBS.csv","r");
+    char line[3000];
+    while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+    {
+        found = 1;
+        line[strcspn(line, "\n")] = '\0';
+        char *token;
+        details.unique_id = strtok(line, ",");
+        token = strtok(NULL, ",");
+        strcpy(details.project_id, token);
+        token = strtok(NULL, ",");
+        strcpy(details.task_id, token);
+        token = strtok(NULL, ",");
+        strcpy(details.name, token);
+        token = strtok(NULL, ",");
+        strcpy(details.description, token);
+        token = strtok(NULL, ",");
+        strcpy(details.priority, token);
+        token = strtok(NULL, ",");
+        strcpy(details.status, token);
+        token = strtok(NULL, ",");
+        strcpy(details.start_date, token);
+        token = strtok(NULL, ",");
+        strcpy(details.end_date, token);
+        token = strtok(NULL, ",");
+        strcpy(details.created_by, token);
+    }
+    fclose(taskDBS_open);
+    if (found==0)
+    {
+        return 0;
+    }
+    else{
+        return ++id;
     }
 }
