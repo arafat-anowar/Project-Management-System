@@ -7,31 +7,29 @@ int create_user()
     strcpy(user.id, generate_user_id(user.id));
     printf("\nEnter Your Name : ");
     fgets(user.name, sizeof(user.name), stdin);
-    user.name[strcspn(user.name, "\n")] = "\0";
+    user.name[strcspn(user.name, "\n")] = '\0';
 
     printf("\nEnter Your Email : ");
     fgets(user.email, sizeof(user.email), stdin);
-    user.email[strcspn(user.email, "\n")] = "\0";
+    user.email[strcspn(user.email, "\n")] = '\0';
 
     printf("\nEnter Your Phone Number : ");
     fgets(user.phone, sizeof(user.phone), stdin);
-    user.phone[strcspn(user.phone, "\n")] = "\0";
+    user.phone[strcspn(user.phone, "\n")] = '\0';
 
     printf("\nEnter Your User Name : ");
     fgets(user.user_name, sizeof(user.user_name), stdin);
-    user.user_name[strcspn(user.user_name, "\n")] = "\0";
+    user.user_name[strcspn(user.user_name, "\n")] = '\0';
 
     printf("\nEnter Your Password : ");
     fgets(user.pass, sizeof(user.pass), stdin);
-    user.pass[strcspn(user.pass, "\n")] = "\0";
+    user.pass[strcspn(user.pass, "\n")] = '\0';
 
     printf("\nWhat's Your Favourite Food : ");
     fgets(user.security_ques, sizeof(user.security_ques), stdin);
-    user.security_ques[strcspn(user.security_ques, "\n")] = "\0";
+    user.security_ques[strcspn(user.security_ques, "\n")] = '\0';
 
-    printf("\nWhat Is Your Role on the Project");
-    fgets(user.role, sizeof(user.role), stdin);
-    user.role[strcspn(user.role, "\n")] = "\0";
+    strcpy(user.role, "Individual");
     FILE *file_open_for_write_data;
     
     file_open_for_write_data = fopen("database\\userDBS.csv", "a");
