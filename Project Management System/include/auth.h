@@ -10,6 +10,10 @@
 // Local Header Files
 #include "user.h"
 #include "menu.h"
+struct l_account{
+    char user_name_or_email[30];
+    char user_pass[30];
+};
 
 // Function Prototypes
 int login();
