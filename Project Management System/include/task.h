@@ -7,6 +7,8 @@
 #include <string.h>
 
 // Local Header Files
+#include "id.h"
+#include "project.h"
 
 // Structures
 struct task
