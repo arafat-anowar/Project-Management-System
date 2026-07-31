@@ -242,5 +242,13 @@ int change_task_start_date(char start_date[])
 }
 int extend_task_deadline(char deadline[])
 {
+    char new_deadline[15];
+
+    printf("Enter New Task Deadline (YYYY-MM-DD) : ");
+    fgets(new_deadline, sizeof(new_deadline), stdin);
+    new_deadline[strcspn(new_deadline, "\n")] = '\0';
+
+    strcpy(deadline, new_deadline);
+
     return 0;
 }
