@@ -4,7 +4,7 @@
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -Iincludes
+CFLAGS = -Wall -Wextra -Iinclude
 
 SRC = main.c \
 	src/auth.c \
@@ -32,6 +32,7 @@ OBJ = build/main.o \
 	  build/report.o \
 	  build/search.o \
 	  build/sort.o \
+	  build/task.o \
       build/ui.o \
 	  build/user.o \
 	  build/utility.o \
