@@ -193,6 +193,14 @@ int change_task_name(char name[])
 }
 int change_task_description(char description[])
 {
+    char new_description[200];
+
+    printf("Enter New Task Description : ");
+    fgets(new_description, sizeof(new_description), stdin);
+    new_description[strcspn(new_description, "\n")] = '\0';
+
+    strcpy(description, new_description);
+
     return 0;
 }
 int change_task_status(char status[])
