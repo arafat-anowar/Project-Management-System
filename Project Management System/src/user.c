@@ -4,26 +4,36 @@ int create_user()
 {
     struct details user;
 
-    generate_user_id(user.id);
+    strcpy(user.id, generate_user_id(user.id));
     printf("\nEnter Your Name : ");
     fgets(user.name, sizeof(user.name), stdin);
     user.name[strcspn(user.name, "\n")] = '\0';
+
+    getchar();
 
     printf("\nEnter Your Email : ");
     fgets(user.email, sizeof(user.email), stdin);
     user.email[strcspn(user.email, "\n")] = '\0';
 
+    getchar();
+
     printf("\nEnter Your Phone Number : ");
     fgets(user.phone, sizeof(user.phone), stdin);
     user.phone[strcspn(user.phone, "\n")] = '\0';
+
+    getchar();
 
     printf("\nEnter Your User Name : ");
     fgets(user.user_name, sizeof(user.user_name), stdin);
     user.user_name[strcspn(user.user_name, "\n")] = '\0';
 
+    getchar();
+
     printf("\nEnter Your Password : ");
     fgets(user.pass, sizeof(user.pass), stdin);
     user.pass[strcspn(user.pass, "\n")] = '\0';
+
+    getchar();
 
     printf("\nWhat's Your Favourite Food : ");
     fgets(user.security_ques, sizeof(user.security_ques), stdin);
