@@ -218,6 +218,14 @@ int change_task_status(char status[])
 
 int change_task_priority(char priority[])
 {
+    char new_priority[20];
+
+    printf("Enter New Task Priority : ");
+    fgets(new_priority, sizeof(new_priority), stdin);
+    new_priority[strcspn(new_priority, "\n")] = '\0';
+
+    strcpy(priority, new_priority);
+
     return 0;
 }
 int change_task_start_date(char start_date[])
