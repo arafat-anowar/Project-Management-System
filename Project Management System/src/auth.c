@@ -9,6 +9,7 @@ int login()
     // Get Details from user
     struct l_account details;
     printf("\nUsername/Email: ");
+    
     fgets( details.user_name_or_email,sizeof( details.user_name_or_email),stdin);
     details.user_name_or_email[strcspn(details.user_name_or_email,”\n”)]=’\0’;
     printf("\nPassword : ");
