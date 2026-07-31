@@ -205,6 +205,14 @@ int change_task_description(char description[])
 }
 int change_task_status(char status[])
 {
+    char new_status[20];
+
+    printf("Enter New Task Status : ");
+    fgets(new_status, sizeof(new_status), stdin);
+    new_status[strcspn(new_status, "\n")] = '\0';
+
+    strcpy(status, new_status);
+
     return 0;
 }
 
