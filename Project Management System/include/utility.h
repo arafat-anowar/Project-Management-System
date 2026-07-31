@@ -8,6 +8,6 @@ int login_invalid_screen();
 int project_details_screen();
 int task_details_screen();
 int header_screen();
-int pause_screen();
+int pause_screen(int sec);
 int clear_screen();
 #endif

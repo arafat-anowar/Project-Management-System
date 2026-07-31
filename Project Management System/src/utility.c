@@ -30,7 +30,7 @@ int header_screen()
     return 0;
 }
 
-int pause_screen()
+int pause_screen(int sec)
 {
     return 0;
 }
