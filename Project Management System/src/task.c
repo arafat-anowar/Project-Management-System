@@ -92,7 +92,7 @@ int create_task()
 
     FILE *taskDBS_open = fopen("database\\taskDBS.csv", "a");
 
-    fprintf(taskDBS_open, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", details.unique_id, details.task_id, details.project_id, details.name, details.description, details.priority, details.status, details.start_date, details.end_date, details.created_by);
+    fprintf(taskDBS_open, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", details.unique_id, details.task_id, details.project_id, details.name, details.description, details.priority, details.status, details.start_date, details.end_date, details.created_by);
 
     fclose(taskDBS_open);
 
@@ -120,7 +120,7 @@ int view_tasks()
         char *token;
 
         token = strtok(line, ",");
-        strcpy(details.unique_id, token);
+        details.unique_id=atoi(token);
 
         token = strtok(NULL, ",");
         strcpy(details.task_id, token);

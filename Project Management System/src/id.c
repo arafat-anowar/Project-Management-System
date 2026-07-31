@@ -58,7 +58,7 @@ int generate_user_id(char id[])
         int j = (strlen(id) - 1);
         while (tmp != 0)
         {
-            id[j] = tmp % 10;
+            id[j] = ((tmp % 10)+'0');
             tmp /= 10;
             j--;
         }

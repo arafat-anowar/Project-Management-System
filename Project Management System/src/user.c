@@ -4,7 +4,7 @@ int create_user()
 {
     struct details user;
 
-    strcpy(user.id, generate_user_id(user.id));
+    generate_user_id(user.id);
     printf("\nEnter Your Name : ");
     fgets(user.name, sizeof(user.name), stdin);
     user.name[strcspn(user.name, "\n")] = '\0';
@@ -30,10 +30,11 @@ int create_user()
     user.security_ques[strcspn(user.security_ques, "\n")] = '\0';
 
     strcpy(user.role, "Individual");
+
     FILE *file_open_for_write_data;
-    
+
     file_open_for_write_data = fopen("database\\userDBS.csv", "a");
-    fprintf(file_open_for_write_data,"%20s,%30s,%30s,%11s,%20s,%30s,%15s,%20s\n", user.id, user.name, user.email, user.phone, user.user_name, user.pass, user.security_ques, user.role);
+    fprintf(file_open_for_write_data, "%s,%s,%s,%s,%s,%s,%s,%s\n", user.id, user.name, user.email, user.phone, user.user_name, user.pass, user.security_ques, user.role);
     fclose(file_open_for_write_data);
 
     return 0;
