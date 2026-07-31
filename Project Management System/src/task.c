@@ -120,7 +120,7 @@ int view_tasks()
         char *token;
 
         token = strtok(line, ",");
-        details.unique_id=atoi(token);
+        details.unique_id = atoi(token);
 
         token = strtok(NULL, ",");
         strcpy(details.task_id, token);
@@ -167,6 +167,7 @@ int view_tasks()
 
 int update_task()
 {
+
     return 0;
 }
 
@@ -179,28 +180,35 @@ int view_tasks_by_project()
 {
     return 0;
 }
-int change_task_name()
+int change_task_name(char name[])
+{
+    char new_name[50];
+    printf("Enter New Task Name : ");
+    fgets(new_name,sizeof(new_name),stdin);
+    new_name[strcspn(new_name,"\n")]='\0';
+
+    strcpy(name, new_name);
+
+    return 0;
+}
+int change_task_description(char description[])
 {
     return 0;
 }
-int change_task_description()
-{
-    return 0;
-}
-int change_task_status()
+int change_task_status(char status[])
 {
     return 0;
 }
 
-int change_task_priority()
+int change_task_priority(char priority[])
 {
     return 0;
 }
-int change_task_start_date()
+int change_task_start_date(char start_date[])
 {
     return 0;
 }
-int extend_task_deadline()
+int extend_task_deadline(char deadline[])
 {
     return 0;
 }
