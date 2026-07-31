@@ -35,7 +35,7 @@ int create_user()
     FILE *file_open_for_write_data;
     
     file_open_for_write_data = fopen("database\\userDBS.csv", "a");
-    fprintf(file_open_for_write_data, "ID: %20d, Name: %30s, Email: %30s, Phone Number: %11s, User Name: %20s, Password: %30s, Favourite Food: %15s, Role: %20s\n", user.id, user.name, user.email, user.phone, user.user_name, user.pass, user.security_ques, user.role);
+    fprintf(file_open_for_write_data,"%20s,%30s,%30s,%11s,%20s,%30s,%15s,%20s\n", user.id, user.name, user.email, user.phone, user.user_name, user.pass, user.security_ques, user.role);
     fclose(file_open_for_write_data);
 
     return 0;
