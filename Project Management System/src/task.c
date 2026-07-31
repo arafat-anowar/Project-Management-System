@@ -230,6 +230,14 @@ int change_task_priority(char priority[])
 }
 int change_task_start_date(char start_date[])
 {
+    char new_start_date[15];
+
+    printf("Enter New Task Start Date (YYYY-MM-DD) : ");
+    fgets(new_start_date, sizeof(new_start_date), stdin);
+    new_start_date[strcspn(new_start_date, "\n")] = '\0';
+
+    strcpy(start_date, new_start_date);
+
     return 0;
 }
 int extend_task_deadline(char deadline[])
