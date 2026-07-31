@@ -4,6 +4,7 @@
 
 // Global Header Files
 #include <stdio.h>
+#include <string.h>
 
 // Local Header Files
 #include "id.h"
@@ -29,8 +30,12 @@ int view_projects();
 int update_project();
 int delete_project();
 int search_project();
-int change_project_status();
+int change_project_name();
+int change_project_category();
+int change_project_description();
 int change_project_priority();
+int change_project_status();
+int change_project_start_date();
 int extend_project_deadline();
 
 #endif

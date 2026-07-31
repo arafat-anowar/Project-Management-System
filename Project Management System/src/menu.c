@@ -155,18 +155,120 @@ int task_management_dashboard()
 
 int project_update_dashboard()
 {
+    clear_screen();
+    header_screen();
+    printf("+--------------------[ PROJECT UPDATE ]-------------------------+\n");
+    printf("|   [1]   -> Update Project Name                                |\n");
+    printf("|   [2]   -> Update Category                                    |\n");
+    printf("|   [3]   -> Update Description                                 |\n");
+    printf("|   [4]   -> Update Priority                                    |\n");
+    printf("|   [5]   -> Update Status                                      |\n");
+    printf("|   [6]   -> Update Start Date                                  |\n");
+    printf("|   [7]   -> Update End Date                                    |\n");
+    printf("|  [ESC]  -> Back                                               |\n");
+    printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
+    char choice;
+    do
+    {
+        choice = get_input;
+    } while (choice < '1' && choice > '7');
+    switch (choice)
+    {
+    case '1':
+        change_project_name();
+        break;
+    case '2':
+        change_project_category();
+        break;
+    case '3':
+        change_project_description();
+        break;
+    case '4':
+        change_project_priority();
+        break;
+    case '5':
+        change_project_status();
+        break;
+    case '6':
+        change_project_start_date();
+        break;
+    case '7':
+        extend_project_deadline();
+        break;
+    case ESC:
+        project_management_dashboard();
+        break;
+    }
     return 0;
 }
 
 int task_update_dashboard()
 {
+    clear_screen();
+    header_screen();
+    printf("+---------------------[ TASK UPDATE ]---------------------------+\n");
+    printf("|   [1]   -> Update Task Name                                   |\n");
+    printf("|   [2]   -> Update Description                                 |\n");
+    printf("|   [3]   -> Update Priority                                    |\n");
+    printf("|   [4]   -> Update Status                                      |\n");
+    printf("|   [5]   -> Update Start Date                                  |\n");
+    printf("|   [6]   -> Update End Date                                    |\n");
+    printf("|  [ESC]  -> Back                                               |\n");
+    printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
+    char choice;
+    do
+    {
+        choice = get_input;
+    } while (choice < '1' && choice > '6');
+    switch (choice)
+    {
+    case '1':
+        change_task_name();
+        break;
+    case '2':
+        change_task_description();
+        break;
+    case '3':
+        change_task_priority();
+        break;
+    case '4':
+        change_task_status();
+        break;
+    case '5':
+        change_task_start_date();
+        break;
+    case '6':
+        extend_task_deadline();
+        break;
+    case ESC:
+        task_management_dashboard();
+        break;
+    }
     return 0;
 }
 int report_dashboard()
 {
+    clear_screen();
+    header_screen();
+    printf("+------------------------[ REPORTS ]----------------------------+\n");
+    printf("|   [1]   -> Project Summary Report                             |\n");
+    printf("|   [2]   -> Task Summary Report                                |\n");
+    printf("|   [3]   -> Completed Projects Report                          |\n");
+    printf("|   [4]   -> Pending Tasks Report                               |\n");
+    printf("|   [5]   -> Overdue Tasks Report                               |\n");
+    printf("|   [6]   -> High Priority Tasks Report                         |\n");
+    printf("|  [ESC]  -> Back                                               |\n");
+    printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
     return 0;
 }
 int search_dashboard()
 {
+    printf("+-------------------------[ SEARCH ]----------------------------+\n");
+    printf("|   [1]   -> Search Project by ID or Name                       |\n");
+    printf("|   [2]   -> Search Task by ID or Name                          |\n");
+    printf("|   [3]   -> Search by Status                                   |\n");
+    printf("|   [4]   -> Search by Priority                                 |\n");
+    printf("|  [ESC]  -> Back                                               |\n");
+    printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
     return 0;
 }

@@ -29,8 +29,11 @@ int view_tasks();
 int update_task();
 int delete_task();
 int view_tasks_by_project();
-int change_task_status();
+int change_task_name();
+int change_task_description();
 int change_task_priority();
+int change_task_status();
+int change_task_start_date();
 int extend_task_deadline();
 
 #endif

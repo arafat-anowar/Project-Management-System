@@ -65,6 +65,7 @@ int generate_user_id(char id[])
         return 0;
     }
 }
+
 int generate_project_id(char id[])
 {
     strcpy(id, "P1001");
@@ -135,6 +136,7 @@ int generate_project_id(char id[])
         return 0;
     }
 }
+
 int generate_task_id(char id[], char path[])
 {
     int found = 0;
@@ -148,7 +150,8 @@ int generate_task_id(char id[], char path[])
         found = 1;
         line[strcspn(line, "\n")] = '\0';
         char *token;
-        details.unique_id = strtok(line, ",");
+        token = strtok(line, ",");
+        details.unique_id = atoi(token);
         token = strtok(NULL, ",");
         strcpy(details.project_id, token);
         token = strtok(NULL, ",");
@@ -204,19 +207,21 @@ int generate_task_id(char id[], char path[])
     }
 }
 
-int unique_task_id_generator(int id){
+int unique_task_id_generator(int id)
+{
     struct task details;
-    int found=0;
-    id=10001;
+    int found = 0;
+    id = 10001;
     FILE *taskDBS_open;
-    taskDBS_open=fopen("database\\taskDBS.csv","r");
+    taskDBS_open = fopen("database\\taskDBS.csv", "r");
     char line[3000];
     while (fgets(line, sizeof(line), taskDBS_open) != NULL)
     {
         found = 1;
         line[strcspn(line, "\n")] = '\0';
         char *token;
-        details.unique_id = strtok(line, ",");
+        token = strtok(line, ",");
+        details.unique_id = atoi(token);
         token = strtok(NULL, ",");
         strcpy(details.project_id, token);
         token = strtok(NULL, ",");
@@ -237,11 +242,12 @@ int unique_task_id_generator(int id){
         strcpy(details.created_by, token);
     }
     fclose(taskDBS_open);
-    if (found==0)
+    if (found == 0)
     {
         return 0;
     }
-    else{
+    else
+    {
         return ++id;
     }
 }
