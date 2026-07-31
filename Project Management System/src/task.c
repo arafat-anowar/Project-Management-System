@@ -16,8 +16,6 @@ int create_task()
 
     FILE *projectDBS_open = fopen("database\\projectDBS.csv", "r");
 
-    fgets(line, sizeof(line), projectDBS_open);
-
     while (fgets(line, sizeof(line), projectDBS_open) != NULL)
     {
         line[strcspn(line, "\n")] = '\0';

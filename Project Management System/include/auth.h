@@ -10,6 +10,8 @@
 // Local Header Files
 #include "user.h"
 #include "menu.h"
+#include "utility.h"
+
 struct l_account{
     char user_name_or_email[30];
     char user_pass[30];
@@ -18,7 +20,7 @@ struct l_account{
 // Function Prototypes
 int login();
 int logout();
-int password_verify();
+int password_verify(char username_or_email[],char password[]);
 int change_password();
 
 #endif
