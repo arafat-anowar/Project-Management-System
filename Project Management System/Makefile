@@ -24,7 +24,7 @@ SRC = main.c \
 
 
 
-OBJ = build/main.c \
+OBJ = build/main.o \
 	build/user.c \
 	build/auth.c \
 	build/validation.c \
