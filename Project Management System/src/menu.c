@@ -220,30 +220,30 @@ int task_update_dashboard()
     {
         choice = get_input;
     } while (choice < '1' && choice > '6');
-    switch (choice)
-    {
-    case '1':
-        change_task_name();
-        break;
-    case '2':
-        change_task_description();
-        break;
-    case '3':
-        change_task_priority();
-        break;
-    case '4':
-        change_task_status();
-        break;
-    case '5':
-        change_task_start_date();
-        break;
-    case '6':
-        extend_task_deadline();
-        break;
-    case ESC:
-        task_management_dashboard();
-        break;
-    }
+    // switch (choice)
+    // {
+    // case '1':
+    //     change_task_name();
+    //     break;
+    // case '2':
+    //     change_task_description();
+    //     break;
+    // case '3':
+    //     change_task_priority();
+    //     break;
+    // case '4':
+    //     change_task_status();
+    //     break;
+    // case '5':
+    //     change_task_start_date();
+    //     break;
+    // case '6':
+    //     extend_task_deadline();
+    //     break;
+    // case ESC:
+    //     task_management_dashboard();
+    //     break;
+    // }
     return 0;
 }
 int report_dashboard()

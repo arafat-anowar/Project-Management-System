@@ -2,7 +2,7 @@
 #ifndef DATE_H
 #define DATE_H
 
-// Gloval Header Files
+// Global Header Files
 #include<stdio.h>
 #include<string.h>
 #include<time.h>

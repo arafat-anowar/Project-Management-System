@@ -12,6 +12,7 @@
 #include "menu.h"
 #include "utility.h"
 
+// Structures
 struct l_account{
     char user_name_or_email[30];
     char user_pass[30];
