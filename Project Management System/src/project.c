@@ -30,8 +30,6 @@ int generate_project_id(char id[])
         token = strtok(NULL, ",");
         strcpy(details.status, token);
         token = strtok(NULL, ",");
-        strcpy(details.progress, token);
-        token = strtok(NULL, ",");
         strcpy(details.start_date, token);
         token = strtok(NULL, ",");
         strcpy(details.end_date, token);
@@ -95,13 +93,7 @@ int create_project()
     fgets(details.priority, sizeof(details.priority), stdin);
     details.priority[strcspn(details.priority, "\n")] = '\0';
 
-    printf("\nStatus : ");
-    fgets(details.status, sizeof(details.status), stdin);
-    details.status[strcspn(details.status, "\n")] = '\0';
-
-    printf("\nProgress : ");
-    fgets(details.progress, sizeof(details.progress), stdin);
-    details.progress[strcspn(details.progress, "\n")] = '\0';
+    strcpy(details.status,"Created");
 
     printf("\nStart Date : ");
     fgets(details.start_date, sizeof(details.start_date), stdin);
@@ -111,21 +103,19 @@ int create_project()
     fgets(details.end_date, sizeof(details.end_date), stdin);
     details.end_date[strcspn(details.end_date, "\n")] = '\0';
 
-    printf("\nCreated by : ");
-    fgets(details.created_by, sizeof(details.created_by), stdin);
-    details.created_by[strcspn(details.created_by, "\n")] = '\0';
+    strcpy(details.created_by,"arafatanowar");
 
     FILE *open_projectDBS = fopen("database\\projectDBS.csv", "a");
 
-    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s\n",
             details.name, details.category, details.description,
-            details.priority, details.status, details.progress,
+            details.priority, details.status,
             details.start_date, details.end_date, details.created_by);
 
     fclose(open_projectDBS);
 
     char filepath[100];
-    strcpy(filepath, "database\\Projects");
+    strcpy(filepath, "database\\Projects\\");
     strcat(filepath, strlwr(details.name));
     strcat(filepath, ".csv");
 

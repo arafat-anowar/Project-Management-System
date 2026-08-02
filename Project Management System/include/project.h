@@ -18,7 +18,6 @@ struct project
     char description[200];
     char priority[20];
     char status[20];
-    char progress[10];
     char start_date[15];
     char end_date[15];
     char created_by[20];
