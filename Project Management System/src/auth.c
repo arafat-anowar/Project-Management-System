@@ -36,11 +36,11 @@ int logout()
 
     return 0;
 }
-int password_verify(char username_or_email[],char password[])
+int password_verify(char username_or_email[], char password[])
 {
-
     return 0;
 }
+
 int change_password()
 {
 
