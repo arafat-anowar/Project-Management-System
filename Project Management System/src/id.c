@@ -288,6 +288,6 @@ int unique_task_id_generator(int id)
     }
     else
     {
-        return ++id;
+        return id+1;
     }
 }
