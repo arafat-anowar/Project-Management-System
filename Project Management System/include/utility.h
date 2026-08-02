@@ -15,5 +15,12 @@ int task_details_screen();
 int header_screen();
 int pause_screen(int sec);
 int clear_screen();
+int validate_user_name();
+int validate_email();
+int validate_phone();
+int validate_date();
+int current_date();
+int compare_date();
+int is_overdue();
 
 #endif

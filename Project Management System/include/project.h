@@ -7,7 +7,7 @@
 #include <string.h>
 
 // Local Header Files
-#include "id.h"
+
 
 // Structures
 struct project
@@ -37,5 +37,9 @@ int change_project_priority();
 int change_project_status();
 int change_project_start_date();
 int extend_project_deadline();
+int generate_project_id(char id[]);
+int sort_projects();
+int search_by_project_id_or_name();
+int search_project_by_status();
 
 #endif

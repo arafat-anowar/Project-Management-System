@@ -7,6 +7,8 @@
 #include <string.h>
 #include <windows.h>
 // Local Header Files
+#include "ui.h"
+#include "utility.h"
 
 // Structures
 struct task
@@ -35,5 +37,10 @@ int change_task_priority(char priority[]);
 int change_task_status(char status[]);
 int change_task_start_date(char start_date[]);
 int extend_task_deadline(char deadline[]);
+int generate_task_id(char id[],char path[]);
+int unique_task_id_generator(int id);
+int sort_tasks();
+int search_by_task_id_or_name();
+int search_task_by_status();
 
 #endif
