@@ -9,7 +9,7 @@
 // Local Header Files
 #include "id.h"
 
-// Structure
+// Structures
 struct project
 {
     char id[20];

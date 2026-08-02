@@ -7,38 +7,36 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Iinclude
 
 SRC = main.c \
-	src/user.c \
 	src/auth.c \
-	src/validation.c \
-	src/menu.c \
-	src/utility.c \
-	src/id.c \
-	src/project.c \
-	src/task.c \
-	src/search.c \
-	src/report.c \
 	src/date.c \
 	src/error.c \
+	src/id.c \
+	src/menu.c \
+	src/project.c \
+	src/report.c \
+	src/search.c \
 	src/sort.c \
+	src/task.c \
 	src/ui.c \
-
-
+	src/user.c \
+	src/utility.c \
+	src/validation.c \
 
 OBJ = build/main.o \
-	build/user.o \
-	build/auth.o \
-	build/validation.o \
-	build/menu.o \
-	build/utility.o \
-	build/id.o \
-	build/project.o \
-	build/task.o \
-	build/search.o \
-	build/report.o \
-	build/date.o \
-	build/error.o \
-	build/sort.o \
-	build/ui.o \
+	  build/auth.o \
+      build/date.o \
+	  build/error.o \
+	  build/id.o \
+	  build/menu.o \
+      build/project.o \
+	  build/report.o \
+	  build/search.o \
+	  build/sort.o \
+	  build/task.o \
+      build/ui.o \
+	  build/user.o \
+	  build/utility.o \
+	  build/validation.o \
 
 TARGET = bin/projectmanagement.exe
 

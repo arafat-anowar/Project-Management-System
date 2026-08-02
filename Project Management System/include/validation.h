@@ -6,4 +6,5 @@ int validate_user_name();
 int validate_email();
 int validate_phone();
 int validate_date();
+
 #endif
