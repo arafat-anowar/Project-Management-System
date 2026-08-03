@@ -1,12 +1,12 @@
 #include "task.h"
 
-int unique_task_id_generator(int id)
+int unique_task_id_generator()
 {
     struct t_details task;
 
     int found = 0;
 
-    id = 10001;
+    int id = 10001;
 
     FILE *taskDBS_open;
     taskDBS_open = fopen("database\\taskDBS.csv", "r");
@@ -21,9 +21,9 @@ int unique_task_id_generator(int id)
         token = strtok(line, ",");
         task.unique_id = atoi(token);
         token = strtok(NULL, ",");
-        strcpy(task.project_id, token);
-        token = strtok(NULL, ",");
         strcpy(task.task_id, token);
+        token = strtok(NULL, ",");
+        strcpy(task.project_id, token);
         token = strtok(NULL, ",");
         strcpy(task.name, token);
         token = strtok(NULL, ",");
@@ -43,11 +43,11 @@ int unique_task_id_generator(int id)
 
     if (found == 0)
     {
-        return 0;
+        return id;
     }
     else
     {
-        return id + 1;
+        return (task.unique_id+ 1);
     }
 }
 int generate_task_id(char id[], char path[])
@@ -69,11 +69,9 @@ int generate_task_id(char id[], char path[])
         line[strcspn(line, "\n")] = '\0';
         char *token;
         token = strtok(line, ",");
-        task.unique_id = atoi(token);
+        strcpy(task.task_id, token);
         token = strtok(NULL, ",");
         strcpy(task.project_id, token);
-        token = strtok(NULL, ",");
-        strcpy(task.task_id, token);
         token = strtok(NULL, ",");
         strcpy(task.name, token);
         token = strtok(NULL, ",");
@@ -147,38 +145,40 @@ int create_task()
 
         token = strtok(line, ",");
         strcpy(project.id, token);
-        token = strtok(line, ",");
-        strcpy(project.category, token);
-        token = strtok(line, ",");
+        token = strtok(NULL, ",");
         strcpy(project.name, token);
-        token = strtok(line, ",");
+        token = strtok(NULL, ",");
+        strcpy(project.category, token);
+        token = strtok(NULL, ",");
         strcpy(project.description, token);
-        token = strtok(line, ",");
+        token = strtok(NULL, ",");
         strcpy(project.priority, token);
-        token = strtok(line, ",");
+        token = strtok(NULL, ",");
         strcpy(project.status, token);
-        token = strtok(line, ",");
+        token = strtok(NULL, ",");
         strcpy(project.start_date, token);
-        token = strtok(line, ",");
+        token = strtok(NULL, ",");
         strcpy(project.end_date, token);
-        token = strtok(line, ",");
+        token = strtok(NULL, ",");
         strcpy(project.created_by, token);
 
         if (strcmp(project_id_or_name, project.id) == 0 || strcmp(project_id_or_name, project.name) == 0)
         {
+            strcpy(project_id_or_name,project.name);
             break;
         }
     }
     fclose(projectDBS_open);
 
     char path[100];
+
     strcpy(path, "database\\Projects\\");
-    strcat(path, strlwr(project.name));
+    strcat(path, strlwr(project_id_or_name));
     strcat(path, ".csv");
 
-    task.unique_id = unique_id_generator();
-    strcpy(task.project_id,project.id);
+    task.unique_id=unique_task_id_generator();
     generate_task_id(task.task_id,path);
+    strcpy(task.project_id,project.id);
 
     printf("\nTask Name : ");
     fgets(task.name,sizeof(task.name),stdin);
@@ -208,7 +208,7 @@ int create_task()
 
     FILE *file_open_for_write_data;
     file_open_for_write_data = fopen("database\\taskDBS.csv", "a");
-    fprintf(file_open_for_write_data, "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
+    fprintf(file_open_for_write_data, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     fclose(file_open_for_write_data);
 
     FILE *file_open_for_write_data_in_separate_file;
@@ -216,7 +216,6 @@ int create_task()
     fprintf(file_open_for_write_data_in_separate_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     fclose(file_open_for_write_data_in_separate_file);
 
-    task_management_dashboard();
     return 0;
 }
 
@@ -282,7 +281,7 @@ int view_tasks()
 
 int update_task()
 {
-
+    
     return 0;
 }
 
@@ -295,31 +294,31 @@ int view_tasks_by_project()
 {
     return 0;
 }
-int change_task_name(char name[])
-{
-    return 0;
-}
-int change_task_description(char description[])
-{
-    return 0;
-}
-int change_task_status(char status[])
-{
-    return 0;
-}
+// int change_task_name(char name[])
+// {
+//     return 0;
+// }
+// int change_task_description(char description[])
+// {
+//     return 0;
+// }
+// int change_task_status(char status[])
+// {
+//     return 0;
+// }
 
-int change_task_priority(char priority[])
-{
-    return 0;
-}
-int change_task_start_date(char start_date[])
-{
-    return 0;
-}
-int extend_task_deadline(char deadline[])
-{
-    return 0;
-}
+// int change_task_priority(char priority[])
+// {
+//     return 0;
+// }
+// int change_task_start_date(char start_date[])
+// {
+//     return 0;
+// }
+// int extend_task_deadline(char deadline[])
+// {
+//     return 0;
+// }
 int sort_tasks()
 {
     return 0;

@@ -20,9 +20,9 @@ int generate_project_id(char id[])
         token = strtok(line, ",");
         strcpy(project.id, token);
         token = strtok(NULL, ",");
-        strcpy(project.category, token);
-        token = strtok(NULL, ",");
         strcpy(project.name, token);
+        token = strtok(NULL, ",");
+        strcpy(project.category, token);
         token = strtok(NULL, ",");
         strcpy(project.description, token);
         token = strtok(NULL, ",");
@@ -77,6 +77,7 @@ int generate_project_id(char id[])
 int create_project()
 {
     struct p_details project;
+    generate_project_id(project.id);
     printf("\nProject name : ");
     fgets(project.name, sizeof(project.name), stdin);
     project.name[strcspn(project.name, "\n")] = '\0';
@@ -107,7 +108,7 @@ int create_project()
 
     FILE *open_projectDBS = fopen("database\\projectDBS.csv", "a");
 
-    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s\n",
+    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",project.id,
             project.name, project.category, project.description,
             project.priority, project.status,
             project.start_date, project.end_date, project.created_by);
