@@ -6,7 +6,7 @@ int generate_project_id(char id[])
 
     int found = 0;
 
-    struct project details;
+    struct p_details project;
 
     FILE *projectDBS_open;
     projectDBS_open = fopen("database\\projectDBS.csv", "r");
@@ -18,23 +18,23 @@ int generate_project_id(char id[])
         line[strcspn(line, "\n")] = '\0';
         char *token;
         token = strtok(line, ",");
-        strcpy(details.id, token);
+        strcpy(project.id, token);
         token = strtok(NULL, ",");
-        strcpy(details.category, token);
+        strcpy(project.category, token);
         token = strtok(NULL, ",");
-        strcpy(details.name, token);
+        strcpy(project.name, token);
         token = strtok(NULL, ",");
-        strcpy(details.description, token);
+        strcpy(project.description, token);
         token = strtok(NULL, ",");
-        strcpy(details.priority, token);
+        strcpy(project.priority, token);
         token = strtok(NULL, ",");
-        strcpy(details.status, token);
+        strcpy(project.status, token);
         token = strtok(NULL, ",");
-        strcpy(details.start_date, token);
+        strcpy(project.start_date, token);
         token = strtok(NULL, ",");
-        strcpy(details.end_date, token);
+        strcpy(project.end_date, token);
         token = strtok(NULL, ",");
-        strcpy(details.created_by, token);
+        strcpy(project.created_by, token);
     }
     fclose(projectDBS_open);
 
@@ -44,7 +44,7 @@ int generate_project_id(char id[])
     }
     else
     {
-        strcpy(id, details.id);
+        strcpy(id, project.id);
         int num_id[20];
         for (int i = 0, j = 1; id[j] != '\0'; i++, j++)
         {
@@ -76,47 +76,47 @@ int generate_project_id(char id[])
 
 int create_project()
 {
-    struct project details;
+    struct p_details project;
     printf("\nProject name : ");
-    fgets(details.name, sizeof(details.name), stdin);
-    details.name[strcspn(details.name, "\n")] = '\0';
+    fgets(project.name, sizeof(project.name), stdin);
+    project.name[strcspn(project.name, "\n")] = '\0';
 
     printf("\nCategory : ");
-    fgets(details.category, sizeof(details.category), stdin);
-    details.category[strcspn(details.category, "\n")] = '\0';
+    fgets(project.category, sizeof(project.category), stdin);
+    project.category[strcspn(project.category, "\n")] = '\0';
 
     printf("\nDescription : ");
-    fgets(details.description, sizeof(details.description), stdin);
-    details.description[strcspn(details.description, "\n")] = '\0';
+    fgets(project.description, sizeof(project.description), stdin);
+    project.description[strcspn(project.description, "\n")] = '\0';
 
     printf("\nPriority : ");
-    fgets(details.priority, sizeof(details.priority), stdin);
-    details.priority[strcspn(details.priority, "\n")] = '\0';
+    fgets(project.priority, sizeof(project.priority), stdin);
+    project.priority[strcspn(project.priority, "\n")] = '\0';
 
-    strcpy(details.status,"Created");
+    strcpy(project.status,"Created");
 
     printf("\nStart Date : ");
-    fgets(details.start_date, sizeof(details.start_date), stdin);
-    details.start_date[strcspn(details.start_date, "\n")] = '\0';
+    fgets(project.start_date, sizeof(project.start_date), stdin);
+    project.start_date[strcspn(project.start_date, "\n")] = '\0';
 
     printf("\nDeadline : ");
-    fgets(details.end_date, sizeof(details.end_date), stdin);
-    details.end_date[strcspn(details.end_date, "\n")] = '\0';
+    fgets(project.end_date, sizeof(project.end_date), stdin);
+    project.end_date[strcspn(project.end_date, "\n")] = '\0';
 
-    strcpy(details.created_by,"arafatanowar");
+    strcpy(project.created_by,"arafatanowar");
 
     FILE *open_projectDBS = fopen("database\\projectDBS.csv", "a");
 
     fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s\n",
-            details.name, details.category, details.description,
-            details.priority, details.status,
-            details.start_date, details.end_date, details.created_by);
+            project.name, project.category, project.description,
+            project.priority, project.status,
+            project.start_date, project.end_date, project.created_by);
 
     fclose(open_projectDBS);
 
     char filepath[100];
     strcpy(filepath, "database\\Projects\\");
-    strcat(filepath, strlwr(details.name));
+    strcat(filepath, strlwr(project.name));
     strcat(filepath, ".csv");
 
     FILE *project_file_create = fopen(filepath, "w");
