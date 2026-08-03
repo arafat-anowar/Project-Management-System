@@ -11,7 +11,7 @@
 #include "utility.h"
 
 // Structures
-struct task
+struct t_details
 {
     int unique_id;
     char project_id[20];

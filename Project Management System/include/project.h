@@ -10,7 +10,7 @@
 
 
 // Structures
-struct project
+struct p_details
 {
     char id[20];
     char category[20];
