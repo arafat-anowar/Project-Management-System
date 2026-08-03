@@ -11,7 +11,7 @@ int generate_project_id(char id[])
     FILE *projectDBS_open;
     projectDBS_open = fopen("database\\projectDBS.csv", "r");
 
-    char line[1500];
+    char line[3000];
     while (fgets(line, sizeof(line), projectDBS_open) != NULL)
     {
         found = 1;
