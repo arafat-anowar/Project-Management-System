@@ -140,7 +140,7 @@ int view_projects()
     printf("| Description          | %-s |\n", data.description);
     printf("| Priority             | %-s |\n", data.priority);
     printf("| Status               | %-s |\n", data.status);
-    printf("| Start Date           | %-s |\n", data.start_date);
+    printf("| Starting Date        | %-s |\n", data.start_date);
     printf("| Deadline             | %-s |\n", data.end_date);
     printf("+----------------------+-----------------------------------------------+\n");
 
