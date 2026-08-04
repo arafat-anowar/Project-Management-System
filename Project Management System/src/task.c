@@ -678,7 +678,7 @@ int search_by_task_id_or_name()
         token = strtok(NULL, ",");
         strcpy(task.created_by, token);
 
-        if (strcmp(task.unique_id, task_id_or_name) == 0 || strcmp(task.name, task_id_or_name) == 0)
+        if ((task.unique_id == *(task_id_or_name)) || strcmp(task.name, task_id_or_name) == 0)
         {
             task_details_screen();
             printf("\n\n");
@@ -758,5 +758,61 @@ int search_task_by_status()
 }
 int search_task_by_priority()
 {
+    char priority[30];
+    task_priority_dashboard(priority);
+    FILE *taskDBS_open;
+    taskDBS_open = fopen("database\\taskDBS.csv", "r");
+    struct t_details task;
+    task_details_screen();
+    char line[3000];
+    while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = '\0';
+
+        char *token;
+
+        token = strtok(line, ",");
+        task.unique_id = atoi(token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.task_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.project_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.created_by, token);
+
+        if (strcmp(task.status, priority) == 0)
+        {
+            printf("\n\n");
+            printf("Task ID        : %s\n", task.task_id);
+            printf("Project ID     : %s\n", task.project_id);
+            printf("Task Name      : %s\n", task.name);
+            printf("Description    : %s\n", task.description);
+            printf("Priority       : %s\n", task.priority);
+            printf("Status         : %s\n", task.status);
+            printf("Start Date     : %s\n", task.start_date);
+            printf("Deadline       : %s\n", task.end_date);
+        }
+    }
     return 0;
 }

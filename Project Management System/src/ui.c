@@ -295,6 +295,42 @@ int task_status_dashboard(char status[])
     }
     return 0;
 }
+int task_priority_dashboard(char priority[])
+{
+    clear_screen();
+    header_screen();
+    printf("+--------------------[ TASK PRIORITY ]--------------------------+\n");
+    printf("|   [1]   -> High                                               |\n");
+    printf("|   [2]   -> Medium                                             |\n");
+    printf("|   [3]   -> Low                                                |\n");
+    printf("|  [ESC]  -> Back                                               |\n");
+    printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
+    char choice;
+    do
+    {
+        choice = get_input;
+    } while (choice < '1' || choice > '3');
+    switch (choice)
+    {
+    case '1':
+        strcpy(priority, "High");
+        break;
+
+    case '2':
+        strcpy(priority, "Medium");
+        break;
+
+    case '3':
+        strcpy(priority, "Low");
+        break;
+
+    case ESC:
+        task_management_dashboard();
+        break;
+        ;
+    }
+    return 0;
+}
 int report_dashboard()
 {
     clear_screen();

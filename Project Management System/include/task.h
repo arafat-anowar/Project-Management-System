@@ -10,7 +10,6 @@
 // Local Header Files
 #include "ui.h"
 #include "utility.h"
-
 #include "project.h"
 
 // Structures

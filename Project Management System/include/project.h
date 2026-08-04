@@ -7,7 +7,7 @@
 #include <string.h>
 
 // Local Header Files
-
+#include "ui.h"
 
 // Structures
 struct p_details

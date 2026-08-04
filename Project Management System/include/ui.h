@@ -1,9 +1,9 @@
 #ifndef UI_H
 #define UI_H
 
-#include<stdio.h>
-#include<conio.h>
-#include<windows.h>
+#include <stdio.h>
+#include <conio.h>
+#include <windows.h>
 
 #include "project.h"
 #include "task.h"
@@ -23,4 +23,5 @@ int task_update_dashboard();
 int report_dashboard();
 int search_dashboard();
 int task_status_dashboard(char status[]);
+int task_priority_dashboard(char priority[]);
 #endif
