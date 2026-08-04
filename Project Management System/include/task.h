@@ -5,18 +5,20 @@
 // Global Header Files
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include <windows.h>
 // Local Header Files
-#include "id.h"
-#include "project.h"
+#include "ui.h"
 #include "utility.h"
 
+#include "project.h"
+
 // Structures
-struct task
+struct t_details
 {
     int unique_id;
-    char project_id[20];
     char task_id[20];
+    char project_id[20];
     char name[50];
     char description[200];
     char priority[20];
@@ -32,11 +34,17 @@ int view_tasks();
 int update_task();
 int delete_task();
 int view_tasks_by_project();
-int change_task_name(char name[]);
-int change_task_description(char description[]);
-int change_task_priority(char priority[]);
-int change_task_status(char status[]);
-int change_task_start_date(char start_date[]);
-int extend_task_deadline(char deadline[]);
+// int change_task_name(char name[]);
+// int change_task_description(char description[]);
+// int change_task_priority(char priority[]);
+// int change_task_status(char status[]);
+// int change_task_start_date(char start_date[]);
+// int extend_task_deadline(char deadline[]);
+int generate_task_id(char id[],char path[]);
+int unique_task_id_generator();
+int sort_tasks();
+int search_by_task_id_or_name();
+int search_task_by_status();
+int search_task_by_priority();
 
 #endif

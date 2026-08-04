@@ -1,91 +1,148 @@
 #include "project.h"
 
-struct project data;
+int generate_project_id(char id[])
+{
+    strcpy(id, "P1001");
+
+    int found = 0;
+
+    struct p_details project;
+
+    FILE *projectDBS_open;
+    projectDBS_open = fopen("database\\projectDBS.csv", "r");
+
+    char line[3000];
+    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    {
+        found = 1;
+        line[strcspn(line, "\n")] = '\0';
+        char *token;
+        token = strtok(line, ",");
+        strcpy(project.id, token);
+        token = strtok(NULL, ",");
+        strcpy(project.name, token);
+        token = strtok(NULL, ",");
+        strcpy(project.category, token);
+        token = strtok(NULL, ",");
+        strcpy(project.description, token);
+        token = strtok(NULL, ",");
+        strcpy(project.priority, token);
+        token = strtok(NULL, ",");
+        strcpy(project.status, token);
+        token = strtok(NULL, ",");
+        strcpy(project.start_date, token);
+        token = strtok(NULL, ",");
+        strcpy(project.end_date, token);
+        token = strtok(NULL, ",");
+        strcpy(project.created_by, token);
+    }
+    fclose(projectDBS_open);
+
+    if (found == 0)
+    {
+        return 0;
+    }
+    else
+    {
+        strcpy(id, project.id);
+        int num_id[20];
+        for (int i = 0, j = 1; id[j] != '\0'; i++, j++)
+        {
+            num_id[i] = (id[j] - '0');
+        }
+
+        int project_id = 0, id_len = strlen(id);
+        for (int i = 0; i <= id_len - 2; i++)
+        {
+            int digit = num_id[i];
+            for (int j = i; j <= id_len - 3; j++)
+            {
+                digit *= 10;
+            }
+            project_id += digit;
+        }
+        project_id++;
+        int tmp = project_id;
+        int j = (strlen(id) - 1);
+        while (tmp != 0)
+        {
+            id[j] = ((tmp % 10) + '0');
+            tmp /= 10;
+            j--;
+        }
+        return 0;
+    }
+}
+
 int create_project()
 {
-
+    struct p_details project;
+    generate_project_id(project.id);
     printf("\nProject name : ");
-    fgets(data.name, sizeof(data.name), stdin);
-    data.name[strcspn(data.name, "\n")] = '\0';
+    fgets(project.name, sizeof(project.name), stdin);
+    project.name[strcspn(project.name, "\n")] = '\0';
 
     printf("\nCategory : ");
-    fgets(data.category, sizeof(data.category), stdin);
-    data.category[strcspn(data.category, "\n")] = '\0';
+    fgets(project.category, sizeof(project.category), stdin);
+    project.category[strcspn(project.category, "\n")] = '\0';
 
     printf("\nDescription : ");
-    fgets(data.description, sizeof(data.description), stdin);
-    data.description[strcspn(data.description, "\n")] = '\0';
+    fgets(project.description, sizeof(project.description), stdin);
+    project.description[strcspn(project.description, "\n")] = '\0';
 
     printf("\nPriority : ");
-    fgets(data.priority, sizeof(data.priority), stdin);
-    data.priority[strcspn(data.priority, "\n")] = '\0';
+    fgets(project.priority, sizeof(project.priority), stdin);
+    project.priority[strcspn(project.priority, "\n")] = '\0';
 
-    printf("\nStatus : ");
-    fgets(data.status, sizeof(data.status), stdin);
-    data.status[strcspn(data.status, "\n")] = '\0';
-
-    printf("\nProgress : ");
-    fgets(data.progress, sizeof(data.progress), stdin);
-    data.progress[strcspn(data.progress, "\n")] = '\0';
+    strcpy(project.status,"Created");
 
     printf("\nStart Date : ");
-    fgets(data.start_date, sizeof(data.start_date), stdin);
-    data.start_date[strcspn(data.start_date, "\n")] = '\0';
+    fgets(project.start_date, sizeof(project.start_date), stdin);
+    project.start_date[strcspn(project.start_date, "\n")] = '\0';
 
-    printf("\nEnd Date : ");
-    fgets(data.end_date, sizeof(data.end_date), stdin);
-    data.end_date[strcspn(data.end_date, "\n")] = '\0';
+    printf("\nDeadline : ");
+    fgets(project.end_date, sizeof(project.end_date), stdin);
+    project.end_date[strcspn(project.end_date, "\n")] = '\0';
 
-    printf("\nCreated by : ");
-    fgets(data.created_by, sizeof(data.created_by), stdin);
-    data.created_by[strcspn(data.created_by, "\n")] = '\0';
+    strcpy(project.created_by,"arafatanowar");
 
-    FILE *dbs_file = fopen("", "a");
+    FILE *open_projectDBS = fopen("database\\projectDBS.csv", "a");
 
-    fprintf(dbs_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-            data.name, data.category, data.description,
-            data.priority, data.status, data.progress,
-            data.start_date, data.end_date, data.created_by);
+    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",project.id,
+            project.name, project.category, project.description,
+            project.priority, project.status,
+            project.start_date, project.end_date, project.created_by);
 
-    fclose(dbs_file);
+    fclose(open_projectDBS);
 
-    char filepath[256];
-    snprintf(filepath, sizeof(filepath), "database/Projects/%s.txt", data.name);
+    char filepath[100];
+    strcpy(filepath, "database\\Projects\\");
+    strcat(filepath, strlwr(project.name));
+    strcat(filepath, ".csv");
 
-    FILE *project_file = fopen(filepath, "w");
-
-    fprintf(project_file, "Project Name : %s\n", data.name);
-    fprintf(project_file, "Category     : %s\n", data.category);
-    fprintf(project_file, "Description  : %s\n", data.description);
-    fprintf(project_file, "Priority     : %s\n", data.priority);
-    fprintf(project_file, "Status       : %s\n", data.status);
-    fprintf(project_file, "Progress     : %s\n", data.progress);
-    fprintf(project_file, "Start Date   : %s\n", data.start_date);
-    fprintf(project_file, "End Date     : %s\n", data.end_date);
-    fprintf(project_file, "Created By   : %s\n", data.created_by);
-
-    fclose(project_file);
+    FILE *project_file_create = fopen(filepath, "w");
+    fclose(project_file_create);
 
     return 0;
 }
 
 int view_projects()
 {
+    struct p_details data;
 
     printf("\n");
     printf("+----------------------------------------------------------------------+\n");
     printf("|                         PROJECT DETAILS                              |\n");
     printf("+----------------------+-----------------------------------------------+\n");
-    printf("| Project ID           | %-s |\n", data.id);
-    printf("| Category             | %-s |\n", data.category);
-    printf("| Project Name         | %-s |\n", data.name);
-    printf("| Description          | %-s |\n", data.description);
-    printf("| Priority             | %-s |\n", data.priority);
-    printf("| Status               | %-s |\n", data.status);
-    printf("| Progress             | %-s |\n", data.progress);
-    printf("| Start Date           | %-s |\n", data.start_date);
-    printf("| End Date             | %-s |\n", data.end_date);
-    printf("| Created By           | %-s |\n", data.created_by);
+    printf("| Project ID           | %-45s |\n", data.id);
+    printf("| Category             | %-45s |\n", data.category);
+    printf("| Project Name         | %-45s |\n", data.name);
+    printf("| Description          | %-45s |\n", data.description);
+    printf("| Priority             | %-45s |\n", data.priority);
+    printf("| Status               | %-45s |\n", data.status);
+    printf("| Start Date           | %-45s |\n", data.start_date);
+    printf("| End Date             | %-45s |\n", data.end_date);
+    printf("| Created By           | %-45s |\n", data.created_by);
     printf("+----------------------+-----------------------------------------------+\n");
 
     return 0;
@@ -93,6 +150,8 @@ int view_projects()
 
 int update_project()
 {
+    struct p_details data;
+    
     int choice;
     printf("+----------------------+-----------------------------------------------+\n");
     printf("|1. Project Name        | %-s |\n", data.name);
@@ -111,24 +170,26 @@ int update_project()
 
 int delete_project()
 {
+    struct p_details data;
+    
     char remove;
     printf("+----------------------+-----------------------------------------------+\n");
     printf("|1. Project Name        | %-s |\n", data.name);
     printf("|2. Category            | %-s |\n", data.category);
     printf("|3. Description         | %-s |\n", data.description);
     printf("|4. Priority            | %-s |\n", data.priority);
-    printf("|5. Progress            | %-s |\n", data.progress);
-    printf("|6. Status              | %-s |\n", data.status);
-    printf("|7. Start Date          | %-s |\n", data.start_date);
-    printf("|8. End Date            | %-s |\n", data.end_date);
-    printf("|10.Created By          | %-s |\n", data.created_by);
+    printf("|5. Status              | %-s |\n", data.status);
+    printf("|6. Start Date          | %-s |\n", data.start_date);
+    printf("|7. End Date            | %-s |\n", data.end_date);
+    printf("|8. Created By          | %-s |\n", data.created_by);
     printf("+----------------------+-----------------------------------------------+\n");
-    printf("\nEnter Which Option Your Want to Delete : ");
+    printf("\nEnter Which Option You Want to Delete : ");
     
-    scanf("%d", &remove);
+    fgets(remove, sizeof(remove), stdin);
+
     
 
-
+    
 
     return 0;
 }
@@ -164,6 +225,22 @@ int change_project_start_date()
     return 0;
 }
 int extend_project_deadline()
+{
+    return 0;
+}
+int sort_projects()
+{
+    return 0;
+}
+int search_by_project_id_or_name()
+{
+    return 0;
+}
+int search_project_by_status()
+{
+    return 0;
+}
+int search_project_by_priority()
 {
     return 0;
 }
