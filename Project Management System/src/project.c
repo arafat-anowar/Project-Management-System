@@ -76,16 +76,16 @@ int view_projects()
     printf("+----------------------------------------------------------------------+\n");
     printf("|                         PROJECT DETAILS                              |\n");
     printf("+----------------------+-----------------------------------------------+\n");
-    printf("| Project ID           | %-45s |\n", data.id);
-    printf("| Category             | %-45s |\n", data.category);
-    printf("| Project Name         | %-45s |\n", data.name);
-    printf("| Description          | %-45s |\n", data.description);
-    printf("| Priority             | %-45s |\n", data.priority);
-    printf("| Status               | %-45s |\n", data.status);
-    printf("| Progress             | %-45s |\n", data.progress);
-    printf("| Start Date           | %-45s |\n", data.start_date);
-    printf("| End Date             | %-45s |\n", data.end_date);
-    printf("| Created By           | %-45s |\n", data.created_by);
+    printf("| Project ID           | %-s |\n", data.id);
+    printf("| Category             | %-s |\n", data.category);
+    printf("| Project Name         | %-s |\n", data.name);
+    printf("| Description          | %-s |\n", data.description);
+    printf("| Priority             | %-s |\n", data.priority);
+    printf("| Status               | %-s |\n", data.status);
+    printf("| Progress             | %-s |\n", data.progress);
+    printf("| Start Date           | %-s |\n", data.start_date);
+    printf("| End Date             | %-s |\n", data.end_date);
+    printf("| Created By           | %-s |\n", data.created_by);
     printf("+----------------------+-----------------------------------------------+\n");
 
     return 0;
@@ -93,11 +93,43 @@ int view_projects()
 
 int update_project()
 {
+    int choice;
+    printf("+----------------------+-----------------------------------------------+\n");
+    printf("|1. Project Name        | %-s |\n", data.name);
+    printf("|2. Category            | %-s |\n", data.category);
+    printf("|3. Description         | %-s |\n", data.description);
+    printf("|4. Priority            | %-s |\n", data.priority);
+    printf("|5. Status              | %-s |\n", data.status);
+    printf("|6. Start Date          | %-s |\n", data.start_date);
+    printf("|7. End Date            | %-s |\n", data.end_date);
+    printf("+----------------------+-----------------------------------------------+\n");
+    printf("\nEnter Which Option Your Want to Update : ");
+    scanf("%d", &choice);
 
     return 0;
 }
+
 int delete_project()
 {
+    char remove;
+    printf("+----------------------+-----------------------------------------------+\n");
+    printf("|1. Project Name        | %-s |\n", data.name);
+    printf("|2. Category            | %-s |\n", data.category);
+    printf("|3. Description         | %-s |\n", data.description);
+    printf("|4. Priority            | %-s |\n", data.priority);
+    printf("|5. Progress            | %-s |\n", data.progress);
+    printf("|6. Status              | %-s |\n", data.status);
+    printf("|7. Start Date          | %-s |\n", data.start_date);
+    printf("|8. End Date            | %-s |\n", data.end_date);
+    printf("|10.Created By          | %-s |\n", data.created_by);
+    printf("+----------------------+-----------------------------------------------+\n");
+    printf("\nEnter Which Option Your Want to Delete : ");
+    
+    scanf("%d", &remove);
+    
+
+
+
     return 0;
 }
 
@@ -107,6 +139,7 @@ int search_project()
 }
 int change_project_name()
 {
+    
     return 0;
 }
 int change_project_category()
