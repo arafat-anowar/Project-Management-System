@@ -94,7 +94,7 @@ int create_project()
     fgets(project.priority, sizeof(project.priority), stdin);
     project.priority[strcspn(project.priority, "\n")] = '\0';
 
-    strcpy(project.status,"Created");
+    strcpy(project.status, "Created");
 
     printf("\nStart Date : ");
     fgets(project.start_date, sizeof(project.start_date), stdin);
@@ -104,11 +104,11 @@ int create_project()
     fgets(project.end_date, sizeof(project.end_date), stdin);
     project.end_date[strcspn(project.end_date, "\n")] = '\0';
 
-    strcpy(project.created_by,"arafatanowar");
+    strcpy(project.created_by, "arafatanowar");
 
     FILE *open_projectDBS = fopen("database\\projectDBS.csv", "a");
 
-    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",project.id,
+    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id,
             project.name, project.category, project.description,
             project.priority, project.status,
             project.start_date, project.end_date, project.created_by);
@@ -134,15 +134,14 @@ int view_projects()
     printf("+----------------------------------------------------------------------+\n");
     printf("|                         PROJECT DETAILS                              |\n");
     printf("+----------------------+-----------------------------------------------+\n");
-    printf("| Project ID           | %-45s |\n", data.id);
-    printf("| Category             | %-45s |\n", data.category);
-    printf("| Project Name         | %-45s |\n", data.name);
-    printf("| Description          | %-45s |\n", data.description);
-    printf("| Priority             | %-45s |\n", data.priority);
-    printf("| Status               | %-45s |\n", data.status);
-    printf("| Start Date           | %-45s |\n", data.start_date);
-    printf("| End Date             | %-45s |\n", data.end_date);
-    printf("| Created By           | %-45s |\n", data.created_by);
+    printf("| Project ID           | %-s |\n", data.id);
+    printf("| Category             | %-s |\n", data.category);
+    printf("| Project Name         | %-s |\n", data.name);
+    printf("| Description          | %-s |\n", data.description);
+    printf("| Priority             | %-s |\n", data.priority);
+    printf("| Status               | %-s |\n", data.status);
+    printf("| Start Date           | %-s |\n", data.start_date);
+    printf("| Deadline             | %-s |\n", data.end_date);
     printf("+----------------------+-----------------------------------------------+\n");
 
     return 0;
@@ -151,56 +150,71 @@ int view_projects()
 int update_project()
 {
     struct p_details data;
-    
+
     int choice;
-    printf("+----------------------+-----------------------------------------------+\n");
-    printf("|1. Project Name        | %-s |\n", data.name);
-    printf("|2. Category            | %-s |\n", data.category);
-    printf("|3. Description         | %-s |\n", data.description);
-    printf("|4. Priority            | %-s |\n", data.priority);
-    printf("|5. Status              | %-s |\n", data.status);
-    printf("|6. Start Date          | %-s |\n", data.start_date);
-    printf("|7. End Date            | %-s |\n", data.end_date);
-    printf("+----------------------+-----------------------------------------------+\n");
-    printf("\nEnter Which Option Your Want to Update : ");
-    scanf("%d", &choice);
+    project_update_dashboard();
 
     return 0;
 }
 
 int delete_project()
 {
-    struct p_details data;
-    
-    char remove;
-    printf("+----------------------+-----------------------------------------------+\n");
-    printf("|1. Project Name        | %-s |\n", data.name);
-    printf("|2. Category            | %-s |\n", data.category);
-    printf("|3. Description         | %-s |\n", data.description);
-    printf("|4. Priority            | %-s |\n", data.priority);
-    printf("|5. Status              | %-s |\n", data.status);
-    printf("|6. Start Date          | %-s |\n", data.start_date);
-    printf("|7. End Date            | %-s |\n", data.end_date);
-    printf("|8. Created By          | %-s |\n", data.created_by);
-    printf("+----------------------+-----------------------------------------------+\n");
-    printf("\nEnter Which Option You Want to Delete : ");
-    
-    fgets(remove, sizeof(remove), stdin);
+    char project_id_or_name[50];
 
-    
+    printf("Enter Project ID or Project Name : ");
+    scanf("%s", project_id_or_name);
 
-    
+    struct p_details project;
+
+    FILE *file_open_for_delete_project, *write_data_to_new_file;
+
+    file_open_for_delete_project = fopen("database\\projectDBS.csv", "r");
+    write_data_to_new_file = fopen("database\\tmp.csv", "w");
+
+    while (fscanf(file_open_for_delete_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
+            project.id, project.category, project.name, project.description, project.priority, 
+            project.status, project.start_date, project.end_date, project.created_by) != EOF)
+    {
+
+        if (strcmp(project.id, project_id_or_name) == 0 || strcmp(project.name, project_id_or_name) == 0)
+        {
+            strcpy(project.status, "Deleted");
+            fprintf(write_data_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", 
+                project.id, project.category, project.name, project.description, project.priority, 
+                project.status, project.start_date, project.end_date, project.created_by);
+            char path[100];
+            strcpy(path, "database\\Projects\\");
+            strcat(path, strlwr(project.name));
+            strcat(path, ".csv");
+            remove(path);
+            continue;
+        }
+
+        fprintf(write_data_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.category, 
+            project.name, project.description, project.priority, project.status, project.start_date, 
+            project.end_date, project.created_by);
+    }
+
+    fclose(file_open_for_delete_project);
+    fclose(write_data_to_new_file);
+
+    remove("database\\projectDBS.csv");
+    rename("database\\tmp.csv", "database\\projectDBS.csv");
+
+    project_management_dashboard();
 
     return 0;
 }
 
 int search_project()
 {
+
+
     return 0;
 }
 int change_project_name()
 {
-    
+
     return 0;
 }
 int change_project_category()
