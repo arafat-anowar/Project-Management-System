@@ -295,14 +295,15 @@ int view_tasks()
         strcpy(task.created_by, token);
 
         printf("\n\n");
-        printf("Project ID  : %s\n", task.project_id);
-        printf("Task ID     : %s\n", task.task_id);
-        printf("Task Name   : %s\n", task.name);
-        printf("Description : %s\n", task.description);
-        printf("Priority    : %s\n", task.priority);
-        printf("Status      : %s\n", task.status);
-        printf("Start Date  : %s\n", task.start_date);
-        printf("Deadline    : %s\n", task.end_date);
+        printf("Unique Task ID : %d\n", task.unique_id);
+        printf("Project ID     : %s\n", task.project_id);
+        printf("Task ID        : %s\n", task.task_id);
+        printf("Task Name      : %s\n", task.name);
+        printf("Description    : %s\n", task.description);
+        printf("Priority       : %s\n", task.priority);
+        printf("Status         : %s\n", task.status);
+        printf("Start Date     : %s\n", task.start_date);
+        printf("Deadline       : %s\n", task.end_date);
 
         Sleep(1000);
     }
@@ -475,15 +476,15 @@ int delete_task()
         if (strcmp(task.task_id, task_id_or_name) == 0 || strcmp(task.name, task_id_or_name) == 0)
         {
             strcpy(task.status, "Deleted");
-            fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+            fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
             continue;
         }
-        fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id,task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+        fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
     }
     fclose(task_dbs_open);
     fclose(tmp_task);
     remove("database\\taskDBS.csv");
-    rename("database\\tmp_task.csv","database\\taskDBS.csv");
+    rename("database\\tmp_task.csv", "database\\taskDBS.csv");
     return 0;
 }
 
@@ -586,8 +587,8 @@ int view_tasks_by_project()
         strcpy(task.created_by, token);
 
         printf("\n\n");
-        printf("Project ID  : %s\n", task.project_id);
         printf("Task ID     : %s\n", task.task_id);
+        printf("Project ID  : %s\n", task.project_id);
         printf("Task Name   : %s\n", task.name);
         printf("Description : %s\n", task.description);
         printf("Priority    : %s\n", task.priority);
@@ -632,10 +633,127 @@ int sort_tasks()
 }
 int search_by_task_id_or_name()
 {
+    char task_id_or_name[50];
+    fgets(task_id_or_name, sizeof(task_id_or_name), stdin);
+    task_id_or_name[strcspn(task_id_or_name, "\n")] = '\0';
+
+    FILE *taskDBS_open;
+    taskDBS_open = fopen("database\\taskDBS.csv", "r");
+    struct t_details task;
+
+    char line[3000];
+    while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = '\0';
+
+        char *token;
+
+        token = strtok(line, ",");
+        task.unique_id = atoi(token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.task_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.project_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.created_by, token);
+
+        if (strcmp(task.unique_id, task_id_or_name) == 0 || strcmp(task.name, task_id_or_name) == 0)
+        {
+            task_details_screen();
+            printf("\n\n");
+            printf("Unique Task ID : %d\n", task.unique_id);
+            printf("Project ID     : %s\n", task.project_id);
+            printf("Task ID        : %s\n", task.task_id);
+            printf("Task Name      : %s\n", task.name);
+            printf("Description    : %s\n", task.description);
+            printf("Priority       : %s\n", task.priority);
+            printf("Status         : %s\n", task.status);
+            printf("Start Date     : %s\n", task.start_date);
+            printf("Deadline       : %s\n", task.end_date);
+            break;
+        }
+    }
     return 0;
 }
 int search_task_by_status()
 {
+    char status[30];
+    task_status_dashboard(status);
+    FILE *taskDBS_open;
+    taskDBS_open = fopen("database\\taskDBS.csv", "r");
+    struct t_details task;
+    task_details_screen();
+    char line[3000];
+    while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = '\0';
+
+        char *token;
+
+        token = strtok(line, ",");
+        task.unique_id = atoi(token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.task_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.project_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.created_by, token);
+
+        if (strcmp(task.status, status) == 0)
+        {
+            printf("\n\n");
+            printf("Task ID        : %s\n", task.task_id);
+            printf("Project ID     : %s\n", task.project_id);
+            printf("Task Name      : %s\n", task.name);
+            printf("Description    : %s\n", task.description);
+            printf("Priority       : %s\n", task.priority);
+            printf("Status         : %s\n", task.status);
+            printf("Start Date     : %s\n", task.start_date);
+            printf("Deadline       : %s\n", task.end_date);
+        }
+    }
     return 0;
 }
 int search_task_by_priority()

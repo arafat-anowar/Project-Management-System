@@ -22,5 +22,5 @@ int project_update_dashboard();
 int task_update_dashboard();
 int report_dashboard();
 int search_dashboard();
-
+int task_status_dashboard(char status[]);
 #endif

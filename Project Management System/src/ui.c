@@ -120,7 +120,10 @@ int task_management_dashboard()
     printf("|   [2]   -> Update Task                                         |\n");
     printf("|   [3]   -> Delete Task                                         |\n");
     printf("|   [4]   -> View All Tasks                                      |\n");
-    printf("|   [5]   -> View Tasks by Project                               |\n");
+    printf("|   [5]   -> View Tasks by ID or Name                            |\n");
+    printf("|   [6]   -> View Tasks by Project                               |\n");
+    printf("|   [7]   -> View Tasks by Status                                |\n");
+    printf("|   [8]   -> View Tasks by Priority                              |\n");
     printf("|  [ESC]  -> Back                                                |\n");
     printf("+---------------------[PRESS YOUR CHOICE]------------------------+\n");
     // Take Input from user and validate that
@@ -128,7 +131,7 @@ int task_management_dashboard()
     do
     {
         choice = get_input;
-    } while (choice < '1' && choice > '5');
+    } while (choice < '1' && choice > '8');
     switch (choice)
     {
     case '1':
@@ -144,8 +147,18 @@ int task_management_dashboard()
         view_tasks();
         break;
     case '5':
+        search_by_task_id_or_name();
+        break;
+    case '6':
         view_tasks_by_project();
         break;
+    case '7':
+        search_task_by_status();
+        break;
+    case '8':
+        search_task_by_priority();
+        break;
+
     case ESC:
         dashboard();
         break;
@@ -244,6 +257,42 @@ int task_update_dashboard()
     //     task_management_dashboard();
     //     break;
     // }
+    return 0;
+}
+int task_status_dashboard(char status[])
+{
+    clear_screen();
+    header_screen();
+    printf("+---------------------[ TASK STATUS ]---------------------------+\n");
+    printf("|   [1]   -> Created                                            |\n");
+    printf("|   [2]   -> In Progress                                        |\n");
+    printf("|   [3]   -> Completed                                          |\n");
+    printf("|   [4]   -> Cancelled                                          |\n");
+    printf("|  [ESC]  -> Back                                               |\n");
+    printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
+    char choice;
+    do
+    {
+        choice = get_input;
+    } while (choice < '1' && choice > '4');
+    switch (choice)
+    {
+    case '1':
+        strcpy(status, "Created");
+        break;
+    case '2':
+        strcpy(status, "In Progress");
+        break;
+    case '3':
+        strcpy(status, "Completed");
+        break;
+    case '4':
+        strcpy(status, "Cancelled");
+        break;
+    case ESC:
+        task_management_dashboard();
+        break;
+    }
     return 0;
 }
 int report_dashboard()
