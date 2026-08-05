@@ -1,10 +1,6 @@
-# ==========================================================
-# Makefile for Project Management System
-# ==========================================================
-
 CC = gcc
 
-CFLAGS = -Wall -Wextra -Iinclude
+CFLAGS = -Wall -Wextra -Iinclude -finput-charset=UTF-8 -fexec-charset=UTF-8
 
 SRC = main.c \
 	src/auth.c \
@@ -12,19 +8,17 @@ SRC = main.c \
 	src/report.c \
 	src/task.c \
 	src/ui.c \
-	src/utility.c \
+	src/utility.c
 
 OBJ = build/main.o \
-	  build/auth.o \
-      build/project.o \
-	  build/report.o \
-	  build/task.o \
-      build/ui.o \
-	  build/utility.o \
+	build/auth.o \
+	build/project.o \
+	build/report.o \
+	build/task.o \
+	build/ui.o \
+	build/utility.o
 
 TARGET = bin/projectmanagement.exe
-
-# ==========================================================
 
 all: $(TARGET)
 
@@ -44,8 +38,7 @@ run: $(TARGET)
 	./$(TARGET)
 
 clean:
-	rm -rf build
-	rm -rf bin
+	rm -rf build bin
 
 rebuild: clean all
 

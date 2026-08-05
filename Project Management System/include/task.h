@@ -48,6 +48,6 @@ int sort_tasks();
 int search_by_task_id_or_name();
 int search_task_by_status();
 int search_task_by_priority();
-int sort_by_priority(void *a, void *b);
+int sort_by_priority(const void *a, const void *b);
 
 #endif

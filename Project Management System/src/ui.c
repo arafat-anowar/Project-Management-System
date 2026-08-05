@@ -1,14 +1,82 @@
 #include "ui.h"
 
+int header_screen()
+{
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+    clear_screen();
+    int terminal_width = get_console_width();
+    int box_width = 100;
+    int x = (terminal_width - box_width) / 2;
+    move_cursor(x, 1);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, 2);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, 3);
+    printf("║                              ██████╗      ███╗   ███╗       ███████╗                             ║\n");
+    move_cursor(x, 4);
+    printf("║                              ██╔══██╗     ████╗ ████║       ██╔════╝                             ║\n");
+    move_cursor(x, 5);
+    printf("║                              ██████╔╝     ██╔████╔██║       ███████╗                             ║\n");
+    move_cursor(x, 6);
+    printf("║                              ██╔═══╝      ██║╚██╔╝██║       ╚════██║                             ║\n");
+    move_cursor(x, 7);
+    printf("║                              ██║     ██   ██║ ╚═╝ ██║  ██   ███████║                             ║\n");
+    move_cursor(x, 8);
+    printf("║                              ╚═╝          ╚═╝     ╚═╝      ╚══════╝                              ║\n");
+    move_cursor(x, 9);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, 10);
+    printf("║                                    PROJECT MANAGEMENT SYSTEM                                     ║\n");
+    move_cursor(x, 11);
+    printf("║                                Plan • Organize • Track • Complete                                ║\n");
+    move_cursor(x, 12);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, 13);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n");
+    return 0;
+}
+
 int main_menu()
 {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
     header_screen();
-    printf("+-------------------------[ MAIN MENU ]--------------------------+\n");
-    printf("|   [1]   -> Register                                            |\n");
-    printf("|   [2]   -> Login                                               |\n");
-    printf("|   [3]   -> Forget Password                                     |\n");
-    printf("|  [ESC]  -> Exit                                                |\n");
-    printf("+----------------------[PRESS YOUR CHOICE]-----------------------+\n");
+    int terminal_width = get_console_width();
+    int box_width = 100;
+    int x = (terminal_width - box_width) / 2;
+    move_cursor(x, 16);
+    printf("╔══════════════════════════════════════════[ MAIN  MENU ]══════════════════════════════════════════╗");
+
+    move_cursor(x, 17);
+    printf("║                                                                                                  ║");
+
+    move_cursor(x, 18);
+    printf("║   [1]  Register                                                                                  ║");
+
+    move_cursor(x, 19);
+    printf("║   [2]  Login                                                                                     ║");
+
+    move_cursor(x, 20);
+    printf("║   [3]  Forgot Password                                                                           ║");
+
+    move_cursor(x, 21);
+    printf("║  [ESC] Exit                                                                                      ║");
+
+    move_cursor(x, 22); 
+    printf("║                                                                                                  ║");
+
+    move_cursor(x, 23);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣");
+
+    move_cursor(x, 24);
+    printf("║                                        ► Select an Option                                        ║");
+
+    move_cursor(x, 25);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
     // Take Input from user and validate that
     char choice;
     do
@@ -33,8 +101,8 @@ int main_menu()
 
 int dashboard()
 {
-    clear_screen();
-    header_screen();
+    // clear_screen();
+    // header_screen();
     printf("+-------------------------[ DASHBOARD ]--------------------------+\n");
     printf("|   [1]   -> Project Management                                  |\n");
     printf("|   [2]   -> Task Managent                                       |\n");
@@ -102,7 +170,7 @@ int project_management_dashboard()
         view_projects();
         break;
     case '5':
-        search_project();
+        search_by_project_id_or_name();
         break;
     case ESC:
         dashboard();

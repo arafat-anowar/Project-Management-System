@@ -1047,13 +1047,13 @@ int sort_tasks()
     sort_task_open = fopen("database\\sort_task.csv", "w");
     for (int j = 0; j < i; j++)
     {
-        fprintf(sort_task_open, "%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",(j+1), task[j].unique_id, task[j].task_id, task[j].project_id, task[j].name, task[j].description, task[j].priority, task[j].status, task[j].start_date, task[j].end_date, task[j].created_by);
+        fprintf(sort_task_open, "%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", (j + 1), task[j].unique_id, task[j].task_id, task[j].project_id, task[j].name, task[j].description, task[j].priority, task[j].status, task[j].start_date, task[j].end_date, task[j].created_by);
     }
 
     fclose(sort_task_open);
     return 0;
 }
-int sort_by_priority(void *a, void *b)
+int sort_by_priority(const void *a, const void *b)
 {
     struct t_details *task_a = (struct t_details *)a;
     struct t_details *task_b = (struct t_details *)b;
@@ -1068,12 +1068,17 @@ int sort_by_priority(void *a, void *b)
         priority_of_a = 1;
 
     if (strcmp(task_b->priority, "High") == 0)
+    {
         priority_of_b = 3;
+    }
     else if (strcmp(task_b->priority, "Medium") == 0)
+    {
         priority_of_b = 2;
+    }
     else
+    {
         priority_of_b = 1;
-
+    }
     if (priority_of_b != priority_of_a)
         return priority_of_b - priority_of_a;
 

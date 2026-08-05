@@ -367,7 +367,7 @@ int search_by_project_id_or_name()
     struct p_details project;
 
     FILE *projectDBS_open;
-    projectDBS_open = fopen("database\\projectDBS.csv", "r");
+    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
 
     char line[3000];
     while (fgets(line, sizeof(line), projectDBS_open) != NULL)
@@ -413,7 +413,7 @@ int search_by_project_id_or_name()
 
     char path[100];
 
-    strcpy(path, "database\\Projects\\");
+    strcpy(path, "..\\database\\Projects\\");
     strcat(path, strlwr(project_id_or_name));
     strcat(path, ".csv");
 

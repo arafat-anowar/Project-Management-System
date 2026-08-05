@@ -28,7 +28,6 @@ int create_project();
 int view_projects();
 int update_project();
 int delete_project();
-int search_project();
 int change_project_name();
 int change_project_category();
 int change_project_description();

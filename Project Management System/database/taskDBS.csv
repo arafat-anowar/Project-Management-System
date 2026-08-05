@@ -1,3 +1,6 @@
-10001,T1001,P1001,WBEK,FWEF,F,Deleted,Deleted,FF,arafatanowar
-10002,T1002,P1001,wergwe,gerwg,Medium,weg,weg,wg,arafatanowar
-10003,T1001,P1002,ferf,ewf,wf,Deleted,Deleted,efw,arafatanowar
+10001,T1001,P1001,Design System Architecture,Create the initial system architecture for the project,High,Completed,2026-08-01,2026-08-05,arafatanowar
+10002,T1002,P1001,Implement User Login,Develop the user authentication and login module,High,In Progress,2026-08-06,2026-08-12,arafatanowar
+10003,T1003,P1001,Create Task Module,Implement the task creation and management feature,Medium,Pending,2026-08-13,2026-08-20,arafatanowar
+10004,T1001,P1002,Design Database,Create the database structure for student records,High,Completed,2026-08-05,2026-08-08,arafatanowar
+10005,T1002,P1002,Student Registration,Implement the student registration feature,Medium,In Progress,2026-08-09,2026-08-16,arafatanowar
+10006,T1003,P1002,Course Enrollment,Develop the course enrollment module,Low,Pending,2026-08-17,2026-08-25,arafatanowar
