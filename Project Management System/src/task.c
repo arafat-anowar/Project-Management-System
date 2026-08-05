@@ -314,6 +314,168 @@ int view_tasks()
 
 int update_task()
 {
+    char project_id_or_name[50];
+    printf("\nProject ID or Name : ");
+    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
+    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
+
+    struct t_details task;
+    struct p_details project;
+
+    FILE *projectDBS_open;
+    projectDBS_open = fopen("database\\projectDBS.csv", "r");
+    char line[3000];
+    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = 0;
+
+        char *token;
+
+        token = strtok(line, ",");
+        strcpy(project.id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.category, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.created_by, token);
+
+        if (strcmp(project_id_or_name, project.id) == 0 || strcmp(project_id_or_name, project.name) == 0)
+        {
+            strcpy(project_id_or_name, project.name);
+            break;
+        }
+    }
+    fclose(projectDBS_open);
+
+    char path[100];
+
+    strcpy(path, "database\\Projects\\");
+    strcat(path, strlwr(project_id_or_name));
+    strcat(path, ".csv");
+
+    char task_id_or_name[50];
+    printf("\nTask ID or Name : ");
+    fgets(task_id_or_name, sizeof(task_id_or_name), stdin);
+    task_id_or_name[strcspn(task_id_or_name, "\n")] = '\0';
+
+    FILE *task_dbs_open, *tmp_task;
+    task_dbs_open = fopen("database\\taskDBS.csv", "r");
+    tmp_task = fopen("database\\tmp_task.csv", "w");
+
+    while (fgets(line, sizeof(line), task_dbs_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = '\0';
+
+        char *token;
+
+        token = strtok(line, ",");
+        task.unique_id = atoi(token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.task_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.project_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.created_by, token);
+
+        if (strcmp(task.task_id, task_id_or_name) == 0 || strcmp(task.name, task_id_or_name) == 0)
+        {
+            task_update_dashboard(&task);
+            fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+            continue;
+        }
+        fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+    }
+    fclose(task_dbs_open);
+    fclose(tmp_task);
+    remove("database\\taskDBS.csv");
+    rename("database\\tmp_task.csv", "database\\taskDBS.csv");
+
+    FILE *separate_project_dbs_open, *tmp_for_separate_project_file;
+    separate_project_dbs_open = fopen("database\\taskDBS.csv", "r");
+    tmp_for_separate_project_file = fopen("database\\Projects\\tmp_task.csv", "w");
+
+    while (fgets(line, sizeof(line), separate_project_dbs_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = '\0';
+
+        char *token;
+
+        token = strtok(line, ",");
+        task.unique_id = atoi(token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.task_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.project_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task.created_by, token);
+
+        fprintf(tmp_for_separate_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+    }
+    fclose(separate_project_dbs_open);
+    fclose(tmp_for_separate_project_file);
+    remove(path);
+    rename("database\\Projects\\tmp_task.csv", path);
 
     return 0;
 }
@@ -602,33 +764,47 @@ int view_tasks_by_project()
 
     return 0;
 }
-// int change_task_name(char name[])
-// {
-//     return 0;
-// }
-// int change_task_description(char description[])
-// {
-//     return 0;
-// }
-// int change_task_status(char status[])
-// {
-//     return 0;
-// }
-
-// int change_task_priority(char priority[])
-// {
-//     return 0;
-// }
-// int change_task_start_date(char start_date[])
-// {
-//     return 0;
-// }
-// int extend_task_deadline(char deadline[])
-// {
-//     return 0;
-// }
-int sort_tasks()
+int change_task_name(char name[])
 {
+    char updated_name[50];
+    fgets(updated_name, sizeof(updated_name), stdin);
+    updated_name[strcspn(updated_name, "\n")] = '\0';
+    strcpy(name, updated_name);
+    return 0;
+}
+int change_task_description(char description[])
+{
+    char updated_description[50];
+    fgets(updated_description, sizeof(updated_description), stdin);
+    updated_description[strcspn(updated_description, "\n")] = '\0';
+    strcpy(description, updated_description);
+    return 0;
+}
+int change_task_status(char status[])
+{
+    task_priority_dashboard(status);
+    return 0;
+}
+
+int change_task_priority(char priority[])
+{
+    task_priority_dashboard(priority);
+    return 0;
+}
+int change_task_start_date(char start_date[])
+{
+    char updated_start_date[50];
+    fgets(updated_start_date, sizeof(updated_start_date), stdin);
+    updated_start_date[strcspn(updated_start_date, "\n")] = '\0';
+    strcpy(start_date, updated_start_date);
+    return 0;
+}
+int extend_task_deadline(char deadline[])
+{
+    char updated_deadline[50];
+    fgets(updated_deadline, sizeof(updated_deadline), stdin);
+    updated_deadline[strcspn(updated_deadline, "\n")] = '\0';
+    strcpy(deadline, updated_deadline);
     return 0;
 }
 int search_by_task_id_or_name()
@@ -814,5 +990,9 @@ int search_task_by_priority()
             printf("Deadline       : %s\n", task.end_date);
         }
     }
+    return 0;
+}
+int sort_tasks()
+{
     return 0;
 }
