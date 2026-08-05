@@ -150,29 +150,74 @@ int view_projects()
 
 int update_project()
 {
-    struct p_details data;
+    char project_id_or_name[50];
 
-    int choice;
-    project_update_dashboard();
+    printf("\nProject ID or Name : ");
+    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
+    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
+ 
+    struct p_details project;
+
+    FILE *projectDBS_open = fopen("database\\projectDBS.csv", "r");
+    FILE *tmp_project = fopen("database\\tmp.csv", "w");
+
+    char line[3000];
+    int found = 0;
+ 
+    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = '\0';
+        char *token;
+        token = strtok(line, ",");
+        strcpy(project.id, token);
+        token = strtok(NULL, ",");
+        strcpy(project.name, token);
+        token = strtok(NULL, ",");
+        strcpy(project.category, token);
+        token = strtok(NULL, ",");
+        strcpy(project.description, token);
+        token = strtok(NULL, ",");
+        strcpy(project.priority, token);
+        token = strtok(NULL, ",");
+        strcpy(project.status, token);
+        token = strtok(NULL, ",");
+        strcpy(project.start_date, token);
+        token = strtok(NULL, ",");
+        strcpy(project.end_date, token);
+        token = strtok(NULL, ",");
+        strcpy(project.created_by, token);
+
+
+        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+                project.id, project.name, project.category, project.description,
+                project.priority, project.status, project.start_date,
+                project.end_date, project.created_by);
+    }
+
+    fclose(projectDBS_open);
+    fclose(tmp_project);
+ 
+    remove("database\\projectDBS.csv");
+    rename("database\\tmp.csv", "database\\projectDBS.csv");
 
     return 0;
 }
 
 int delete_project()
 {
+    struct p_details project;
+
     char project_id_or_name[50];
 
     printf("Enter Project ID or Project Name : ");
-    scanf("%s", project_id_or_name);
+    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
 
-    struct p_details project;
+    FILE *file_for_delete_project, *write_to_new_file;
 
-    FILE *file_open_for_delete_project, *write_data_to_new_file;
+    file_for_delete_project = fopen("database\\projectDBS.csv", "r");
+    write_to_new_file = fopen("database\\tmp.csv", "w");
 
-    file_open_for_delete_project = fopen("database\\projectDBS.csv", "r");
-    write_data_to_new_file = fopen("database\\tmp.csv", "w");
-
-    while (fscanf(file_open_for_delete_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
+    while (fscanf(file_for_delete_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
             project.id, project.category, project.name, project.description, project.priority, 
             project.status, project.start_date, project.end_date, project.created_by) != EOF)
     {
@@ -180,24 +225,28 @@ int delete_project()
         if (strcmp(project.id, project_id_or_name) == 0 || strcmp(project.name, project_id_or_name) == 0)
         {
             strcpy(project.status, "Deleted");
-            fprintf(write_data_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", 
-                project.id, project.category, project.name, project.description, project.priority, 
-                project.status, project.start_date, project.end_date, project.created_by);
+            
+            fprintf(write_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.category, project.name, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
+            
             char path[100];
+            
             strcpy(path, "database\\Projects\\");
+            
             strcat(path, strlwr(project.name));
             strcat(path, ".csv");
+            
             remove(path);
+            
             continue;
         }
 
-        fprintf(write_data_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.category, 
+        fprintf(write_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.category, 
             project.name, project.description, project.priority, project.status, project.start_date, 
             project.end_date, project.created_by);
     }
 
-    fclose(file_open_for_delete_project);
-    fclose(write_data_to_new_file);
+    fclose(file_for_delete_project);
+    fclose(write_to_new_file);
 
     remove("database\\projectDBS.csv");
     rename("database\\tmp.csv", "database\\projectDBS.csv");
@@ -208,35 +257,104 @@ int delete_project()
 }
 int change_project_name()
 {
+    struct p_details data;
+    char new_name[50];
+    printf("\nNew Project Name : ");
+
+    fgets(new_name, sizeof(new_name), stdin);
+    
+    new_name[strcspn(new_name, "\n")] = '\0';
+    strcpy(data.name, new_name);
+
     return 0;
 }
 int change_project_category()
 {
+    struct p_details data;
+    char new_category[20];
+    printf("\nNew Category : ");
+
+    fgets(new_category, sizeof(new_category), stdin);
+    
+    new_category[strcspn(new_category, "\n")] = '\0';
+    strcpy(data.category, new_category);
+
     return 0;
 }
 int change_project_description()
 {
+    struct p_details data;
+    char new_description[200];
+    printf("\nNew Description : ");
+
+    fgets(new_description, sizeof(new_description), stdin);
+    
+    new_description[strcspn(new_description, "\n")] = '\0';
+    strcpy(data.description, new_description);
+
+
     return 0;
 }
 int change_project_status()
 {
+    struct p_details data;
+    char new_status[20];
+    printf("\nNew Status : ");
+
+    fgets(new_status, sizeof(new_status), stdin);
+    
+    new_status[strcspn(new_status, "\n")] = '\0';
+    strcpy(data.status, new_status);
+
+ 
     return 0;
 }
 
 int change_project_priority()
-{
+{   
+    struct p_details data;
+    char new_priority[20];
+    printf("\nNew Priority : ");
+
+    fgets(new_priority, sizeof(new_priority), stdin);
+    
+    new_priority[strcspn(new_priority, "\n")] = '\0';
+    strcpy(data.priority, new_priority);
+
+ 
     return 0;
 }
 int change_project_start_date()
 {
+    struct p_details data;
+    char new_starting_date[20];
+    printf("\nNew Starting Date : ");
+
+    fgets(new_starting_date, sizeof(new_starting_date), stdin);
+    
+    new_starting_date[strcspn(new_starting_date, "\n")] = '\0';
+    strcpy(data.start_date, new_starting_date);
+
+ 
     return 0;
 }
 int extend_project_deadline()
 {
+    struct p_details data;
+    char new_deadline[20];
+    printf("\nNew Deadline : ");
+
+    fgets(new_deadline, sizeof(new_deadline), stdin);
+    
+    new_deadline[strcspn(new_deadline, "\n")] = '\0';
+    strcpy(data.end_date, new_deadline);
+
+ 
     return 0;
 }
 int sort_projects()
 {
+
     return 0;
 }
 int search_by_project_id_or_name()
