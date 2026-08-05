@@ -144,6 +144,7 @@ int view_projects()
     printf("| Deadline             | %-s |\n", data.end_date);
     printf("+----------------------+-----------------------------------------------+\n");
 
+    
     return 0;
 }
 
