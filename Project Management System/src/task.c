@@ -420,10 +420,10 @@ int update_task()
         if (strcmp(task.task_id, task_id_or_name) == 0 || strcmp(task.name, task_id_or_name) == 0)
         {
             task_update_dashboard(&task);
-            fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+            fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
             continue;
         }
-        fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+        fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
     fclose(task_dbs_open);
     fclose(tmp_task);
@@ -470,7 +470,7 @@ int update_task()
         token = strtok(NULL, ",");
         strcpy(task.created_by, token);
 
-        fprintf(tmp_for_separate_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+        fprintf(tmp_for_separate_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
     fclose(separate_project_dbs_open);
     fclose(tmp_for_separate_project_file);
@@ -585,10 +585,10 @@ int delete_task()
         if (strcmp(task.task_id, task_id_or_name) == 0 || strcmp(task.name, task_id_or_name) == 0)
         {
             strcpy(task.status, "Deleted");
-            fprintf(tmp_for_separate_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+            fprintf(tmp_for_separate_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
             continue;
         }
-        fprintf(tmp_for_separate_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+        fprintf(tmp_for_separate_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
     fclose(separate_project_dbs_open);
     fclose(tmp_for_separate_project_file);
@@ -638,10 +638,10 @@ int delete_task()
         if (strcmp(task.task_id, task_id_or_name) == 0 || strcmp(task.name, task_id_or_name) == 0)
         {
             strcpy(task.status, "Deleted");
-            fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+            fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
             continue;
         }
-        fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.status, task.end_date, task.created_by);
+        fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
     fclose(task_dbs_open);
     fclose(tmp_task);
@@ -994,5 +994,88 @@ int search_task_by_priority()
 }
 int sort_tasks()
 {
+    FILE *taskDBS_open;
+    taskDBS_open = fopen("database\\taskDBS.csv", "r");
+
+    struct t_details task[MAX];
+
+    char line[3000];
+    int i = 0;
+    while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = '\0';
+
+        char *token;
+
+        token = strtok(line, ",");
+        task[i].unique_id = atoi(token);
+
+        token = strtok(NULL, ",");
+        strcpy(task[i].task_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task[i].project_id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task[i].name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task[i].description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task[i].priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task[i].status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task[i].start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task[i].end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(task[i].created_by, token);
+
+        i++;
+    }
+    fclose(taskDBS_open);
+
+    qsort(task, i, sizeof(struct t_details), sort_by_priority);
+
+    FILE *sort_task_open;
+    sort_task_open = fopen("database\\sort_task.csv", "w");
+    for (int j = 0; j < i; j++)
+    {
+        fprintf(sort_task_open, "%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",(j+1), task[j].unique_id, task[j].task_id, task[j].project_id, task[j].name, task[j].description, task[j].priority, task[j].status, task[j].start_date, task[j].end_date, task[j].created_by);
+    }
+
+    fclose(sort_task_open);
     return 0;
+}
+int sort_by_priority(void *a, void *b)
+{
+    struct t_details *task_a = (struct t_details *)a;
+    struct t_details *task_b = (struct t_details *)b;
+
+    int priority_of_a, priority_of_b;
+
+    if (strcmp(task_a->priority, "High") == 0)
+        priority_of_a = 3;
+    else if (strcmp(task_a->priority, "Medium") == 0)
+        priority_of_a = 2;
+    else
+        priority_of_a = 1;
+
+    if (strcmp(task_b->priority, "High") == 0)
+        priority_of_b = 3;
+    else if (strcmp(task_b->priority, "Medium") == 0)
+        priority_of_b = 2;
+    else
+        priority_of_b = 1;
+
+    if (priority_of_b != priority_of_a)
+        return priority_of_b - priority_of_a;
+
+    return strcmp(task_a->end_date, task_b->end_date);
 }

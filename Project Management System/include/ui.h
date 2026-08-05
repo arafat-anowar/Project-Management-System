@@ -13,13 +13,15 @@
 #define get_input _getch()
 #define ESC 27
 
+struct t_details;
+
 // Function Prototypes
 int main_menu();
 int dashboard();
 int project_management_dashboard();
 int task_management_dashboard();
 int project_update_dashboard();
-int task_update_dashboard();
+int task_update_dashboard(struct t_details *task);
 int report_dashboard();
 int search_dashboard();
 int task_status_dashboard(char status[]);

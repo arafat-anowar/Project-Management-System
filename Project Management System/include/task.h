@@ -7,10 +7,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <windows.h>
+#include <errno.h>
 // Local Header Files
 #include "ui.h"
 #include "utility.h"
 #include "project.h"
+
+#define MAX 10000
 
 // Structures
 struct t_details
@@ -45,5 +48,6 @@ int sort_tasks();
 int search_by_task_id_or_name();
 int search_task_by_status();
 int search_task_by_priority();
+int sort_by_priority(void *a, void *b);
 
 #endif
