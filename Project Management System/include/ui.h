@@ -16,6 +16,7 @@
 struct t_details;
 
 // Function Prototypes
+int header_screen();
 int main_menu();
 int dashboard();
 int project_management_dashboard();

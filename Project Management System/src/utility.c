@@ -25,10 +25,7 @@ int task_details_screen()
     return 0;
 }
 
-int header_screen()
-{
-    return 0;
-}
+
 
 int pause_screen(int sec)
 {
@@ -37,6 +34,7 @@ int pause_screen(int sec)
 
 int clear_screen()
 {
+    system("cls");
     return 0;
 }
 int validate_user_name()
@@ -69,4 +67,23 @@ int compare_date()
 int is_overdue()
 {
     return 0;
+}
+int move_cursor(int x, int y)
+{
+
+    COORD position;
+
+    position.X = x;
+    position.Y = y;
+
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), position);
+    return 0;
+}
+int get_console_width()
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+    return csbi.srWindow.Right - csbi.srWindow.Left + 1;
 }

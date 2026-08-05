@@ -3,19 +3,24 @@
 #define AUTH_H
 
 // Global Header Files
-#include<stdio.h>
-#include<string.h>
-#include<conio.h>
+#include <stdio.h>
+#include <string.h>
+#include <conio.h>
+#include <errno.h>
 
 // Local Header Files
 #include "utility.h"
 #include "ui.h"
-
-// Structures
-struct l_account{
+// Macros
+#define MAX_LENGTH 3000
+// Structure for user login information
+struct l_account
+{
     char user_name_or_email[30];
     char user_pass[30];
 };
+
+// Structure for user account information
 struct r_account
 {
     char id[20];
@@ -28,12 +33,31 @@ struct r_account
     char role[20];
 };
 
+// Structure for password recovery information
+struct account
+{
+    char email[30];
+    char security_question[15];
+};
+
 // Function Prototypes
+
+// Authenticate a user
 int login();
+
+// Log out the current user
 int logout();
-int password_verify(char username_or_email[],char password[]);
+
+// Verify the user's login credentials
+int password_verify(char username_or_email[], char password[]);
+
+// Change the user's password
 int change_password();
+
+// Create a new user account
 int create_user();
+
+// Generate a unique user ID
 int generate_user_id(char id[]);
 
 #endif
