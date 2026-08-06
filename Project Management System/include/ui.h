@@ -14,6 +14,7 @@
 #define ESC 27
 
 struct t_details;
+struct p_details;
 
 // Function Prototypes
 int header_screen();
@@ -21,10 +22,13 @@ int main_menu();
 int dashboard();
 int project_management_dashboard();
 int task_management_dashboard();
-int project_update_dashboard();
+int project_update_dashboard(struct p_details *project);
 int task_update_dashboard(struct t_details *task);
 int report_dashboard();
 int search_dashboard();
 int task_status_dashboard(char status[]);
 int task_priority_dashboard(char priority[]);
+int project_status_dashboard(char status[]);
+int project_priority_dashboard(char priority[]);
+
 #endif

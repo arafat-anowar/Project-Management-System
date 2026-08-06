@@ -35,7 +35,6 @@ int header_screen()
     printf("║                                                                                                  ║\n");
     move_cursor(x, 13);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
-    printf("\n\n\n\n\n\n\n\n\n\n\n\n\n");
     return 0;
 }
 
@@ -48,35 +47,35 @@ int main_menu()
     int terminal_width = get_console_width();
     int box_width = 100;
     int x = (terminal_width - box_width) / 2;
-    move_cursor(x, 16);
-    printf("╔══════════════════════════════════════════[ MAIN  MENU ]══════════════════════════════════════════╗");
-
-    move_cursor(x, 17);
-    printf("║                                                                                                  ║");
-
-    move_cursor(x, 18);
-    printf("║   [1]  Register                                                                                  ║");
-
-    move_cursor(x, 19);
-    printf("║   [2]  Login                                                                                     ║");
-
-    move_cursor(x, 20);
-    printf("║   [3]  Forgot Password                                                                           ║");
+    move_cursor(x,20 );
+    printf("╔══════════════════════════════════════════[ MAIN  MENU ]══════════════════════════════════════════╗\n");
 
     move_cursor(x, 21);
-    printf("║  [ESC] Exit                                                                                      ║");
+    printf("║                                                                                                  ║\n");
 
-    move_cursor(x, 22); 
-    printf("║                                                                                                  ║");
+    move_cursor(x, 22);
+    printf("║   [1]  Register                                                                                  ║\n");
 
     move_cursor(x, 23);
-    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣");
+    printf("║   [2]  Login                                                                                     ║\n");
 
     move_cursor(x, 24);
-    printf("║                                        ► Select an Option                                        ║");
+    printf("║   [3]  Forgot Password                                                                           ║\n");
 
     move_cursor(x, 25);
-    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
+    printf("║  [ESC] Exit                                                                                      ║\n");
+
+    move_cursor(x, 26); 
+    printf("║                                                                                                  ║\n");
+
+    move_cursor(x, 27);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+
+    move_cursor(x, 28);
+    printf("║                                        PRESS YOUR CHOICE                                         ║\n");
+
+    move_cursor(x, 29);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
     // Take Input from user and validate that
     char choice;
     do
@@ -234,7 +233,7 @@ int task_management_dashboard()
     return 0;
 }
 
-int project_update_dashboard()
+int project_update_dashboard(struct p_details *project)
 {
     clear_screen();
     header_screen();
@@ -256,25 +255,25 @@ int project_update_dashboard()
     switch (choice)
     {
     case '1':
-        change_project_name();
+        change_project_name(project->name);
         break;
     case '2':
-        change_project_category();
+        change_project_category(project->category);
         break;
     case '3':
-        change_project_description();
+        change_project_description(project->description);
         break;
     case '4':
-        change_project_priority();
+        change_project_priority(project->priority);
         break;
     case '5':
-        change_project_status();
+        change_project_status(project->status);
         break;
     case '6':
-        change_project_start_date();
+        change_project_start_date(project->start_date);
         break;
     case '7':
-        extend_project_deadline();
+        extend_project_deadline(project->end_date);
         break;
     case ESC:
         project_management_dashboard();
@@ -363,6 +362,42 @@ int task_status_dashboard(char status[])
     }
     return 0;
 }
+int project_status_dashboard(char status[])
+{
+    clear_screen();
+    header_screen();
+    printf("+---------------------[ PROJECT STATUS ]---------------------------+\n");
+    printf("|   [1]   -> Created                                            |\n");
+    printf("|   [2]   -> In Progress                                        |\n");
+    printf("|   [3]   -> Completed                                          |\n");
+    printf("|   [4]   -> Cancelled                                          |\n");
+    printf("|  [ESC]  -> Back                                               |\n");
+    printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
+    char choice;
+    do
+    {
+        choice = get_input;
+    } while (choice < '1' && choice > '4');
+    switch (choice)
+    {
+    case '1':
+        strcpy(status, "Created");
+        break;
+    case '2':
+        strcpy(status, "In Progress");
+        break;
+    case '3':
+        strcpy(status, "Completed");
+        break;
+    case '4':
+        strcpy(status, "Cancelled");
+        break;
+    case ESC:
+        project_management_dashboard();
+        break;
+    }
+    return 0;
+}
 int task_priority_dashboard(char priority[])
 {
     clear_screen();
@@ -396,6 +431,41 @@ int task_priority_dashboard(char priority[])
         task_management_dashboard();
         break;
         ;
+    }
+    return 0;
+}
+int project_priority_dashboard(char priority[])
+{
+    clear_screen();
+    header_screen();
+    printf("+--------------------[ PROJECT PRIORITY ]--------------------------+\n");
+    printf("|   [1]   -> High                                               |\n");
+    printf("|   [2]   -> Medium                                             |\n");
+    printf("|   [3]   -> Low                                                |\n");
+    printf("|  [ESC]  -> Back                                               |\n");
+    printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
+    char choice;
+    do
+    {
+        choice = get_input;
+    } while (choice < '1' || choice > '3');
+    switch (choice)
+    {
+    case '1':
+        strcpy(priority, "High");
+        break;
+
+    case '2':
+        strcpy(priority, "Medium");
+        break;
+
+    case '3':
+        strcpy(priority, "Low");
+        break;
+
+    case ESC:
+        project_management_dashboard();
+        break;
     }
     return 0;
 }
