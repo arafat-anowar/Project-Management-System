@@ -9,7 +9,7 @@ int generate_project_id(char id[])
     struct p_details project;
 
     FILE *projectDBS_open;
-    projectDBS_open = fopen("database\\projectDBS.csv", "r");
+    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
 
     char line[3000];
     while (fgets(line, sizeof(line), projectDBS_open) != NULL)
@@ -106,7 +106,7 @@ int create_project()
 
     strcpy(project.created_by, "arafatanowar");
 
-    FILE *open_projectDBS = fopen("database\\projectDBS.csv", "a");
+    FILE *open_projectDBS = fopen("..\\database\\projectDBS.csv", "a");
 
     fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id,
             project.name, project.category, project.description,
@@ -116,7 +116,7 @@ int create_project()
     fclose(open_projectDBS);
 
     char filepath[100];
-    strcpy(filepath, "database\\Projects\\");
+    strcpy(filepath, ".\\database\\Projects\\");
     strcat(filepath, strlwr(project.name));
     strcat(filepath, ".csv");
 
@@ -129,7 +129,7 @@ int create_project()
 int view_projects()
 {
     struct p_details data;
-
+    
     printf("\n");
     printf("+----------------------------------------------------------------------+\n");
     printf("|                         PROJECT DETAILS                              |\n");
@@ -157,8 +157,8 @@ int update_project()
 
     struct p_details project;
 
-    FILE *projectDBS_open = fopen("database\\projectDBS.csv", "r");
-    FILE *tmp_project = fopen("database\\tmp.csv", "w");
+    FILE *projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
+    FILE *tmp_project = fopen("..\\database\\tmp.csv", "w");
 
     char line[3000];
     int found = 0;
@@ -200,8 +200,8 @@ int update_project()
     fclose(projectDBS_open);
     fclose(tmp_project);
 
-    remove("database\\projectDBS.csv");
-    rename("database\\tmp.csv", "database\\projectDBS.csv");
+    remove("..\\database\\projectDBS.csv");
+    rename("..\\database\\tmp.csv", "..\\database\\projectDBS.csv");
 
     return 0;
 }
@@ -217,8 +217,8 @@ int delete_project()
 
     FILE *file_for_delete_project, *write_to_new_file;
 
-    file_for_delete_project = fopen("database\\projectDBS.csv", "r");
-    write_to_new_file = fopen("database\\tmp.csv", "w");
+    file_for_delete_project = fopen("..\\database\\projectDBS.csv", "r");
+    write_to_new_file = fopen("..\\database\\tmp.csv", "w");
 
     while (fscanf(file_for_delete_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
                   project.id, project.category, project.name, project.description, project.priority,
@@ -233,7 +233,7 @@ int delete_project()
 
             char path[100];
 
-            strcpy(path, "database\\Projects\\");
+            strcpy(path, "..\\database\\Projects\\");
 
             strcat(path, strlwr(project.name));
             strcat(path, ".csv");
@@ -251,8 +251,8 @@ int delete_project()
     fclose(file_for_delete_project);
     fclose(write_to_new_file);
 
-    remove("database\\projectDBS.csv");
-    rename("database\\tmp.csv", "database\\projectDBS.csv");
+    remove("..\\database\\projectDBS.csv");
+    rename("..\\database\\tmp.csv", "..\\database\\projectDBS.csv");
 
     project_management_dashboard();
 

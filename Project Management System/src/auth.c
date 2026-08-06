@@ -1,6 +1,5 @@
 #include "auth.h"
 
-
 // Main Source Code Start From Here
 
 /*
@@ -206,10 +205,8 @@ int login()
     user.user_name_or_email[strcspn(user.user_name_or_email, "\n")] = '\0';
 
     // Take user password.
-    printf("\nPassword : ");
-    fgets(user.user_pass, sizeof(user.user_pass), stdin);
+    input_password(&user);
     user.user_pass[strcspn(user.user_pass, "\n")] = '\0';
-
     // Check username/email and password is correct or not.
     int is_verified = password_verify(user.user_name_or_email, user.user_pass);
 
@@ -431,5 +428,21 @@ int change_password()
         perror("rename");
     }
 
+    return 0;
+}
+int input_password(struct l_account *user)
+{
+    char password[30];
+    int i = 0;
+    char each_character;
+    printf("\nPassword : ");
+    while ((each_character = getch()) != 13)
+    {
+        password[i] = each_character;
+        printf("*");
+        i++;
+    }
+    printf("\n");
+    strcpy(user->user_pass,password);
     return 0;
 }
