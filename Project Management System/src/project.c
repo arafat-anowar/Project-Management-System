@@ -266,17 +266,12 @@ int change_project_name(char name[])
     strcpy(name, updated_name);
     return 0;
 }
-int change_project_category()
+int change_project_category(char category[])
 {
-    struct p_details data;
-    char new_category[20];
-    printf("\nNew Category : ");
-
-    fgets(new_category, sizeof(new_category), stdin);
-
-    new_category[strcspn(new_category, "\n")] = '\0';
-    strcpy(data.category, new_category);
-
+    char updated_category[50];
+    fgets(updated_category, sizeof(updated_category), stdin);
+    updated_category[strcspn(updated_category, "\n")] = '\0';
+    strcpy(category, updated_category);
     return 0;
 }
 int change_project_description(char description[])
@@ -391,7 +386,6 @@ int search_project_by_status()
     fgets(status, sizeof(status), stdin);
     status[strcspn(status, "\n")] = '\0';
 
-
     FILE *projectDBS_open;
     projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
 
@@ -456,7 +450,6 @@ int search_project_by_priority()
     fgets(priority, sizeof(priority), stdin);
     priority[strcspn(priority, "\n")] = '\0';
 
-
     FILE *projectDBS_open;
     projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
 
@@ -508,8 +501,6 @@ int search_project_by_priority()
         }
     }
     fclose(projectDBS_open);
-
-
 
     return 0;
 }

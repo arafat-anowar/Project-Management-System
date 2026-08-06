@@ -14,6 +14,7 @@
 #define ESC 27
 
 struct t_details;
+struct p_details;
 
 // Function Prototypes
 int header_screen();
