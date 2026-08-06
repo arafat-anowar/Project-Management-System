@@ -8,6 +8,7 @@
 #include "project.h"
 #include "task.h"
 #include "auth.h"
+#include "utility.h"
 
 // Macros
 #define get_input _getch()
