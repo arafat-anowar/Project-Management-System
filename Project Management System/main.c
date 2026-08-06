@@ -8,7 +8,7 @@
 
 int main()
 {
-    // sort_tasks();
+    sort_tasks();
     main_menu();
     return 0;
 }

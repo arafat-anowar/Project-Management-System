@@ -49,6 +49,14 @@ int validate_email()
 
 int validate_phone()
 {
+    // int count=0;
+    // char character;
+    // while ((character=))
+    // {
+    //     count++;
+    // }
+    
+    
     return 0;
 }
 

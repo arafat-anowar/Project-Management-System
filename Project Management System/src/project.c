@@ -383,9 +383,133 @@ int search_by_project_id_or_name()
 }
 int search_project_by_status()
 {
+    struct p_details project;
+
+    char status[50];
+
+    printf("\nEnter your status : ");
+    fgets(status, sizeof(status), stdin);
+    status[strcspn(status, "\n")] = '\0';
+
+
+    FILE *projectDBS_open;
+    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
+
+    char line[3000];
+    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = 0;
+
+        char *token;
+
+        token = strtok(line, ",");
+        strcpy(project.id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.category, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.created_by, token);
+
+        if (strcmp(status, project.status) == 0)
+        {
+            printf("Project ID  : %s\n", project.id);
+            printf("Project name: %s\n", project.name);
+            printf("Category    : %s\n", project.category);
+            printf("Description : %s\n", project.description);
+            printf("Priority    : %s\n", project.priority);
+            printf("Status      : %s\n", project.status);
+            printf("Start Date  : %s\n", project.start_date);
+            printf("Deadline    : %s\n", project.end_date);
+            break;
+        }
+    }
+    fclose(projectDBS_open);
+
     return 0;
 }
 int search_project_by_priority()
 {
+    struct p_details project;
+
+    char priority[50];
+
+    printf("\nEnter your Priority : ");
+    fgets(priority, sizeof(priority), stdin);
+    priority[strcspn(priority, "\n")] = '\0';
+
+
+    FILE *projectDBS_open;
+    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
+
+    char line[3000];
+    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = 0;
+
+        char *token;
+
+        token = strtok(line, ",");
+        strcpy(project.id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.category, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.created_by, token);
+
+        if (strcmp(priority, project.priority) == 0)
+        {
+            printf("Project ID  : %s\n", project.id);
+            printf("Project name: %s\n", project.name);
+            printf("Category    : %s\n", project.category);
+            printf("Description : %s\n", project.description);
+            printf("Priority    : %s\n", project.priority);
+            printf("Status      : %s\n", project.status);
+            printf("Start Date  : %s\n", project.start_date);
+            printf("Deadline    : %s\n", project.end_date);
+            break;
+        }
+    }
+    fclose(projectDBS_open);
+
+
+
     return 0;
 }
