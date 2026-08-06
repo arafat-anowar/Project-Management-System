@@ -420,8 +420,6 @@ int update_task()
         if (strcmp(task.task_id, task_id_or_name) == 0 || strcmp(task.name, task_id_or_name) == 0)
         {
             task_update_dashboard(&task);
-            fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
-            continue;
         }
         fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
@@ -782,7 +780,7 @@ int change_task_description(char description[])
 }
 int change_task_status(char status[])
 {
-    task_priority_dashboard(status);
+    task_status_dashboard(status);
     return 0;
 }
 
