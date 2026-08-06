@@ -13,6 +13,7 @@
 #include "ui.h"
 // Macros
 #define MAX_LENGTH 3000
+
 // Structure for user login information
 struct l_account
 {
@@ -59,5 +60,8 @@ int create_user();
 
 // Generate a unique user ID
 int generate_user_id(char id[]);
+
+int input_password(struct l_account *user);
+int input_password_two(struct r_account *user);
 
 #endif

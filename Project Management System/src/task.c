@@ -9,7 +9,7 @@ int unique_task_id_generator()
     int id = 10001;
 
     FILE *taskDBS_open;
-    taskDBS_open = fopen("database\\taskDBS.csv", "r");
+    taskDBS_open = fopen("..\\database\\taskDBS.csv", "r");
 
     char line[3000];
 
@@ -158,7 +158,7 @@ int create_task()
     struct p_details project;
 
     FILE *projectDBS_open;
-    projectDBS_open = fopen("database\\projectDBS.csv", "r");
+    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
     char line[3000];
     while (fgets(line, sizeof(line), projectDBS_open) != NULL)
     {
@@ -203,7 +203,7 @@ int create_task()
 
     char path[100];
 
-    strcpy(path, "database\\Projects\\");
+    strcpy(path, "..\\database\\Projects\\");
     strcat(path, strlwr(project_id_or_name));
     strcat(path, ".csv");
 
@@ -238,7 +238,7 @@ int create_task()
     strcpy(task.created_by, "arafatanowar");
 
     FILE *file_open_for_write_data;
-    file_open_for_write_data = fopen("database\\taskDBS.csv", "a");
+    file_open_for_write_data = fopen("..\\database\\taskDBS.csv", "a");
     fprintf(file_open_for_write_data, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     fclose(file_open_for_write_data);
 
@@ -254,7 +254,7 @@ int view_tasks()
 {
     struct t_details task;
 
-    FILE *taskDBS_open = fopen("database\\taskDBS.csv", "r");
+    FILE *taskDBS_open = fopen("..\\database\\taskDBS.csv", "r");
 
     char line[3000];
     task_details_screen();
@@ -323,7 +323,7 @@ int update_task()
     struct p_details project;
 
     FILE *projectDBS_open;
-    projectDBS_open = fopen("database\\projectDBS.csv", "r");
+    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
     char line[3000];
     while (fgets(line, sizeof(line), projectDBS_open) != NULL)
     {
@@ -368,7 +368,7 @@ int update_task()
 
     char path[100];
 
-    strcpy(path, "database\\Projects\\");
+    strcpy(path, "..\\database\\Projects\\");
     strcat(path, strlwr(project_id_or_name));
     strcat(path, ".csv");
 
@@ -378,8 +378,8 @@ int update_task()
     task_id_or_name[strcspn(task_id_or_name, "\n")] = '\0';
 
     FILE *task_dbs_open, *tmp_task;
-    task_dbs_open = fopen("database\\taskDBS.csv", "r");
-    tmp_task = fopen("database\\tmp_task.csv", "w");
+    task_dbs_open = fopen("..\\database\\taskDBS.csv", "r");
+    tmp_task = fopen("..\\database\\tmp_task.csv", "w");
 
     while (fgets(line, sizeof(line), task_dbs_open) != NULL)
     {
@@ -420,19 +420,17 @@ int update_task()
         if (strcmp(task.task_id, task_id_or_name) == 0 || strcmp(task.name, task_id_or_name) == 0)
         {
             task_update_dashboard(&task);
-            fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
-            continue;
         }
         fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
     fclose(task_dbs_open);
     fclose(tmp_task);
-    remove("database\\taskDBS.csv");
-    rename("database\\tmp_task.csv", "database\\taskDBS.csv");
+    remove("..\\database\\taskDBS.csv");
+    rename("..\\database\\tmp_task.csv", "..\\database\\taskDBS.csv");
 
     FILE *separate_project_dbs_open, *tmp_for_separate_project_file;
-    separate_project_dbs_open = fopen("database\\taskDBS.csv", "r");
-    tmp_for_separate_project_file = fopen("database\\Projects\\tmp_task.csv", "w");
+    separate_project_dbs_open = fopen("..\\database\\taskDBS.csv", "r");
+    tmp_for_separate_project_file = fopen("..\\database\\Projects\\tmp_task.csv", "w");
 
     while (fgets(line, sizeof(line), separate_project_dbs_open) != NULL)
     {
@@ -475,7 +473,7 @@ int update_task()
     fclose(separate_project_dbs_open);
     fclose(tmp_for_separate_project_file);
     remove(path);
-    rename("database\\Projects\\tmp_task.csv", path);
+    rename("..\\database\\Projects\\tmp_task.csv", path);
 
     return 0;
 }
@@ -491,7 +489,7 @@ int delete_task()
     struct p_details project;
 
     FILE *projectDBS_open;
-    projectDBS_open = fopen("database\\projectDBS.csv", "r");
+    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
     char line[3000];
     while (fgets(line, sizeof(line), projectDBS_open) != NULL)
     {
@@ -536,7 +534,7 @@ int delete_task()
 
     char path[100];
 
-    strcpy(path, "database\\Projects\\");
+    strcpy(path, "..\\database\\Projects\\");
     strcat(path, strlwr(project_id_or_name));
     strcat(path, ".csv");
 
@@ -547,7 +545,7 @@ int delete_task()
 
     FILE *separate_project_dbs_open, *tmp_for_separate_project_file;
     separate_project_dbs_open = fopen(path, "r");
-    tmp_for_separate_project_file = fopen("database\\Projects\\tmp_task.csv", "w");
+    tmp_for_separate_project_file = fopen("..\\database\\Projects\\tmp_task.csv", "w");
 
     while (fgets(line, sizeof(line), separate_project_dbs_open) != NULL)
     {
@@ -593,11 +591,11 @@ int delete_task()
     fclose(separate_project_dbs_open);
     fclose(tmp_for_separate_project_file);
     remove(path);
-    rename("database\\Projects\\tmp_task.csv", path);
+    rename("..\\database\\Projects\\tmp_task.csv", path);
 
     FILE *task_dbs_open, *tmp_task;
-    task_dbs_open = fopen("database\\taskDBS.csv", "r");
-    tmp_task = fopen("database\\tmp_task.csv", "w");
+    task_dbs_open = fopen("..\\database\\taskDBS.csv", "r");
+    tmp_task = fopen("..\\database\\tmp_task.csv", "w");
 
     while (fgets(line, sizeof(line), task_dbs_open) != NULL)
     {
@@ -645,8 +643,8 @@ int delete_task()
     }
     fclose(task_dbs_open);
     fclose(tmp_task);
-    remove("database\\taskDBS.csv");
-    rename("database\\tmp_task.csv", "database\\taskDBS.csv");
+    remove("..\\database\\taskDBS.csv");
+    rename("..\\database\\tmp_task.csv", "..\\database\\taskDBS.csv");
     return 0;
 }
 
@@ -660,7 +658,7 @@ int view_tasks_by_project()
     struct p_details project;
 
     FILE *projectDBS_open;
-    projectDBS_open = fopen("database\\projectDBS.csv", "r");
+    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
 
     char line[3000];
     while (fgets(line, sizeof(line), projectDBS_open) != NULL)
@@ -706,7 +704,7 @@ int view_tasks_by_project()
 
     char path[100];
 
-    strcpy(path, "database\\Projects\\");
+    strcpy(path, "..\\database\\Projects\\");
     strcat(path, strlwr(project_id_or_name));
     strcat(path, ".csv");
 
@@ -782,7 +780,7 @@ int change_task_description(char description[])
 }
 int change_task_status(char status[])
 {
-    task_priority_dashboard(status);
+    task_status_dashboard(status);
     return 0;
 }
 
@@ -814,7 +812,7 @@ int search_by_task_id_or_name()
     task_id_or_name[strcspn(task_id_or_name, "\n")] = '\0';
 
     FILE *taskDBS_open;
-    taskDBS_open = fopen("database\\taskDBS.csv", "r");
+    taskDBS_open = fopen("..\\database\\taskDBS.csv", "r");
     struct t_details task;
 
     char line[3000];
@@ -877,7 +875,7 @@ int search_task_by_status()
     char status[30];
     task_status_dashboard(status);
     FILE *taskDBS_open;
-    taskDBS_open = fopen("database\\taskDBS.csv", "r");
+    taskDBS_open = fopen("..\\database\\taskDBS.csv", "r");
     struct t_details task;
     task_details_screen();
     char line[3000];
@@ -937,7 +935,7 @@ int search_task_by_priority()
     char priority[30];
     task_priority_dashboard(priority);
     FILE *taskDBS_open;
-    taskDBS_open = fopen("database\\taskDBS.csv", "r");
+    taskDBS_open = fopen("..\\database\\taskDBS.csv", "r");
     struct t_details task;
     task_details_screen();
     char line[3000];
@@ -995,7 +993,7 @@ int search_task_by_priority()
 int sort_tasks()
 {
     FILE *taskDBS_open;
-    taskDBS_open = fopen("database\\taskDBS.csv", "r");
+    taskDBS_open = fopen("..\\database\\taskDBS.csv", "r");
 
     struct t_details task[MAX];
 
@@ -1044,7 +1042,7 @@ int sort_tasks()
     qsort(task, i, sizeof(struct t_details), sort_by_priority);
 
     FILE *sort_task_open;
-    sort_task_open = fopen("database\\sort_task.csv", "w");
+    sort_task_open = fopen("..\\database\\sort_task.csv", "w");
     for (int j = 0; j < i; j++)
     {
         fprintf(sort_task_open, "%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", (j + 1), task[j].unique_id, task[j].task_id, task[j].project_id, task[j].name, task[j].description, task[j].priority, task[j].status, task[j].start_date, task[j].end_date, task[j].created_by);
