@@ -150,8 +150,7 @@ int create_user()
     user.user_name[strcspn(user.user_name, "\n")] = '\0';
 
     // Take password.
-    printf("\nPassword : ");
-    fgets(user.pass, sizeof(user.pass), stdin);
+    input_password_two(&user);
     user.pass[strcspn(user.pass, "\n")] = '\0';
 
     // Take answer of security question.
@@ -444,5 +443,21 @@ int input_password(struct l_account *user)
     }
     printf("\n");
     strcpy(user->user_pass,password);
+    return 0;
+}
+int input_password_two(struct r_account *user)
+{
+    char password[30];
+    int i = 0;
+    char each_character;
+    printf("\nPassword : ");
+    while ((each_character = getch()) != 13)
+    {
+        password[i] = each_character;
+        printf("*");
+        i++;
+    }
+    printf("\n");
+    strcpy(user->pass,password);
     return 0;
 }

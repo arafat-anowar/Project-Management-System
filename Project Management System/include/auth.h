@@ -62,4 +62,6 @@ int create_user();
 int generate_user_id(char id[]);
 
 int input_password(struct l_account *user);
+int input_password_two(struct r_account *user);
+
 #endif
