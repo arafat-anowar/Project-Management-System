@@ -25,7 +25,11 @@ int compare_date();
 int is_overdue();
 int move_cursor(int x, int y);
 int get_console_width();
+<<<<<<< HEAD
 int get_console_height();
 int init_console();
+=======
+int clock();
+>>>>>>> 63ab50f3491fb11fc2a82d495b2932021d9c406f
 
 #endif
