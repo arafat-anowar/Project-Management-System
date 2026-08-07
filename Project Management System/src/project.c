@@ -128,21 +128,60 @@ int create_project()
 
 int view_projects()
 {
-    struct p_details data;
+    struct p_details project;
 
-    printf("\n");
-    printf("+----------------------------------------------------------------------+\n");
-    printf("|                         PROJECT DETAILS                              |\n");
-    printf("+----------------------+-----------------------------------------------+\n");
-    printf("| Project ID           | %-s |\n", data.id);
-    printf("| Category             | %-s |\n", data.category);
-    printf("| Project Name         | %-s |\n", data.name);
-    printf("| Description          | %-s |\n", data.description);
-    printf("| Priority             | %-s |\n", data.priority);
-    printf("| Status               | %-s |\n", data.status);
-    printf("| Starting Date        | %-s |\n", data.start_date);
-    printf("| Deadline             | %-s |\n", data.end_date);
-    printf("+----------------------+-----------------------------------------------+\n");
+    FILE *projectDBS_open;
+    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
+
+    char line[3000];
+    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    {
+        line[strcspn(line, "\n")] = 0;
+
+        char *token;
+
+        token = strtok(line, ",");
+        strcpy(project.id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.category, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.created_by, token);
+
+        printf("+----------------------------------------------------------------------+\n");
+        printf("|                         PROJECT DETAILS                              |\n");
+        printf("+----------------------+-----------------------------------------------+\n");
+        printf("| Project ID           | %-s |\n", project.id);
+        printf("| Category             | %-s |\n", project.category);
+        printf("| Project Name         | %-s |\n", project.name);
+        printf("| Description          | %-s |\n", project.description);
+        printf("| Priority             | %-s |\n", project.priority);
+        printf("| Status               | %-s |\n", project.status);
+        printf("| Starting Date        | %-s |\n", project.start_date);
+        printf("| Deadline             | %-s |\n", project.end_date);
+        printf("+----------------------+-----------------------------------------------+\n");
+    }
+    fclose(projectDBS_open);
+    
 
     return 0;
 }
