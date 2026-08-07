@@ -230,10 +230,7 @@ int update_project()
             project_update_dashboard(&project);
             break;
         }
-        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                project.id, project.name, project.category, project.description,
-                project.priority, project.status, project.start_date,
-                project.end_date, project.created_by);
+        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
     }
 
     fclose(projectDBS_open);
@@ -248,32 +245,61 @@ int update_project()
 int delete_project()
 {
     struct p_details project;
-
     char project_id_or_name[50];
 
-    printf("Enter Project ID or Project Name : ");
+    printf("\nEnter Project ID or Project Name : ");
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
+    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
-    FILE *file_for_delete_project, *write_to_new_file;
+    FILE *file_for_delete_project = fopen("..\\database\\projectDBS.csv", "r");
+    FILE *write_to_new_file = fopen("..\\database\\tmp.csv", "w");
 
-    file_for_delete_project = fopen("..\\database\\projectDBS.csv", "r");
-    write_to_new_file = fopen("..\\database\\tmp.csv", "w");
+    char line[3000];
 
-    while (fscanf(file_for_delete_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s",
-                  project.id, project.category, project.name, project.description, project.priority,
-                  project.status, project.start_date, project.end_date, project.created_by) != EOF)
+    while (fgets(line, sizeof(line), file_for_delete_project) != NULL)
     {
+        line[strcspn(line, "\n")] = '\0';
 
-        if (strcmp(project.id, project_id_or_name) == 0 || strcmp(project.name, project_id_or_name) == 0)
+        char *token;
+
+        token = strtok(line, ",");
+        strcpy(project.id, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.name, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.category, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.description, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.priority, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.status, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.start_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.end_date, token);
+
+        token = strtok(NULL, ",");
+        strcpy(project.created_by, token);
+
+        if (strcmp(project.id, project_id_or_name) == 0 ||
+            strcmp(project.name, project_id_or_name) == 0)
         {
+
             strcpy(project.status, "Deleted");
 
-            fprintf(write_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.category, project.name, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
+            fprintf(write_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
 
             char path[100];
 
             strcpy(path, "..\\database\\Projects\\");
-
             strcat(path, strlwr(project.name));
             strcat(path, ".csv");
 
@@ -282,9 +308,7 @@ int delete_project()
             continue;
         }
 
-        fprintf(write_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.category,
-                project.name, project.description, project.priority, project.status, project.start_date,
-                project.end_date, project.created_by);
+        fprintf(write_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
     }
 
     fclose(file_for_delete_project);
@@ -293,9 +317,11 @@ int delete_project()
     remove("..\\database\\projectDBS.csv");
     rename("..\\database\\tmp.csv", "..\\database\\projectDBS.csv");
 
+
     project_management_dashboard();
 
     return 0;
+
 }
 int change_project_name(char name[])
 {
