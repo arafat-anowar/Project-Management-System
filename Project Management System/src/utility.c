@@ -1,5 +1,4 @@
 #include "utility.h"
-#include <time.h>
 
 
 
@@ -37,7 +36,11 @@ int validate_date()
     return 0;
 }
 
+<<<<<<< HEAD
+//int current_date(char date[])
+=======
 // int current_date(char date[])
+>>>>>>> 8064a04718014d1d73c921108a7ae4d884a2558d
 // {
 //     return 0;
 // }
@@ -69,6 +72,37 @@ int get_console_width()
 
     return csbi.srWindow.Right - csbi.srWindow.Left + 1;
 }
+<<<<<<< HEAD
+
+ void clock(void)
+{
+    while (!_kbhit())
+    {
+        time_t now = time(NULL);
+        struct tm *local_time = localtime(&now);
+
+        move_cursor(0, 0);
+
+        printf("+------------------------------+\n");
+        printf("|         DIGITAL CLOCK         |\n");
+        printf("+------------------------------+\n");
+        printf("|  Date : %02d/%02d/%04d          |\n",
+               local_time->tm_mday,
+               local_time->tm_mon + 1,
+               local_time->tm_year + 1900);
+        printf("|  Time : %02d:%02d:%02d              |\n",
+               local_time->tm_hour,
+               local_time->tm_min,
+               local_time->tm_sec);
+        printf("+------------------------------+\n");
+        printf("(press any key to exit)         \n");
+
+        Sleep(1000);
+    }
+
+    _getch();
+}
+=======
 int get_console_height()
 {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -109,3 +143,4 @@ int init_console()
 
 // Auth Header File
 
+>>>>>>> 8064a04718014d1d73c921108a7ae4d884a2558d
