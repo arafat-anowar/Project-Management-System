@@ -1,4 +1,3 @@
-
 #ifndef AUTH_H
 #define AUTH_H
 
@@ -6,9 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
-
+#include <errno.h>
 
 #include "ui.h"
+
 // Macros
 #define DATABASE_PATH "..\\database\\"
 

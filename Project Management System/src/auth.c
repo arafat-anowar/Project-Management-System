@@ -83,7 +83,17 @@ int create_user()
     strcpy(user.role, DEFAULT_ROLE);
 
     userDBS_open = fopen(USER_DBS, APPEND_MODE);
+    if (userDBS_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
     credentialDBS_open = fopen(CREDENTIAL_DBS, APPEND_MODE);
+    if (credentialDBS_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
 
     fprintf(userDBS_open, "%s,%s,%s,%s,%s\n",
             user.id,
@@ -206,7 +216,17 @@ int change_password()
     change_password.new_pass[strcspn(change_password.new_pass, "\n")] = '\0';
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
+    if (credentialDBS_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
     tmp_credentialDBS_open = fopen(TMP_CREDENTIAL_DBS, WRITE_MODE);
+    if (tmp_credentialDBS_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -268,6 +288,11 @@ int generate_user_id(char id[])
     strcpy(id, FIRST_USER_ID);
 
     userDBS_open = fopen(USER_DBS, READ_MODE);
+    if (userDBS_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
 
     while (fgets(row, sizeof(row), userDBS_open) != NULL)
     {
@@ -333,7 +358,17 @@ int change_login_status(char status[])
     get_user_name(username);
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
+    if (credentialDBS_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
     tmp_credentialDBS_open = fopen(TMP_CREDENTIAL_DBS, WRITE_MODE);
+    if (tmp_credentialDBS_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -392,7 +427,17 @@ int password_verify(char username_or_email[], char password[])
     FILE *credentialDBS_open, *log_open;
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
+    if (credentialDBS_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
     log_open = fopen(LOG_DBS, WRITE_MODE);
+    if (log_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -466,6 +511,11 @@ int get_user_name(char username[])
     FILE *log_open;
 
     log_open = fopen(LOG_DBS, READ_MODE);
+    if (log_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
 
     while (fgets(row, sizeof(row), log_open) != NULL)
     {
@@ -490,6 +540,11 @@ int validate_user_name(char username[])
     FILE *credentialDBS_open;
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
+    if (credentialDBS_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -533,6 +588,11 @@ int validate_email(char email[])
     }
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
+    if (credentialDBS_open == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -606,6 +666,11 @@ int create_directories(char username[])
     strcat(path, PROJECT_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
+    if (necessary_file_create == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
     fclose(necessary_file_create);
 
     strcpy(path, DATABASE_PATH);
@@ -614,6 +679,11 @@ int create_directories(char username[])
     strcat(path, TASK_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
+    if (necessary_file_create == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
     fclose(necessary_file_create);
 
     strcpy(path, DATABASE_PATH);
@@ -622,6 +692,11 @@ int create_directories(char username[])
     strcat(path, SORT_TASK_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
+    if (necessary_file_create == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
     fclose(necessary_file_create);
 
     return 0;
