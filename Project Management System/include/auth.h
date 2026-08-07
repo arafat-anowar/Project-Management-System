@@ -54,5 +54,6 @@ int validate_user_name(char username[]);
 int validate_email(char email[]);
 int validate_phone(char phone[]);
 int get_user_name(char username[]);
+int create_directories(char username[]);
 
 #endif

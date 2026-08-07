@@ -3,7 +3,7 @@
 int create_user()
 {
     struct r_account user;
-    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0, user_name_found, is_email_valid, is_phone_valid;
+    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0, user_name_found=1, is_email_valid=1, is_phone_valid=1;
     FILE *userDBS_open, *credentialDBS_open;
 
     init_console();
@@ -80,7 +80,7 @@ int create_user()
 
     fclose(userDBS_open);
     fclose(credentialDBS_open);
-
+    create_directories(user.user_name);
     login();
 
     return 0;
@@ -487,5 +487,38 @@ int validate_phone(char phone[])
         return 1;
     }
 
+    return 0;
+}
+
+int create_directories(char username[])
+{
+
+    char path[200];
+    FILE *necessary_file_create;
+
+    strcpy(path, "..\\database\\");
+    strcat(path, username);
+    CreateDirectory(path, NULL);
+
+    strcat(path, "\\Projects");
+    CreateDirectory(path, NULL);
+
+    strcpy(path, "..\\database\\");
+    strcat(path, username);
+    strcat(path, "\\projectsDBS.csv");
+    necessary_file_create = fopen(path, "w");
+    fclose(necessary_file_create);
+
+    strcpy(path, "..\\database\\");
+    strcat(path, username);
+    strcat(path, "\\taskDBS.csv");
+    necessary_file_create = fopen(path, "w");
+    fclose(necessary_file_create);
+
+    strcpy(path, "..\\database\\");
+    strcat(path, username);
+    strcat(path, "\\sort_task.csv");
+    necessary_file_create = fopen(path, "w");
+    fclose(necessary_file_create);
     return 0;
 }
