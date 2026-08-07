@@ -452,7 +452,7 @@ int validate_phone(char phone[])
 
     for (int i = 0; phone[i] != '\0'; i++)
     {
-        if (phone[i] >= '0' || phone[i] <= '9')
+        if (phone[i] >= '0' && phone[i] <= '9')
         {
             count++;
         }
