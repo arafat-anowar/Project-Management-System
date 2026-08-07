@@ -2,7 +2,7 @@
 
 int completes_tasks()
 {
-    printf("");
+    printf("Completed Task");
     return 0;
 }
 
