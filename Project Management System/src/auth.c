@@ -365,12 +365,25 @@ int input_password(char password[])
 {
     int i = 0;
     char each_character;
+
     while ((each_character = getch()) != 13)
     {
-        password[i] = each_character;
-        printf("*");
-        i++;
+        if (each_character == 8)
+        {
+            if (i > 0)
+            {
+                i--;
+                printf("\b \b");
+            }
+        }
+        else
+        {
+            password[i] = each_character;
+            printf("*");
+            i++;
+        }
     }
+
     password[i] = '\0';
     return 0;
 }
