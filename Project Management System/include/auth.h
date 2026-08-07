@@ -6,13 +6,11 @@
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
-#include <errno.h>
 
 // Local Header Files
-#include "utility.h"
 #include "ui.h"
 // Macros
-#define MAX_LENGTH 3000
+#define MAX_LENGTH_OF_DATA_IN_FILE 3000
 
 // Structure for user login information
 struct l_account
@@ -32,6 +30,7 @@ struct r_account
     char pass[30];
     char security_question[15];
     char role[20];
+    char login_status[20];
 };
 
 // Structure for password recovery information
@@ -39,29 +38,21 @@ struct account
 {
     char email[30];
     char security_question[15];
+    char new_pass[30];
 };
 
 // Function Prototypes
-
-// Authenticate a user
-int login();
-
-// Log out the current user
-int logout();
-
-// Verify the user's login credentials
-int password_verify(char username_or_email[], char password[]);
-
-// Change the user's password
-int change_password();
-
-// Create a new user account
 int create_user();
-
-// Generate a unique user ID
+int login();
+int logout();
+int change_password();
 int generate_user_id(char id[]);
-
-int input_password(struct l_account *user);
-int input_password_two(struct r_account *user);
+int change_login_status(char status[]);
+int password_verify(char username_or_email[], char password[]);
+int input_password(char password[]);
+int validate_user_name(char username[]);
+int validate_email(char email[]);
+int validate_phone(char phone[]);
+int get_user_name(char username[]);
 
 #endif
