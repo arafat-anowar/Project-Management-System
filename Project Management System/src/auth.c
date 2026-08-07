@@ -1,390 +1,157 @@
 #include "auth.h"
 
-// Main Source Code Start From Here
-
-/*
-    Goal : This function generates a unique user id for every new user.
-*/
-int generate_user_id(char id[])
-{
-    // Firstly assign U1001 to id.
-    strcpy(id, "U1001");
-
-    // Declare a variable which is confirm that database isn't empty.
-    int data_found = 0;
-
-    // Open userDBS
-    FILE *userDBS_open = fopen("..\\database\\userDBS.csv", "r");
-    // If file not open show a error to user.
-    if (userDBS_open == NULL)
-    {
-        perror("userDBS.csv");
-        return 0;
-    }
-
-    // Declare structure variable.
-    struct r_account user;
-
-    // Store every rows data.
-    char row[MAX_LENGTH];
-    // Read data with loop
-    while (fgets(row, sizeof(row), userDBS_open) != NULL)
-    {
-        // Assign 1 to data_found variable.
-        data_found = 1;
-
-        // Handle enter character
-        row[strcspn(row, "\n")] = '\0';
-        // Divide rows data into pieces
-        char *field = strtok(row, ",");
-        strcpy(user.id, field);
-    }
-
-    // Close userDBS
-    fclose(userDBS_open);
-
-    // If file empty return default ID.
-    if (data_found == 0)
-    {
-        return 0;
-    }
-    // Else generate a new ID.
-    else
-    {
-        // Copy the last user id of file.
-        strcpy(id, user.id);
-
-        // Declare a integer array
-        int num_id[20];
-
-        // Convert ASCII value to decimal value
-        for (int i = 0, j = 1; id[j] != '\0'; i++, j++)
-        {
-            num_id[i] = (id[j] - '0');
-        }
-
-        // Declare two integer variable.usr_id store a decimal number and id_len store id length.
-        int usr_id = 0, id_len = strlen(id);
-
-        // Convert to a decimal number.
-        for (int i = 0; i <= id_len - 2; i++)
-        {
-            int digit = num_id[i];
-            for (int j = i; j <= id_len - 3; j++)
-            {
-                digit *= 10;
-            }
-
-            usr_id += digit;
-        }
-
-        // Increase id by 1
-        usr_id++;
-
-        // Convert Decimal number to ASCII and store that into ID.
-        int tmp = usr_id;
-        int j = (strlen(id) - 1);
-
-        while (tmp != 0)
-        {
-            id[j] = ((tmp % 10) + '0');
-            tmp /= 10;
-            j--;
-        }
-        // Return ID.
-        return 0;
-    }
-}
-
-/*
-    Goal : This function create a new user and store that into userDBS.
-*/
 int create_user()
 {
-    // Structure variable for store user information.
     struct r_account user;
+    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0;
+    FILE *userDBS_open, *credentialDBS_open;
 
     init_console();
     header_screen();
-    int terminal_width = get_console_width();
-    int terminal_height = get_console_height();
-    int box_width = 100, box_height = 37;
-    int x = (terminal_width - box_width) / 2, y =((terminal_height-box_height)/2)+ 13;
 
-    // Generate a new user id.
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    box_width = 100;
+    box_height = 37;
+    x = (terminal_width - box_width) / 2;
+    y = ((terminal_height - box_height) / 2) + 13;
+
+    user_registration_screen(x, y);
+
     generate_user_id(user.id);
-    move_cursor(x, y+0);
-    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-    move_cursor(x, y+1);
-    printf("║                                   CREATE NEW ACCOUNT                                             ║\n");
-    move_cursor(x, y+2);
-    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
-    move_cursor(x, y+3);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y+4);
-    printf("║    Full Name :                                                                                   ║\n");
-    move_cursor(x, y+5);
-    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
-    move_cursor(x, y+6);
-    printf("║    │                                                                                        │    ║\n");
-    move_cursor(x, y+7);
-    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
-    move_cursor(x, y+8);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y+9);
-    printf("║    Email Address :                                                                               ║\n");
-    move_cursor(x, y+10);
-    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
-    move_cursor(x, y+11);
-    printf("║    │                                                                                        │    ║\n");
-    move_cursor(x, y+12);
-    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
-    move_cursor(x, y+13);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y+14);
-    printf("║    Phone Number :                                                                                ║\n");
-    move_cursor(x, y+15);
-    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
-    move_cursor(x, y+16);
-    printf("║    │    +880                                                                                │    ║\n");
-    move_cursor(x, y+17);
-    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
-    move_cursor(x, y+18);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y+19);
-    printf("║    Username :                                                                                    ║\n");
-    move_cursor(x, y+20);
-    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
-    move_cursor(x, y+21);
-    printf("║    │                                                                                        │    ║\n");
-    move_cursor(x, y+22);
-    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
-    move_cursor(x, y+23);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y+24);
-    printf("║    Password :                                                                                    ║\n");
-    move_cursor(x, y+25);
-    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
-    move_cursor(x, y+26);
-    printf("║    │                                                                                        │    ║\n");
-    move_cursor(x, y+27);
-    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
-    move_cursor(x, y+28);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y+29);
-    printf("║    What Is Your Favourite Food : :                                                               ║\n");
-    move_cursor(x, y+30);
-    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
-    move_cursor(x, y+31);
-    printf("║    │                                                                                        │    ║\n");
-    move_cursor(x, y+32);
-    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
-    move_cursor(x, y+33);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y+34);
-    printf("║                      [ ENTER ] Register        [ ESC ] Cancel                                    ║\n");
-    move_cursor(x, y+35);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y+36);
-    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
-    // Take user name.
-    move_cursor((x + 10), y+6);
+
+    move_cursor((x + 10), y + 6);
     fgets(user.name, sizeof(user.name), stdin);
     user.name[strcspn(user.name, "\n")] = '\0';
 
-    // Take user email.
-    move_cursor((x + 10), y+11);
+    move_cursor((x + 10), y + 11);
     fgets(user.email, sizeof(user.email), stdin);
     user.email[strcspn(user.email, "\n")] = '\0';
 
-    // Take user phone number.
-    move_cursor((x + 14), y+16);
+    move_cursor((x + 14), y + 16);
     fgets(user.phone, sizeof(user.phone), stdin);
     user.phone[strcspn(user.phone, "\n")] = '\0';
 
-    // Take username.
-    move_cursor((x + 10), y+21);
+    move_cursor((x + 10), y + 21);
     fgets(user.user_name, sizeof(user.user_name), stdin);
     user.user_name[strcspn(user.user_name, "\n")] = '\0';
 
-    // Take password.
-    move_cursor((x + 10), y+26);
-    input_password_two(&user);
+    move_cursor((x + 10), y + 26);
+    input_password(user.pass);
     user.pass[strcspn(user.pass, "\n")] = '\0';
 
-    // Take answer of security question.
-    move_cursor((x + 10), y+31);
+    move_cursor((x + 10), y + 31);
     fgets(user.security_question, sizeof(user.security_question), stdin);
     user.security_question[strcspn(user.security_question, "\n")] = '\0';
 
-    // Set default role.
     strcpy(user.role, "Individual");
 
-    // Open user database file.
-    FILE *userDBS_open = fopen("..\\database\\userDBS.csv", "a");
+    userDBS_open = fopen("..\\database\\userDBS.csv", "a");
+    credentialDBS_open = fopen("..\\database\\credentialDBS.csv", "a");
 
-    // If file can not open show the error.
-    if (userDBS_open == NULL)
-    {
-        perror("userDBS.csv");
-        return 0;
-    }
+    fprintf(userDBS_open, "%s,%s,%s,%s,%s\n", user.id, user.name, user.email, user.phone, user.role);
+    fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,logout\n", user.id, user.user_name, user.email, user.pass, user.security_question);
 
-    // Save all user data into database.
-    fprintf(userDBS_open, "%s,%s,%s,%s,%s,%s,%s,%s\n",
-            user.id, user.name, user.email, user.phone,
-            user.user_name, user.pass,
-            user.security_question, user.role);
-
-    // Close the file.
     fclose(userDBS_open);
+    fclose(credentialDBS_open);
 
-    // Go to login page.
     login();
 
     return 0;
 }
 
-// This function login a user.
 int login()
-
 {
-    // Show the login screen.
-
-    user_login_screen();
-
-    // Structure variable for store login data.
     struct l_account user;
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-#endif
+    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0;
+
+    init_console();
     header_screen();
-    int terminal_width = get_console_width();
-    int box_width = 100;
-    int x = (terminal_width - box_width) / 2;
-    move_cursor(x, 20);
-    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-    move_cursor(x, 21);
-    printf("║                                     LOGIN TO PROJECT SYSTEM                                      ║\n");
-    move_cursor(x, 22);
-    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
-    move_cursor(x, 23);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, 24);
-    printf("║    Username :                                                                                    ║\n");
-    move_cursor(x, 25);
-    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
-    move_cursor(x, 26);
-    printf("║    │                                                                                        │    ║\n");
-    move_cursor(x, 27);
-    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
-    move_cursor(x, 28);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, 29);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, 30);
-    printf("║    Password :                                                                                    ║\n");
-    move_cursor(x, 31);
-    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
-    move_cursor(x, 32);
-    printf("║    │                                                                                        │    ║\n");
-    move_cursor(x, 33);
-    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
-    move_cursor(x, 34);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, 35);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, 36);
-    printf("║                          [ ENTER ] Login        [ ESC ] Back                                     ║\n");
-    move_cursor(x, 37);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, 38);
-    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
-    // Take username or email.
-    move_cursor((x + 10), 26);
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    box_width = 100;
+    box_height = 19;
+    x = (terminal_width - box_width) / 2;
+    y = ((terminal_height - box_height) / 2) + 13;
+
+    user_login_screen(x, y);
+
+    move_cursor((x + 10), y + 6);
     fgets(user.user_name_or_email, sizeof(user.user_name_or_email), stdin);
     user.user_name_or_email[strcspn(user.user_name_or_email, "\n")] = '\0';
 
-    // Take user password.
-    move_cursor((x + 10), 32);
-    input_password(&user);
+    move_cursor((x + 10), y + 12);
+    input_password(user.user_pass);
     user.user_pass[strcspn(user.user_pass, "\n")] = '\0';
-    // Check username/email and password is correct or not.
+
     int is_verified = password_verify(user.user_name_or_email, user.user_pass);
 
-    // If login is successful go to dashboard.
     if (is_verified == 1)
     {
+        char login_status[] = "login";
+        change_login_status(login_status);
         dashboard();
     }
-
-    // Otherwise show invalid message and ask for login again.
-    else
-    {
-        clear_screen();
-        header_screen();
-        login_invalid_screen();
-        pause_screen(1500);
-        login();
-    }
+    clear_screen();
+    header_screen();
+    login_invalid_screen();
+    pause_screen(1500);
+    login();
 
     return 0;
 }
 
-// This function logout the current user.
 int logout()
 {
-    // Go back to main menu.
+    char login_status[] = "logout";
+    change_login_status(login_status);
     main_menu();
-
     return 0;
 }
 
-// This function check user login information.
-int password_verify(char username_or_email[], char password[])
+int change_password()
 {
-    // Structure variable for store user data.
     struct r_account user;
+    struct account change_password;
 
-    // Variables needed for file reading.
-    char row[MAX_LENGTH];
-    int found = 0;
+    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0;
+    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *credentialDBS_open, *tmp_credentialDBS_open;
+    init_console();
+    header_screen();
 
-    // Open user database file.
-    FILE *userDBS_open;
-    userDBS_open = fopen("..\\database\\userDBS.csv", "r");
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    box_width = 100;
+    box_height = 19;
+    x = (terminal_width - box_width) / 2;
+    y = ((terminal_height - box_height) / 2) + 13;
 
-    // If file can not open show the error.
-    if (userDBS_open == NULL)
+    change_password_screen(x, y);
+
+    move_cursor((x + 10), y + 6);
+    fgets(change_password.email, sizeof(change_password.email), stdin);
+    change_password.email[strcspn(change_password.email, "\n")] = '\0';
+
+    move_cursor((x + 10), y + 11);
+    fgets(change_password.security_question, sizeof(change_password.security_question), stdin);
+    change_password.security_question[strcspn(change_password.security_question, "\n")] = '\0';
+
+    credentialDBS_open = fopen("..\\database\\credentialDBS.csv", "r");
+
+    while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
-        perror("userDBS.csv");
-        return 0;
-    }
-
-    // Read all user data from file.
-    while (fgets(row, sizeof(row), userDBS_open) != NULL)
-    {
-        // Remove new row character.
         row[strcspn(row, "\n")] = '\0';
 
-        // Split the row into different parts.
-        char *field;
-
-        // Store every value into structure.
         field = strtok(row, ",");
         strcpy(user.id, field);
 
         field = strtok(NULL, ",");
-        strcpy(user.name, field);
+        strcpy(user.user_name, field);
 
         field = strtok(NULL, ",");
         strcpy(user.email, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.phone, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.user_name, field);
 
         field = strtok(NULL, ",");
         strcpy(user.pass, field);
@@ -393,9 +160,159 @@ int password_verify(char username_or_email[], char password[])
         strcpy(user.security_question, field);
 
         field = strtok(NULL, ",");
-        strcpy(user.role, field);
+        strcpy(user.login_status, field);
 
-        // Check if username/email and password matched.
+        if (strcmp(change_password.email, user.email) == 0 &&
+            strcmp(change_password.security_question, user.security_question) == 0)
+        {
+            strcpy(user.pass, change_password.new_pass);
+        }
+        fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, user.login_status);
+    }
+
+    fclose(credentialDBS_open);
+    fclose(tmp_credentialDBS_open);
+
+    remove("..\\database\\credentialDBS.csv");
+
+    rename("..\\database\\tmp_credentialDBS.csv", "..\\database\\credentialDBS.csv");
+
+    return 0;
+}
+
+
+
+
+
+
+int generate_user_id(char id[])
+{
+    struct r_account user;
+    int data_found_in_file = 0, user_id_in_integer = 0, id_length = 0, i = 0, j = 0, tmp_user_id = 0, num_id[20] = {0}, digit = 0;
+    char *field, row[MAX_LENGTH_OF_DATA_IN_FILE];
+    FILE *userDBS_open;
+    strcpy(id, "U1001");
+
+    userDBS_open = fopen("..\\database\\userDBS.csv", "r");
+
+    while (fgets(row, sizeof(row), userDBS_open) != NULL)
+    {
+        data_found_in_file = 1;
+
+        row[strcspn(row, "\n")] = '\0';
+
+        field = strtok(row, ",");
+        strcpy(user.id, field);
+    }
+
+    fclose(userDBS_open);
+
+    if (data_found_in_file == 0)
+    {
+        return 0;
+    }
+    strcpy(id, user.id);
+
+    for (i = 0, j = 1; id[j] != '\0'; i++, j++)
+    {
+        num_id[i] = (id[j] - '0');
+    }
+    id_length = strlen(id);
+    for (i = 0; i < id_length - 1; i++)
+    {
+        digit = num_id[i];
+        for (j = i; j < id_length - 2; j++)
+        {
+            digit *= 10;
+        }
+        user_id_in_integer += digit;
+    }
+
+    user_id_in_integer++;
+
+    tmp_user_id = user_id_in_integer;
+    j = (strlen(id) - 1);
+
+    while (tmp_user_id != 0)
+    {
+        id[j] = ((tmp_user_id % 10) + '0');
+        tmp_user_id /= 10;
+        j--;
+    }
+
+    return 0;
+}
+int change_login_status(char status[])
+{
+    struct r_account user;
+    FILE *credentialDBS_open, *tmp_credentialDBS_open;
+    char username[30], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+
+    get_user_name(username);
+
+    credentialDBS_open = fopen("..\\database\\credentialDBS.csv", "r");
+    tmp_credentialDBS_open = fopen("..\\database\\tmp_credentialDBS.csv", "w");
+
+    while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+        field = strtok(row, ",");
+        strcpy(user.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(user.user_name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(user.email, field);
+
+        field = strtok(NULL, ",");
+        strcpy(user.pass, field);
+
+        field = strtok(NULL, ",");
+        strcpy(user.security_question, field);
+
+        field = strtok(NULL, ",");
+        strcpy(user.login_status, field);
+
+        if (strcmp(user.user_name, username) == 0)
+        {
+            strcpy(user.login_status, status);
+        }
+        fprintf(tmp_credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, user.login_status);
+    }
+
+    fclose(credentialDBS_open);
+    fclose(tmp_credentialDBS_open);
+
+    return 0;
+}
+int password_verify(char username_or_email[], char password[])
+{
+    struct r_account user;
+
+    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int found = 0;
+
+    FILE *credentialDBS_open;
+
+    credentialDBS_open = fopen("..\\database\\credentialDBS.csv", "r");
+
+    while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        field = strtok(row, ",");
+        strcpy(user.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(user.user_name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(user.email, field);
+
+        field = strtok(NULL, ",");
+        strcpy(user.pass, field);
+
         if ((strcmp(username_or_email, user.email) == 0 && strcmp(password, user.pass) == 0) ||
             (strcmp(username_or_email, user.user_name) == 0 && strcmp(password, user.pass) == 0))
         {
@@ -404,137 +321,18 @@ int password_verify(char username_or_email[], char password[])
         }
     }
 
-    // Close the file.
-    fclose(userDBS_open);
+    fclose(credentialDBS_open);
 
-    // If user found return 1.
     if (found == 1)
     {
         return 1;
     }
 
-    // Otherwise return 0.
     return 0;
 }
 
-// This function change user password.
-int change_password()
+int input_password(char *password)
 {
-    // Structure variables for store user data.
-    struct r_account user;
-    struct account change_password;
-
-    // Take user email.
-    printf("\nEmail : ");
-    fgets(change_password.email, sizeof(change_password.email), stdin);
-    change_password.email[strcspn(change_password.email, "\n")] = '\0';
-
-    // Take answer of security question.
-    printf("\nWhat Is Your Favourite Food : ");
-    fgets(change_password.security_question, sizeof(change_password.security_question), stdin);
-    change_password.security_question[strcspn(change_password.security_question, "\n")] = '\0';
-
-    // Store each row from file.
-    char row[MAX_LENGTH];
-
-    // Open user database and temporary file.
-    FILE *userDBS_open, *tmp_userDBS_open;
-    userDBS_open = fopen("..\\database\\userDBS.csv", "r");
-
-    // If file can not open show the error.
-    if (userDBS_open == NULL)
-    {
-        perror("userDBS.csv");
-        return 0;
-    }
-
-    tmp_userDBS_open = fopen("..\\database\\tmp_userDBS.csv", "w");
-
-    // If file can not open show the error.
-    if (tmp_userDBS_open == NULL)
-    {
-        perror("userDBS.csv");
-        return 0;
-    }
-
-    // Read all user data from file.
-    while (fgets(row, sizeof(row), userDBS_open) != NULL)
-    {
-        // Remove new row character.
-        row[strcspn(row, "\n")] = '\0';
-
-        // Split the row into different parts.
-        char *field;
-
-        // Store every value into structure.
-        field = strtok(row, ",");
-        strcpy(user.id, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.name, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.email, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.phone, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.user_name, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.pass, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.security_question, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.role, field);
-
-        // Check email and security answer.
-        if (strcmp(change_password.email, user.email) == 0 &&
-            strcmp(change_password.security_question, user.security_question) == 0)
-        {
-            // Take new password.
-            printf("Enter New Password : ");
-            fgets(user.pass, sizeof(user.pass), stdin);
-            user.pass[strcspn(user.pass, "\n")] = '\0';
-        }
-
-        // Write user data into temporary file.
-        fprintf(tmp_userDBS_open, "%s,%s,%s,%s,%s,%s,%s,%s\n",
-                user.id, user.name, user.email, user.phone,
-                user.user_name, user.pass,
-                user.security_question, user.role);
-    }
-
-    // Close both files.
-    fclose(userDBS_open);
-    fclose(tmp_userDBS_open);
-
-    // Delete old database.
-    remove("..\\database\\userDBS.csv");
-
-    // If delete failed show the error.
-    if (remove("..\\database\\userDBS.csv") != 0)
-    {
-        perror("remove");
-    }
-
-    // Rename temporary file.
-    rename("..\\database\\tmp_userDBS.csv", "..\\database\\userDBS.csv");
-
-    // If rename failed show the error.
-    if (rename("..\\database\\tmp_userDBS.csv", "..\\database\\userDBS.csv") != 0)
-    {
-        perror("rename");
-    }
-
-    return 0;
-}
-int input_password(struct l_account *user)
-{
-    char password[30];
     int i = 0;
     char each_character;
     while ((each_character = getch()) != 13)
@@ -544,21 +342,5 @@ int input_password(struct l_account *user)
         i++;
     }
     password[i] = '\0';
-    strcpy(user->user_pass, password);
-    return 0;
-}
-int input_password_two(struct r_account *user)
-{
-    char password[30];
-    int i = 0;
-    char each_character;
-    while ((each_character = getch()) != 13)
-    {
-        password[i] = each_character;
-        printf("*");
-        i++;
-    }
-    password[i] = '\0';
-    strcpy(user->pass, password);
     return 0;
 }

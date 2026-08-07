@@ -12,7 +12,7 @@
 #include "utility.h"
 #include "ui.h"
 // Macros
-#define MAX_LENGTH 3000
+#define MAX_LENGTH_OF_DATA_IN_FILE 3000
 
 // Structure for user login information
 struct l_account
@@ -32,6 +32,7 @@ struct r_account
     char pass[30];
     char security_question[15];
     char role[20];
+    char login_status[20];
 };
 
 // Structure for password recovery information
@@ -39,6 +40,7 @@ struct account
 {
     char email[30];
     char security_question[15];
+    char new_pass[30];
 };
 
 // Function Prototypes
@@ -61,7 +63,7 @@ int create_user();
 // Generate a unique user ID
 int generate_user_id(char id[]);
 
-int input_password(struct l_account *user);
-int input_password_two(struct r_account *user);
+int input_password(char password[]);
+int change_login_status(char status[]);
 
 #endif

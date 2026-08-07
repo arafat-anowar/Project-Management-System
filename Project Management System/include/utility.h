@@ -6,11 +6,11 @@
 #include <conio.h>
 #include <windows.h>
 
+#include "auth.h"
 
-
+#define MAX_LENGTH_OF_DATA_IN_FILE 3000
 // Function Prototypes
-int user_registration_screen();
-int user_login_screen();
+
 int login_invalid_screen();
 int project_details_screen();
 int task_details_screen();
@@ -20,16 +20,20 @@ int validate_user_name();
 int validate_email();
 int validate_phone();
 int validate_date();
-int current_date();
+// int current_date();
 int compare_date();
 int is_overdue();
 int move_cursor(int x, int y);
 int get_console_width();
-<<<<<<< HEAD
 int get_console_height();
 int init_console();
-=======
-int clock();
->>>>>>> 63ab50f3491fb11fc2a82d495b2932021d9c406f
+// int clock();
+int get_user_name(char username[]);
+
+// Auth Header File
+int generate_user_id(char id[]);
+int change_login_status(char status[]);
+int password_verify(char username_or_email[], char password[]);
+
 
 #endif

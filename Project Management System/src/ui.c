@@ -665,7 +665,6 @@ int report_dashboard()
         break;
     }
     return 0;
-    
 }
 int search_dashboard()
 {
@@ -676,5 +675,182 @@ int search_dashboard()
     printf("|   [4]   -> Search by Priority                                 |\n");
     printf("|  [ESC]  -> Back                                               |\n");
     printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
+    return 0;
+}
+
+int user_registration_screen(int x, int y)
+{
+    move_cursor(x, y + 0);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, y + 1);
+    printf("║                                   CREATE NEW ACCOUNT                                             ║\n");
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 3);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 4);
+    printf("║    Full Name :                                                                                   ║\n");
+    move_cursor(x, y + 5);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 6);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y + 7);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 8);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 9);
+    printf("║    Email Address :                                                                               ║\n");
+    move_cursor(x, y + 10);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 11);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y + 12);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 13);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 14);
+    printf("║    Phone Number :                                                                                ║\n");
+    move_cursor(x, y + 15);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 16);
+    printf("║    │    +880                                                                                │    ║\n");
+    move_cursor(x, y + 17);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 18);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 19);
+    printf("║    Username :                                                                                    ║\n");
+    move_cursor(x, y + 20);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 21);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y + 22);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 23);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 24);
+    printf("║    Password :                                                                                    ║\n");
+    move_cursor(x, y + 25);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 26);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y + 27);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 28);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 29);
+    printf("║    What Is Your Favourite Food : :                                                               ║\n");
+    move_cursor(x, y + 30);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 31);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y + 32);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 33);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 34);
+    printf("║                      [ ENTER ] Register        [ ESC ] Cancel                                    ║\n");
+    move_cursor(x, y + 35);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 36);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+    return 0;
+}
+int user_login_screen(int x, int y)
+{
+    move_cursor(x, y + 0);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, y + 1);
+    printf("║                                     LOGIN TO PROJECT SYSTEM                                      ║\n");
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 3);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 4);
+    printf("║    Username :                                                                                    ║\n");
+    move_cursor(x, y + 5);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 6);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y + 7);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 8);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 9);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 10);
+    printf("║    Password :                                                                                    ║\n");
+    move_cursor(x, y + 11);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 12);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y + 13);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 14);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 15);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 16);
+    printf("║                          [ ENTER ] Login        [ ESC ] Back                                     ║\n");
+    move_cursor(x, y + 17);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 18);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+    return 0;
+}
+
+int change_password_screen(int x, int y)
+{
+    move_cursor(x, y + 0);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, y + 1);
+    printf("║                                      CHANGE PASSWORD                                             ║\n");
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 3);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 4);
+    printf("║    Email Address :                                                                               ║\n");
+    move_cursor(x, y + 5);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 6);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y + 7);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 8);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 9);
+    printf("║    What Is Your Favourite Food :                                                                 ║\n");
+    move_cursor(x, y + 10);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 11);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y + 12);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 13);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 14);
+    printf("║    New Password :                                                                                ║\n");
+    move_cursor(x, y + 15);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y + 16);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y + 17);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y + 18);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 19);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 20);
+    printf("║                    [ ENTER ] Change Password        [ ESC ] Cancel                               ║\n");
+    move_cursor(x, y + 21);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 22);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 23);
+    printf("║                               VERIFY YOUR IDENTITY FIRST                                         ║\n");
+    move_cursor(x, y + 24);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+
     return 0;
 }

@@ -31,4 +31,8 @@ int task_priority_dashboard(char priority[]);
 int project_status_dashboard(char status[]);
 int project_priority_dashboard(char priority[]);
 
+
+int user_registration_screen(int x,int y);
+int user_login_screen(int x,int y);
+int change_password_screen(int x,int y);
 #endif
