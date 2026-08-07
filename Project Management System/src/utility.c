@@ -116,7 +116,7 @@ int init_console()
     return 0;
 }
 
-int clock()
+void clock()
 {
    time_t now;
     struct tm *current;
@@ -134,7 +134,7 @@ int clock()
            current->tm_min,
            current->tm_sec);
     
-    return 0;
+    
 }
 
 
