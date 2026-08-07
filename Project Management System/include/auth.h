@@ -52,6 +52,10 @@ int generate_user_id(char id[]);
 int change_login_status(char status[]);
 int password_verify(char username_or_email[], char password[]);
 int input_password(char password[]);
+int validate_user_name();
+int validate_email();
+int validate_phone();
+int get_user_name(char username[]);
 
 
 #endif

@@ -347,3 +347,28 @@ int input_password(char password[])
     password[i] = '\0';
     return 0;
 }
+
+int get_user_name(char username[])
+{
+    return 0;
+}
+int validate_user_name()
+{
+    return 0;
+}
+
+int validate_email()
+{
+    return 0;
+}
+int validate_phone()
+{
+    // int count=0;
+    // char character;
+    // while ((character=))
+    // {
+    //     count++;
+    // }
+
+    return 0;
+}

@@ -1,10 +1,7 @@
 #include "utility.h"
 #include <time.h>
 
-int get_user_name(char username[])
-{
-    return 0;
-}
+
 
 int login_invalid_screen()
 {
@@ -31,27 +28,9 @@ int clear_screen()
     system("cls");
     return 0;
 }
-int validate_user_name()
-{
-    return 0;
-}
 
-int validate_email()
-{
-    return 0;
-}
 
-int validate_phone()
-{
-    // int count=0;
-    // char character;
-    // while ((character=))
-    // {
-    //     count++;
-    // }
 
-    return 0;
-}
 
 int validate_date()
 {
