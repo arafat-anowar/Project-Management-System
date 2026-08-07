@@ -92,6 +92,7 @@ int login()
         char login_status[] = "login";
         change_login_status(login_status);
         dashboard();
+        return 0;
     }
     clear_screen();
     header_screen();
@@ -138,7 +139,12 @@ int change_password()
     fgets(change_password.security_question, sizeof(change_password.security_question), stdin);
     change_password.security_question[strcspn(change_password.security_question, "\n")] = '\0';
 
+    move_cursor((x + 10), y + 16);
+    input_password(change_password.new_pass);
+    change_password.new_pass[strcspn(change_password.new_pass, "\n")] = '\0';
+
     credentialDBS_open = fopen("..\\database\\credentialDBS.csv", "r");
+    tmp_credentialDBS_open = fopen("..\\database\\tmp_credentialDBS.csv", "w");
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -167,7 +173,7 @@ int change_password()
         {
             strcpy(user.pass, change_password.new_pass);
         }
-        fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, user.login_status);
+        fprintf(tmp_credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, user.login_status);
     }
 
     fclose(credentialDBS_open);
@@ -176,14 +182,9 @@ int change_password()
     remove("..\\database\\credentialDBS.csv");
 
     rename("..\\database\\tmp_credentialDBS.csv", "..\\database\\credentialDBS.csv");
-
+    login();
     return 0;
 }
-
-
-
-
-
 
 int generate_user_id(char id[])
 {
@@ -283,7 +284,9 @@ int change_login_status(char status[])
 
     fclose(credentialDBS_open);
     fclose(tmp_credentialDBS_open);
+    remove("..\\database\\credentialDBS.csv");
 
+    rename("..\\database\\tmp_credentialDBS.csv", "..\\database\\credentialDBS.csv");
     return 0;
 }
 int password_verify(char username_or_email[], char password[])
@@ -331,7 +334,7 @@ int password_verify(char username_or_email[], char password[])
     return 0;
 }
 
-int input_password(char *password)
+int input_password(char password[])
 {
     int i = 0;
     char each_character;

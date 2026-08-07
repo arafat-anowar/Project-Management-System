@@ -44,26 +44,14 @@ struct account
 };
 
 // Function Prototypes
-
-// Authenticate a user
-int login();
-
-// Log out the current user
-int logout();
-
-// Verify the user's login credentials
-int password_verify(char username_or_email[], char password[]);
-
-// Change the user's password
-int change_password();
-
-// Create a new user account
 int create_user();
-
-// Generate a unique user ID
+int login();
+int logout();
+int change_password();
 int generate_user_id(char id[]);
-
-int input_password(char password[]);
 int change_login_status(char status[]);
+int password_verify(char username_or_email[], char password[]);
+int input_password(char password[]);
+
 
 #endif
