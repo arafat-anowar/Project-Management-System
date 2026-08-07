@@ -83,13 +83,9 @@ int create_user()
     strcpy(user.role, DEFAULT_ROLE);
 
     userDBS_open = fopen(USER_DBS, APPEND_MODE);
-    if (userDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
     credentialDBS_open = fopen(CREDENTIAL_DBS, APPEND_MODE);
-    if (credentialDBS_open == NULL)
+
+    if (userDBS_open == NULL || credentialDBS_open == NULL)
     {
         printf("Error: %s\n", strerror(errno));
         return 0;
@@ -216,13 +212,9 @@ int change_password()
     change_password.new_pass[strcspn(change_password.new_pass, "\n")] = '\0';
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
-    if (credentialDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
     tmp_credentialDBS_open = fopen(TMP_CREDENTIAL_DBS, WRITE_MODE);
-    if (tmp_credentialDBS_open == NULL)
+
+    if (credentialDBS_open == NULL || tmp_credentialDBS_open == NULL)
     {
         printf("Error: %s\n", strerror(errno));
         return 0;
@@ -358,13 +350,9 @@ int change_login_status(char status[])
     get_user_name(username);
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
-    if (credentialDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
     tmp_credentialDBS_open = fopen(TMP_CREDENTIAL_DBS, WRITE_MODE);
-    if (tmp_credentialDBS_open == NULL)
+
+    if (credentialDBS_open == NULL || tmp_credentialDBS_open == NULL)
     {
         printf("Error: %s\n", strerror(errno));
         return 0;
@@ -427,13 +415,9 @@ int password_verify(char username_or_email[], char password[])
     FILE *credentialDBS_open, *log_open;
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
-    if (credentialDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
     log_open = fopen(LOG_DBS, WRITE_MODE);
-    if (log_open == NULL)
+
+    if (credentialDBS_open == NULL || log_open == NULL)
     {
         printf("Error: %s\n", strerror(errno));
         return 0;
@@ -572,7 +556,7 @@ int validate_email(char email[])
 {
     struct r_account user;
 
-    int email_found = INVALID, is_email_valid = VALID;
+    int is_email_valid = INVALID;
 
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
 
@@ -582,7 +566,7 @@ int validate_email(char email[])
     {
         if (email[i] == '@')
         {
-            is_email_valid = INVALID;
+            is_email_valid = VALID;
             break;
         }
     }
@@ -609,14 +593,14 @@ int validate_email(char email[])
 
         if (strcmp(user.email, email) == 0)
         {
-            email_found = VALID;
+            is_email_valid = INVALID;
             break;
         }
     }
 
     fclose(credentialDBS_open);
 
-    if (email_found == INVALID && is_email_valid == INVALID)
+    if (is_email_valid == VALID)
     {
         return VALID;
     }

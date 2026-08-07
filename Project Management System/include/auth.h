@@ -1,7 +1,6 @@
 #ifndef AUTH_H
 #define AUTH_H
 
-
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
@@ -68,35 +67,42 @@
 #define WRITE_MODE "w"
 #define APPEND_MODE "a"
 
+#define ID_SIZE 20
+#define NAME_SIZE 30
+#define EMAIL_SIZE 30
+#define PHONE_SIZE 13
+#define USERNAME_SIZE 20
+#define PASSWORD_SIZE 30
+#define SECURITY_QUESTION_SIZE 15
+#define ROLE_SIZE 20
+#define LOGIN_STATUS_SIZE 20
+#define USERNAME_OR_EMAIL_SIZE 30
 
 struct l_account
 {
-    char user_name_or_email[30];
-    char user_pass[30];
+    char user_name_or_email[USERNAME_OR_EMAIL_SIZE];
+    char user_pass[PASSWORD_SIZE];
 };
-
 
 struct r_account
 {
-    char id[20];
-    char name[30];
-    char email[30];
-    char phone[13];
-    char user_name[20];
-    char pass[30];
-    char security_question[15];
-    char role[20];
-    char login_status[20];
+    char id[ID_SIZE];
+    char name[NAME_SIZE];
+    char email[EMAIL_SIZE];
+    char phone[PHONE_SIZE];
+    char user_name[USERNAME_SIZE];
+    char pass[PASSWORD_SIZE];
+    char security_question[SECURITY_QUESTION_SIZE];
+    char role[ROLE_SIZE];
+    char login_status[LOGIN_STATUS_SIZE];
 };
-
 
 struct account
 {
-    char email[30];
-    char security_question[15];
-    char new_pass[30];
+    char email[EMAIL_SIZE];
+    char security_question[SECURITY_QUESTION_SIZE];
+    char new_pass[PASSWORD_SIZE];
 };
-
 
 int create_user();
 int login();
