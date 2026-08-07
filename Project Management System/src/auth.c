@@ -3,7 +3,7 @@
 int create_user()
 {
     struct r_account user;
-    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0, user_name_found = 0, is_email_valid = 0, is_phone_valid = 0;
+    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0, user_name_found, is_email_valid, is_phone_valid;
     FILE *userDBS_open, *credentialDBS_open;
 
     init_console();
@@ -27,6 +27,11 @@ int create_user()
     do
     {
         move_cursor((x + 10), y + 11);
+        if (is_email_valid == 0)
+        {
+            printf("                                                                             ");
+            move_cursor((x + 10), y + 11);
+        }
         fgets(user.email, sizeof(user.email), stdin);
         user.email[strcspn(user.email, "\n")] = '\0';
         is_email_valid = validate_email(user.email);
@@ -35,15 +40,23 @@ int create_user()
     do
     {
         move_cursor(x + 14, y + 16);
+        if (is_phone_valid == 0)
+        {
+            printf("                                                                             ");
+            move_cursor(x + 14, y + 16);
+        }
         fgets(user.phone, sizeof(user.phone), stdin);
         user.phone[strcspn(user.phone, "\n")] = '\0';
-
         is_phone_valid = validate_phone(user.phone);
-
     } while (is_phone_valid != 1);
     do
     {
         move_cursor((x + 10), y + 21);
+        if (user_name_found == 0)
+        {
+            printf("                                                                             ");
+            move_cursor((x + 10), y + 21);
+        }
         fgets(user.user_name, sizeof(user.user_name), stdin);
         user.user_name[strcspn(user.user_name, "\n")] = '\0';
         user_name_found = validate_user_name(user.user_name);
@@ -396,12 +409,11 @@ int validate_user_name(char username[])
 
         if ((strcmp(user.user_name, username) == 0))
         {
-            user_name_found = 1;
-            break;
+            return 0;
         }
     }
     fclose(credentialDBS_open);
-    return user_name_found;
+    return 1;
 }
 
 int validate_email(char email[])
@@ -457,7 +469,7 @@ int validate_phone(char phone[])
             count++;
         }
     }
-    if (count == phone_length)
+    if (count == 10 && phone_length == 10)
     {
         return 1;
     }
