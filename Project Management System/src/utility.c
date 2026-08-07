@@ -115,3 +115,26 @@ int init_console()
 #endif
     return 0;
 }
+
+int clock()
+{
+   time_t now;
+    struct tm *current;
+
+    time(&now);
+    current = localtime(&now);
+
+    printf("Date : %02d-%02d-%04d\n",
+           current->tm_mday,
+           current->tm_mon + 1,
+           current->tm_year + 1900);
+
+    printf("Time : %02d:%02d:%02d\n",
+           current->tm_hour,
+           current->tm_min,
+           current->tm_sec);
+    
+    return 0;
+}
+
+
