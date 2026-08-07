@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <conio.h>
 #include <windows.h>
-
-
+#include <time.h>
+#include <dos.h>
 
 // Function Prototypes
 int user_registration_screen();
@@ -20,11 +20,11 @@ int validate_user_name();
 int validate_email();
 int validate_phone();
 int validate_date();
-int current_date();
+//int current_date(char date[]);
 int compare_date();
 int is_overdue();
 int move_cursor(int x, int y);
 int get_console_width();
-int clock();
+// void clock(void);
 
 #endif

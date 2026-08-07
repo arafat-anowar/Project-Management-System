@@ -1,5 +1,4 @@
 #include "utility.h"
-#include <time.h>
 
 int user_registration_screen()
 {
@@ -64,10 +63,10 @@ int validate_date()
     return 0;
 }
 
-int current_date(char date[])
-{
-    return 0;
-}
+//int current_date(char date[])
+// {
+//     return 0;
+// }
 
 int compare_date()
 {
@@ -97,23 +96,31 @@ int get_console_width()
     return csbi.srWindow.Right - csbi.srWindow.Left + 1;
 }
 
-int clock()
+ void clock(void)
 {
-    while (1)
+    while (!_kbhit())
     {
         time_t now = time(NULL);
         struct tm *local_time = localtime(&now);
 
-        system("cls");
+        move_cursor(0, 0);
 
-        printf("Date: %02d/%02d/%d\n", local_time->tm_mday, local_time->tm_mon + 1, local_time->tm_year + 1900);
-
-        printf("Time: %02d:%02d:%02d\n", local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
+        printf("+------------------------------+\n");
+        printf("|         DIGITAL CLOCK         |\n");
+        printf("+------------------------------+\n");
+        printf("|  Date : %02d/%02d/%04d          |\n",
+               local_time->tm_mday,
+               local_time->tm_mon + 1,
+               local_time->tm_year + 1900);
+        printf("|  Time : %02d:%02d:%02d              |\n",
+               local_time->tm_hour,
+               local_time->tm_min,
+               local_time->tm_sec);
+        printf("+------------------------------+\n");
+        printf("(press any key to exit)         \n");
 
         Sleep(1000);
     }
 
-    return 0;
-
-
+    _getch();
 }
