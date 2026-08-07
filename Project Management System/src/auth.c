@@ -3,7 +3,7 @@
 int create_user()
 {
     struct r_account user;
-    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0;
+    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0, user_name_found = 0, is_email_valid = 0, is_phone_valid = 0;
     FILE *userDBS_open, *credentialDBS_open;
 
     init_console();
@@ -24,17 +24,30 @@ int create_user()
     fgets(user.name, sizeof(user.name), stdin);
     user.name[strcspn(user.name, "\n")] = '\0';
 
-    move_cursor((x + 10), y + 11);
-    fgets(user.email, sizeof(user.email), stdin);
-    user.email[strcspn(user.email, "\n")] = '\0';
+    do
+    {
+        move_cursor((x + 10), y + 11);
+        fgets(user.email, sizeof(user.email), stdin);
+        user.email[strcspn(user.email, "\n")] = '\0';
+        is_email_valid = validate_email(user.email);
+    } while (is_email_valid != 1);
 
-    move_cursor((x + 14), y + 16);
-    fgets(user.phone, sizeof(user.phone), stdin);
-    user.phone[strcspn(user.phone, "\n")] = '\0';
+    do
+    {
+        move_cursor(x + 14, y + 16);
+        fgets(user.phone, sizeof(user.phone), stdin);
+        user.phone[strcspn(user.phone, "\n")] = '\0';
 
-    move_cursor((x + 10), y + 21);
-    fgets(user.user_name, sizeof(user.user_name), stdin);
-    user.user_name[strcspn(user.user_name, "\n")] = '\0';
+        is_phone_valid = validate_phone(user.phone);
+
+    } while (is_phone_valid != 1);
+    do
+    {
+        move_cursor((x + 10), y + 21);
+        fgets(user.user_name, sizeof(user.user_name), stdin);
+        user.user_name[strcspn(user.user_name, "\n")] = '\0';
+        user_name_found = validate_user_name(user.user_name);
+    } while (user_name_found != 1);
 
     move_cursor((x + 10), y + 26);
     input_password(user.pass);
@@ -119,6 +132,7 @@ int change_password()
     int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0;
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     FILE *credentialDBS_open, *tmp_credentialDBS_open;
+
     init_console();
     header_screen();
 
@@ -296,10 +310,10 @@ int password_verify(char username_or_email[], char password[])
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     int found = 0;
 
-    FILE *credentialDBS_open;
+    FILE *credentialDBS_open, *log_open;
 
     credentialDBS_open = fopen("..\\database\\credentialDBS.csv", "r");
-
+    log_open = fopen("..\\database\\log.csv", "w");
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
@@ -316,16 +330,16 @@ int password_verify(char username_or_email[], char password[])
         field = strtok(NULL, ",");
         strcpy(user.pass, field);
 
-        if ((strcmp(username_or_email, user.email) == 0 && strcmp(password, user.pass) == 0) ||
-            (strcmp(username_or_email, user.user_name) == 0 && strcmp(password, user.pass) == 0))
+        if ((strcmp(username_or_email, user.email) == 0 && strcmp(password, user.pass) == 0) || (strcmp(username_or_email, user.user_name) == 0 && strcmp(password, user.pass) == 0))
         {
             found = 1;
+            fprintf(log_open, "%s\n", user.user_name);
             break;
         }
     }
 
     fclose(credentialDBS_open);
-
+    fclose(log_open);
     if (found == 1)
     {
         return 1;
@@ -350,25 +364,103 @@ int input_password(char password[])
 
 int get_user_name(char username[])
 {
+    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *log_open;
+    log_open = fopen("..\\database\\log.csv", "r");
+    while (fgets(row, sizeof(row), log_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+        field = strtok(row, ",");
+        strcpy(username, field);
+    }
+    fclose(log_open);
     return 0;
 }
-int validate_user_name()
+int validate_user_name(char username[])
 {
+    struct r_account user;
+    int user_name_found = 0;
+    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *credentialDBS_open;
+    credentialDBS_open = fopen("..\\database\\credentialDBS.csv", "r");
+
+    while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        field = strtok(row, ",");
+        strcpy(user.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(user.user_name, field);
+
+        if ((strcmp(user.user_name, username) == 0))
+        {
+            user_name_found = 1;
+            break;
+        }
+    }
+    fclose(credentialDBS_open);
+    return user_name_found;
+}
+
+int validate_email(char email[])
+{
+    struct r_account user;
+    int email_found = 0, is_email_valid = 1;
+    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *credentialDBS_open;
+
+    for (int i = 0; email[i] != '\0'; i++)
+    {
+        if (email[i] == '@')
+        {
+            is_email_valid = 0;
+            break;
+        }
+    }
+
+    credentialDBS_open = fopen("..\\database\\credentialDBS.csv", "r");
+
+    while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        field = strtok(row, ",");
+        strcpy(user.id, field);
+        field = strtok(NULL, ",");
+        strcpy(user.user_name, field);
+        field = strtok(NULL, ",");
+        strcpy(user.email, field);
+        if (strcmp(user.email, email) == 0)
+        {
+            email_found = 1;
+            break;
+        }
+    }
+    fclose(credentialDBS_open);
+    if (email_found == 0 && is_email_valid == 0)
+    {
+        return 1;
+    }
     return 0;
 }
 
-int validate_email()
+int validate_phone(char phone[])
 {
-    return 0;
-}
-int validate_phone()
-{
-    // int count=0;
-    // char character;
-    // while ((character=))
-    // {
-    //     count++;
-    // }
+    int phone_length = strlen(phone), count = 0;
+
+    for (int i = 0; phone[i] != '\0'; i++)
+    {
+        if (phone[i] >= '0' || phone[i] <= '9')
+        {
+            count++;
+        }
+    }
+    if (count == phone_length)
+    {
+        return 1;
+    }
 
     return 0;
 }

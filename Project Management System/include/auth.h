@@ -6,10 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
-#include <errno.h>
 
 // Local Header Files
-#include "utility.h"
 #include "ui.h"
 // Macros
 #define MAX_LENGTH_OF_DATA_IN_FILE 3000
@@ -52,10 +50,9 @@ int generate_user_id(char id[]);
 int change_login_status(char status[]);
 int password_verify(char username_or_email[], char password[]);
 int input_password(char password[]);
-int validate_user_name();
-int validate_email();
-int validate_phone();
+int validate_user_name(char username[]);
+int validate_email(char email[]);
+int validate_phone(char phone[]);
 int get_user_name(char username[]);
-
 
 #endif
