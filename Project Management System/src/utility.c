@@ -95,3 +95,21 @@ int get_console_width()
 
     return csbi.srWindow.Right - csbi.srWindow.Left + 1;
 }
+int get_console_height()
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+    return csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+}
+
+int init_console()
+{
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
+    return 0;
+}
+

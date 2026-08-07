@@ -35,31 +35,9 @@ int generate_user_id(char id[])
 
         // Handle enter character
         row[strcspn(row, "\n")] = '\0';
-
         // Divide rows data into pieces
         char *field = strtok(row, ",");
         strcpy(user.id, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.name, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.email, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.phone, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.user_name, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.pass, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.security_question, field);
-
-        field = strtok(NULL, ",");
-        strcpy(user.role, field);
     }
 
     // Close userDBS
@@ -126,35 +104,116 @@ int create_user()
     // Structure variable for store user information.
     struct r_account user;
 
+    init_console();
+    header_screen();
+    int terminal_width = get_console_width();
+    int terminal_height = get_console_height();
+    int box_width = 100, box_height = 37;
+    int x = (terminal_width - box_width) / 2, y =((terminal_height-box_height)/2)+ 13;
+
     // Generate a new user id.
     generate_user_id(user.id);
-
+    move_cursor(x, y+0);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, y+1);
+    printf("║                                   CREATE NEW ACCOUNT                                             ║\n");
+    move_cursor(x, y+2);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y+3);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y+4);
+    printf("║    Full Name :                                                                                   ║\n");
+    move_cursor(x, y+5);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y+6);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y+7);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y+8);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y+9);
+    printf("║    Email Address :                                                                               ║\n");
+    move_cursor(x, y+10);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y+11);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y+12);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y+13);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y+14);
+    printf("║    Phone Number :                                                                                ║\n");
+    move_cursor(x, y+15);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y+16);
+    printf("║    │    +880                                                                                │    ║\n");
+    move_cursor(x, y+17);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y+18);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y+19);
+    printf("║    Username :                                                                                    ║\n");
+    move_cursor(x, y+20);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y+21);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y+22);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y+23);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y+24);
+    printf("║    Password :                                                                                    ║\n");
+    move_cursor(x, y+25);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y+26);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y+27);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y+28);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y+29);
+    printf("║    What Is Your Favourite Food : :                                                               ║\n");
+    move_cursor(x, y+30);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, y+31);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, y+32);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, y+33);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y+34);
+    printf("║                      [ ENTER ] Register        [ ESC ] Cancel                                    ║\n");
+    move_cursor(x, y+35);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y+36);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
     // Take user name.
-    printf("\nName : ");
+    move_cursor((x + 10), y+6);
     fgets(user.name, sizeof(user.name), stdin);
     user.name[strcspn(user.name, "\n")] = '\0';
 
     // Take user email.
-    printf("\nEmail : ");
+    move_cursor((x + 10), y+11);
     fgets(user.email, sizeof(user.email), stdin);
     user.email[strcspn(user.email, "\n")] = '\0';
 
     // Take user phone number.
-    printf("\nPhone Number : +880 ");
+    move_cursor((x + 14), y+16);
     fgets(user.phone, sizeof(user.phone), stdin);
     user.phone[strcspn(user.phone, "\n")] = '\0';
 
     // Take username.
-    printf("\nUsername : ");
+    move_cursor((x + 10), y+21);
     fgets(user.user_name, sizeof(user.user_name), stdin);
     user.user_name[strcspn(user.user_name, "\n")] = '\0';
 
     // Take password.
+    move_cursor((x + 10), y+26);
     input_password_two(&user);
     user.pass[strcspn(user.pass, "\n")] = '\0';
 
     // Take answer of security question.
-    printf("\nWhat Is Your Favourite Food : ");
+    move_cursor((x + 10), y+31);
     fgets(user.security_question, sizeof(user.security_question), stdin);
     user.security_question[strcspn(user.security_question, "\n")] = '\0';
 
@@ -191,19 +250,63 @@ int login()
 
 {
     // Show the login screen.
-    clear_screen();
-    header_screen();
+
     user_login_screen();
 
     // Structure variable for store login data.
     struct l_account user;
-
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+#endif
+    header_screen();
+    int terminal_width = get_console_width();
+    int box_width = 100;
+    int x = (terminal_width - box_width) / 2;
+    move_cursor(x, 20);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, 21);
+    printf("║                                     LOGIN TO PROJECT SYSTEM                                      ║\n");
+    move_cursor(x, 22);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, 23);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, 24);
+    printf("║    Username :                                                                                    ║\n");
+    move_cursor(x, 25);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, 26);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, 27);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, 28);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, 29);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, 30);
+    printf("║    Password :                                                                                    ║\n");
+    move_cursor(x, 31);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║\n");
+    move_cursor(x, 32);
+    printf("║    │                                                                                        │    ║\n");
+    move_cursor(x, 33);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║\n");
+    move_cursor(x, 34);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, 35);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, 36);
+    printf("║                          [ ENTER ] Login        [ ESC ] Back                                     ║\n");
+    move_cursor(x, 37);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, 38);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
     // Take username or email.
-    printf("\nUsername/Email: ");
+    move_cursor((x + 10), 26);
     fgets(user.user_name_or_email, sizeof(user.user_name_or_email), stdin);
     user.user_name_or_email[strcspn(user.user_name_or_email, "\n")] = '\0';
 
     // Take user password.
+    move_cursor((x + 10), 32);
     input_password(&user);
     user.user_pass[strcspn(user.user_pass, "\n")] = '\0';
     // Check username/email and password is correct or not.
@@ -434,15 +537,14 @@ int input_password(struct l_account *user)
     char password[30];
     int i = 0;
     char each_character;
-    printf("\nPassword : ");
     while ((each_character = getch()) != 13)
     {
         password[i] = each_character;
         printf("*");
         i++;
     }
-    printf("\n");
-    strcpy(user->user_pass,password);
+    password[i] = '\0';
+    strcpy(user->user_pass, password);
     return 0;
 }
 int input_password_two(struct r_account *user)
@@ -450,14 +552,13 @@ int input_password_two(struct r_account *user)
     char password[30];
     int i = 0;
     char each_character;
-    printf("\nPassword : ");
     while ((each_character = getch()) != 13)
     {
         password[i] = each_character;
         printf("*");
         i++;
     }
-    printf("\n");
-    strcpy(user->pass,password);
+    password[i] = '\0';
+    strcpy(user->pass, password);
     return 0;
 }

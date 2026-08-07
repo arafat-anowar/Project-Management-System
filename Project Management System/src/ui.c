@@ -2,79 +2,81 @@
 
 int header_screen()
 {
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-#endif
+    init_console();
     clear_screen();
     int terminal_width = get_console_width();
-    int box_width = 100;
-    int x = (terminal_width - box_width) / 2;
-    move_cursor(x, 1);
+    int terminal_height = get_console_height();
+    int box_width = 100, box_height = 13;
+    int x = (terminal_width - box_width) / 2, y = 1;
+    move_cursor(x, y + 0);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-    move_cursor(x, 2);
+    move_cursor(x, y + 1);
     printf("║                                                                                                  ║\n");
-    move_cursor(x, 3);
+    move_cursor(x, y + 2);
     printf("║                              ██████╗      ███╗   ███╗       ███████╗                             ║\n");
-    move_cursor(x, 4);
+    move_cursor(x, y + 3);
     printf("║                              ██╔══██╗     ████╗ ████║       ██╔════╝                             ║\n");
-    move_cursor(x, 5);
+    move_cursor(x, y + 4);
     printf("║                              ██████╔╝     ██╔████╔██║       ███████╗                             ║\n");
-    move_cursor(x, 6);
+    move_cursor(x, y + 5);
     printf("║                              ██╔═══╝      ██║╚██╔╝██║       ╚════██║                             ║\n");
-    move_cursor(x, 7);
+    move_cursor(x, y + 6);
     printf("║                              ██║     ██   ██║ ╚═╝ ██║  ██   ███████║                             ║\n");
-    move_cursor(x, 8);
+    move_cursor(x, y + 7);
     printf("║                              ╚═╝          ╚═╝     ╚═╝      ╚══════╝                              ║\n");
-    move_cursor(x, 9);
+    move_cursor(x, y + 8);
     printf("║                                                                                                  ║\n");
-    move_cursor(x, 10);
+    move_cursor(x, y + 9);
     printf("║                                    PROJECT MANAGEMENT SYSTEM                                     ║\n");
-    move_cursor(x, 11);
+    move_cursor(x, y + 10);
     printf("║                                Plan • Organize • Track • Complete                                ║\n");
-    move_cursor(x, 12);
+    move_cursor(x, y + 11);
     printf("║                                                                                                  ║\n");
-    move_cursor(x, 13);
+    move_cursor(x, y + 12);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
     return 0;
 }
 
 int main_menu()
 {
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-#endif
+    init_console();
     header_screen();
     int terminal_width = get_console_width();
-    int box_width = 100;
-    int x = (terminal_width - box_width) / 2;
-    move_cursor(x,20 );
+    int terminal_height = get_console_height();
+    int box_width = 100, box_height = 14;
+    int x = (terminal_width - box_width) / 2, y = ((terminal_height - box_height) / 2) + 13;
+    move_cursor(x, y + 0);
     printf("╔══════════════════════════════════════════[ MAIN  MENU ]══════════════════════════════════════════╗\n");
 
-    move_cursor(x, 21);
+    move_cursor(x, y + 1);
     printf("║                                                                                                  ║\n");
 
-    move_cursor(x, 22);
+    move_cursor(x, y + 2);
     printf("║   [1]  Register                                                                                  ║\n");
-
-    move_cursor(x, 23);
+    move_cursor(x, y + 3);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 4);
     printf("║   [2]  Login                                                                                     ║\n");
-
-    move_cursor(x, 24);
+    move_cursor(x, y + 5);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 6);
     printf("║   [3]  Forgot Password                                                                           ║\n");
-
-    move_cursor(x, 25);
+    move_cursor(x, y + 7);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 8);
     printf("║  [ESC] Exit                                                                                      ║\n");
-
-    move_cursor(x, 26); 
+    move_cursor(x, y + 9);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 10);
     printf("║                                                                                                  ║\n");
 
-    move_cursor(x, 27);
+    move_cursor(x, y + 11);
     printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
 
-    move_cursor(x, 28);
+    move_cursor(x, y + 12);
     printf("║                                        PRESS YOUR CHOICE                                         ║\n");
 
-    move_cursor(x, 29);
+    move_cursor(x, y + 13);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
     // Take Input from user and validate that
     char choice;
@@ -100,21 +102,56 @@ int main_menu()
 
 int dashboard()
 {
-    // clear_screen();
-    // header_screen();
-    printf("+-------------------------[ DASHBOARD ]--------------------------+\n");
-    printf("|   [1]   -> Project Management                                  |\n");
-    printf("|   [2]   -> Task Managent                                       |\n");
-    printf("|   [3]   -> Reports                                             |\n");
-    printf("|   [4]   -> Search                                              |\n");
-    printf("|  [ESC]  -> Logout                                              |\n");
-    printf("+----------------------[PRESS YOUR CHOICE]-----------------------+\n");
+    init_console();
+    header_screen();
+    int terminal_width = get_console_width();
+    int terminal_height = get_console_height();
+    int box_width = 100, box_height = 19;
+    int x = (terminal_width - box_width) / 2, y = ((terminal_height - box_height) / 2) + 13;
+    move_cursor(x, y + 0);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, y + 1);
+    printf("║                                             DASHBOARD                                            ║\n");
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 3);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 4);
+    printf("║    [1]  Project Management                                                                       ║\n");
+    move_cursor(x, y + 5);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 6);
+    printf("║    [2]  Task Management                                                                          ║\n");
+    move_cursor(x, y + 7);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 8);
+    printf("║    [3]  Reports                                                                                  ║\n");
+    move_cursor(x, y + 9);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 10);
+    printf("║    [4]  Search                                                                                   ║\n");
+    move_cursor(x, y + 11);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 12);
+    printf("║    [5]  Profile                                                                                  ║\n");
+    move_cursor(x, y + 13);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 14);
+    printf("║   [ESC] Logout                                                                                   ║\n");
+    move_cursor(x, y + 15);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 16);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 17);
+    printf("║                                         PRESS YOUR CHOICE                                        ║\n");
+    move_cursor(x, y + 18);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
     // Take Input from user and validate that
     char choice;
     do
     {
         choice = get_input;
-    } while (choice < '1' || choice > '4');
+    } while ((choice < '1' || choice > '5') && choice != ESC);
     switch (choice)
     {
     case '1':
@@ -138,22 +175,57 @@ int dashboard()
 
 int project_management_dashboard()
 {
-    clear_screen();
+    init_console();
     header_screen();
-    printf("+--------------------[ PROJECT MANAGEMENT ]----------------------+\n");
-    printf("|   [1]   -> Create Project                                      |\n");
-    printf("|   [2]   -> Update Project                                      |\n");
-    printf("|   [3]   -> Delete Project                                      |\n");
-    printf("|   [4]   -> View All Projects                                   |\n");
-    printf("|   [5]   -> Search Project                                      |\n");
-    printf("|  [ESC]  -> Back                                                |\n");
-    printf("+---------------------[PRESS YOUR CHOICE]------------------------+\n");
+    int terminal_width = get_console_width();
+    int terminal_height = get_console_height();
+    int box_width = 100, box_height = 19;
+    int x = (terminal_width - box_width) / 2, y = ((terminal_height - box_height) / 2) + 13;
+    move_cursor(x, y + 0);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, y + 1);
+    printf("║                                        PROJECT MANAGEMENT                                        ║\n");
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 3);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 4);
+    printf("║    [1]  Create Project                                                                           ║\n");
+    move_cursor(x, y + 5);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 6);
+    printf("║    [2]  Update Project                                                                           ║\n");
+    move_cursor(x, y + 7);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 8);
+    printf("║    [3]  Delete Project                                                                           ║\n");
+    move_cursor(x, y + 9);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 10);
+    printf("║    [4]  View All Projects                                                                        ║\n");
+    move_cursor(x, y + 11);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 12);
+    printf("║    [5]  Search Project                                                                           ║\n");
+    move_cursor(x, y + 13);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 14);
+    printf("║   [ESC] Back                                                                                     ║\n");
+    move_cursor(x, y + 15);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 16);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 17);
+    printf("║                                        PRESS YOUR CHOICE                                         ║\n");
+    move_cursor(x, y + 18);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+    move_cursor(x, y + 19);
     // Take Input from user and validate that
     char choice;
     do
     {
         choice = get_input;
-    } while (choice < '1' || choice > '5');
+    } while ((choice < '1' || choice > '5') && choice != ESC);
     switch (choice)
     {
     case '1':
@@ -180,25 +252,68 @@ int project_management_dashboard()
 
 int task_management_dashboard()
 {
-    clear_screen();
+    init_console();
     header_screen();
-    printf("+---------------------[ TASK MANAGEMENT ]------------------------+\n");
-    printf("|   [1]   -> Create Task                                         |\n");
-    printf("|   [2]   -> Update Task                                         |\n");
-    printf("|   [3]   -> Delete Task                                         |\n");
-    printf("|   [4]   -> View All Tasks                                      |\n");
-    printf("|   [5]   -> View Tasks by ID or Name                            |\n");
-    printf("|   [6]   -> View Tasks by Project                               |\n");
-    printf("|   [7]   -> View Tasks by Status                                |\n");
-    printf("|   [8]   -> View Tasks by Priority                              |\n");
-    printf("|  [ESC]  -> Back                                                |\n");
-    printf("+---------------------[PRESS YOUR CHOICE]------------------------+\n");
+    int terminal_width = get_console_width();
+    int terminal_height = get_console_height();
+    int box_width = 100, box_height = 25;
+    int x = (terminal_width - box_width) / 2, y = ((terminal_height - box_height) / 2) + 13;
+    move_cursor(x, y + 0);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, y + 1);
+    printf("║                                         TASK MANAGEMENT                                          ║\n");
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 3);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 4);
+    printf("║    [1]  Create Task                                                                              ║\n");
+    move_cursor(x, y + 5);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 6);
+    printf("║    [2]  Update Task                                                                              ║\n");
+    move_cursor(x, y + 7);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 8);
+    printf("║    [3]  Delete Task                                                                              ║\n");
+    move_cursor(x, y + 9);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 10);
+    printf("║    [4]  View All Tasks                                                                           ║\n");
+    move_cursor(x, y + 11);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 12);
+    printf("║    [5]  View Tasks by ID or Name                                                                 ║\n");
+    move_cursor(x, y + 13);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 14);
+    printf("║    [6]  View Tasks by Project                                                                    ║\n");
+    move_cursor(x, y + 15);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 16);
+    printf("║    [7]  View Tasks by Status                                                                     ║\n");
+    move_cursor(x, y + 17);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 18);
+    printf("║    [8]  View Tasks by Priority                                                                   ║\n");
+    move_cursor(x, y + 19);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 20);
+    printf("║   [ESC] Back                                                                                     ║\n");
+    move_cursor(x, y + 21);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 22);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 23);
+    printf("║                                        PRESS YOUR CHOICE                                         ║\n");
+    move_cursor(x, y + 24);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
     // Take Input from user and validate that
     char choice;
     do
     {
         choice = get_input;
-    } while (choice < '1' && choice > '8');
+    } while ((choice < '1' && choice > '8') && choice != ESC);
     switch (choice)
     {
     case '1':
@@ -471,18 +586,86 @@ int project_priority_dashboard(char priority[])
 }
 int report_dashboard()
 {
-    clear_screen();
+    init_console();
     header_screen();
-    printf("+------------------------[ REPORTS ]----------------------------+\n");
-    printf("|   [1]   -> Project Summary Report                             |\n");
-    printf("|   [2]   -> Task Summary Report                                |\n");
-    printf("|   [3]   -> Completed Projects Report                          |\n");
-    printf("|   [4]   -> Pending Tasks Report                               |\n");
-    printf("|   [5]   -> Overdue Tasks Report                               |\n");
-    printf("|   [6]   -> High Priority Tasks Report                         |\n");
-    printf("|  [ESC]  -> Back                                               |\n");
-    printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
+    int terminal_width = get_console_width();
+    int terminal_height = get_console_height();
+    int box_width = 100, box_height = 21;
+    int x = (terminal_width - box_width) / 2, y = ((terminal_height - box_height) / 2) + 13;
+    move_cursor(x, y + 0);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, y + 1);
+    printf("║                                              REPORTS                                             ║\n");
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 3);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 4);
+    printf("║    [1]  Project Summary Report                                                                   ║\n");
+    move_cursor(x, y + 5);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 6);
+    printf("║    [2]  Task Summary Report                                                                      ║\n");
+    move_cursor(x, y + 7);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 8);
+    printf("║    [3]  Completed Projects Report                                                                ║\n");
+    move_cursor(x, y + 9);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 10);
+    printf("║    [4]  Pending Tasks Report                                                                     ║\n");
+    move_cursor(x, y + 11);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 12);
+    printf("║    [5]  Overdue Tasks Report                                                                     ║\n");
+    move_cursor(x, y + 13);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 14);
+    printf("║    [6]  High Priority Tasks Report                                                               ║\n");
+    move_cursor(x, y + 15);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 16);
+    printf("║   [ESC] Back                                                                                     ║\n");
+    move_cursor(x, y + 17);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 18);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 19);
+    printf("║                                        PRESS YOUR CHOICE                                         ║\n");
+    move_cursor(x, y + 20);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+    char choice;
+    do
+    {
+        choice = get_input;
+    } while ((choice < '1' && choice > '6') && choice != ESC);
+    switch (choice)
+    {
+        // case '1':
+        //     create_task();
+        //     break;
+        // case '2':
+        //     update_task();
+        //     break;
+        // case '3':
+        //     delete_task();
+        //     break;
+        // case '4':
+        //     view_tasks();
+        //     break;
+        // case '5':
+        //     search_by_task_id_or_name();
+        //     break;
+        // case '6':
+        //     view_tasks_by_project();
+        //     break;
+
+    case ESC:
+        dashboard();
+        break;
+    }
     return 0;
+    
 }
 int search_dashboard()
 {
