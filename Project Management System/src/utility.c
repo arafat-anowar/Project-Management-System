@@ -115,26 +115,3 @@ int init_console()
 #endif
     return 0;
 }
-
-// int clock()
-// {
-//     while (1)
-//     {
-//         time_t now = time(NULL);
-//         struct tm *local_time = localtime(&now);
-
-//         system("cls");
-
-//         printf("Date: %02d/%02d/%d\n", local_time->tm_mday, local_time->tm_mon + 1, local_time->tm_year + 1900);
-
-//         printf("Time: %02d:%02d:%02d\n", local_time->tm_hour, local_time->tm_min, local_time->tm_sec);
-
-//         Sleep(1000);
-//     }
-
-//     return 0;
-
-// }
-
-// Auth Header File
-
