@@ -549,37 +549,18 @@ int task_priority_dashboard(char priority[])
     }
     return 0;
 }
-int project_priority_dashboard(char priority[])
+int project_priority_dashboard(char priority[], char priority_choice)
 {
-    clear_screen();
-    header_screen();
-    printf("+--------------------[ PROJECT PRIORITY ]--------------------------+\n");
-    printf("|   [1]   -> High                                               |\n");
-    printf("|   [2]   -> Medium                                             |\n");
-    printf("|   [3]   -> Low                                                |\n");
-    printf("|  [ESC]  -> Back                                               |\n");
-    printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
-    char choice;
-    do
-    {
-        choice = get_input;
-    } while (choice < '1' || choice > '3');
-    switch (choice)
+    switch (priority_choice)
     {
     case '1':
         strcpy(priority, "High");
         break;
-
     case '2':
         strcpy(priority, "Medium");
         break;
-
     case '3':
         strcpy(priority, "Low");
-        break;
-
-    case ESC:
-        project_management_dashboard();
         break;
     }
     return 0;
@@ -852,5 +833,106 @@ int change_password_screen(int x, int y)
     move_cursor(x, y + 24);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
 
+    return 0;
+}
+
+int create_project_screen(int x, int y)
+{
+    move_cursor(x, y + 0);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗");
+    move_cursor(x, y + 1);
+    printf("║                                      CREATE PROJECT                                              ║");
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣");
+    move_cursor(x, y + 3);
+    printf("║                                                                                                  ║");
+    move_cursor(x, y + 4);
+    printf("║    Project Name :                                                                                ║");
+    move_cursor(x, y + 5);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║");
+    move_cursor(x, y + 6);
+    printf("║    │                                                                                        │    ║");
+    move_cursor(x, y + 7);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║");
+    move_cursor(x, y + 8);
+    printf("║                                                                                                  ║");
+    move_cursor(x, y + 9);
+    printf("║    Category :                                                                                    ║");
+    move_cursor(x, y + 10);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║");
+    move_cursor(x, y + 11);
+    printf("║    │                                                                                        │    ║");
+    move_cursor(x, y + 12);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║");
+    move_cursor(x, y + 13);
+    printf("║                                                                                                  ║");
+    move_cursor(x, y + 14);
+    printf("║    Description :                                                                                 ║");
+    move_cursor(x, y + 15);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║");
+    move_cursor(x, y + 16);
+    printf("║    │                                                                                        │    ║");
+    move_cursor(x, y + 17);
+    printf("║    │                                                                                        │    ║");
+    move_cursor(x, y + 18);
+    printf("║    │                                                                                        │    ║");
+    move_cursor(x, y + 19);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║");
+    move_cursor(x, y + 20);
+    printf("║                                                                                                  ║");
+
+    move_cursor(x, y + 21);
+    printf("║    Priority :                                                                                    ║");
+
+    move_cursor(x, y + 22);
+    printf("║    ┌─────────────── [ 1 ] High ──── [ 2 ] Medium  ──── [ 3 ] Low  ──────────────────────────┐    ║");
+
+    move_cursor(x, y + 23);
+    printf("║    │                                                                                        │    ║");
+
+    move_cursor(x, y + 24);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║");
+
+    move_cursor(x, y + 25);
+    printf("║                                                                                                  ║");
+
+    move_cursor(x, y + 26);
+    printf("║    Start Date (YYYY-MM-DD) :                                                                     ║");
+
+    move_cursor(x, y + 27);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║");
+
+    move_cursor(x, y + 28);
+    printf("║    │                                                                                        │    ║");
+
+    move_cursor(x, y + 29);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║");
+
+    move_cursor(x, y +30);
+    printf("║                                                                                                  ║");
+
+    move_cursor(x, y + 31);
+    printf("║    End Date (YYYY-MM-DD) :                                                                       ║");
+
+    move_cursor(x, y + 32);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────────┐    ║");
+
+    move_cursor(x, y + 33);
+    printf("║    │                                                                                        │    ║");
+
+    move_cursor(x, y + 34);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────────┘    ║");
+
+    move_cursor(x, y + 35);
+    printf("║                                                                                                  ║");
+
+    move_cursor(x, y + 36);
+    printf("║                        [ ENTER ] Create Project        [ ESC ] Cancel                            ║");
+
+    move_cursor(x, y + 37);
+    printf("║                                                                                                  ║");
+
+    move_cursor(x, y + 38);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
     return 0;
 }

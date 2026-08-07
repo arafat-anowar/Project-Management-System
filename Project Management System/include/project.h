@@ -7,6 +7,7 @@
 #include <string.h>
 
 // Local Header Files
+#include "auth.h"
 #include "ui.h"
 
 // Structures
@@ -40,5 +41,7 @@ int sort_projects();
 int search_by_project_id_or_name();
 int search_project_by_status();
 int search_project_by_priority();
+int get_path(char path[]);
+int create_project_screen(int x,int y);
 
 #endif

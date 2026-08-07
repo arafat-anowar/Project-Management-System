@@ -158,6 +158,7 @@ int view_projects()
     char row[MAX_LENGTH_OF_DATA_IN_FILE];
     char *field;
 
+<<<<<<< HEAD
     get_path(path);
     strcat(path, "projectsDBS.csv");
 
@@ -213,6 +214,54 @@ int view_projects()
 
         printf("\nPress any key to view next project...");
         getch();
+=======
+    char row[3000];
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = 0;
+
+        char *field;
+
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        printf("+----------------------------------------------------------------------+\n");
+        printf("|                         PROJECT DETAILS                              |\n");
+        printf("+----------------------+-----------------------------------------------+\n");
+        printf("| Project ID           | %-s |\n", project.id);
+        printf("| Category             | %-s |\n", project.category);
+        printf("| Project Name         | %-s |\n", project.name);
+        printf("| Description          | %-s |\n", project.description);
+        printf("| Priority             | %-s |\n", project.priority);
+        printf("| Status               | %-s |\n", project.status);
+        printf("| Starting Date        | %-s |\n", project.start_date);
+        printf("| Deadrow             | %-s |\n", project.end_date);
+        printf("+----------------------+-----------------------------------------------+\n");
+>>>>>>> ab436c8237ab0acf8a0e7e7e9555bd7417b56614
     }
 
     fclose(projectDBS_open);

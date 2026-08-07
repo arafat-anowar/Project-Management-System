@@ -29,7 +29,7 @@ int search_dashboard();
 int task_status_dashboard(char status[]);
 int task_priority_dashboard(char priority[]);
 int project_status_dashboard(char status[]);
-int project_priority_dashboard(char priority[]);
+int project_priority_dashboard(char priority[],char priority_choice);
 
 
 int user_registration_screen(int x,int y);

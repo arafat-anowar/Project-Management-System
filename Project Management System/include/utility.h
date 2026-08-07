@@ -30,7 +30,7 @@ int get_console_width();
 // void clock(void);
 int get_console_height();
 int init_console();
-// int clock();
+void clock();
 
 
 
