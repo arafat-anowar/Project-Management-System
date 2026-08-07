@@ -5,36 +5,22 @@ int generate_project_id(char id[])
     strcpy(id, "P1001");
 
     int found = 0;
-
+    char path[100];
+    get_path(path);
+    strcat(path, "projectsDBS.csv");
     struct p_details project;
 
     FILE *projectDBS_open;
-    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
+    projectDBS_open = fopen(path, "r");
 
-    char line[3000];
-    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    char row[3000];
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         found = 1;
-        line[strcspn(line, "\n")] = '\0';
-        char *token;
-        token = strtok(line, ",");
-        strcpy(project.id, token);
-        token = strtok(NULL, ",");
-        strcpy(project.name, token);
-        token = strtok(NULL, ",");
-        strcpy(project.category, token);
-        token = strtok(NULL, ",");
-        strcpy(project.description, token);
-        token = strtok(NULL, ",");
-        strcpy(project.priority, token);
-        token = strtok(NULL, ",");
-        strcpy(project.status, token);
-        token = strtok(NULL, ",");
-        strcpy(project.start_date, token);
-        token = strtok(NULL, ",");
-        strcpy(project.end_date, token);
-        token = strtok(NULL, ",");
-        strcpy(project.created_by, token);
+        row[strcspn(row, "\n")] = '\0';
+        char *field;
+        field = strtok(row, ",");
+        strcpy(project.id, field);
     }
     fclose(projectDBS_open);
 
@@ -77,50 +63,88 @@ int generate_project_id(char id[])
 int create_project()
 {
     struct p_details project;
+
+    int terminal_width = 0;
+    int terminal_height = 0;
+    int box_width = 100;
+    int box_height = 39;
+    int x = 0;
+    int y = 0;
+    char priority_choice;
+    FILE *open_projectDBS;
+    FILE *project_file_create;
+
+    char filepath[200];
+
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - box_width) / 2;
+    y = ((terminal_height - box_height) / 2) + 13;
+
+    create_project_screen(x, y);
+
     generate_project_id(project.id);
-    printf("\nProject name : ");
+
+    move_cursor(x + 10, y + 6);
     fgets(project.name, sizeof(project.name), stdin);
     project.name[strcspn(project.name, "\n")] = '\0';
 
-    printf("\nCategory : ");
+    move_cursor(x + 10, y + 11);
     fgets(project.category, sizeof(project.category), stdin);
     project.category[strcspn(project.category, "\n")] = '\0';
 
-    printf("\nDescription : ");
+    move_cursor(x + 10, y + 16);
     fgets(project.description, sizeof(project.description), stdin);
     project.description[strcspn(project.description, "\n")] = '\0';
 
-    printf("\nPriority : ");
-    fgets(project.priority, sizeof(project.priority), stdin);
-    project.priority[strcspn(project.priority, "\n")] = '\0';
+    move_cursor(x + 10, y + 21);
+    priority_choice=get_input;
+    project_priority_dashboard(project.priority,priority_choice);
+
+    move_cursor(x + 10, y + 21);
+    printf("%s", project.priority);
 
     strcpy(project.status, "Created");
 
-    printf("\nStart Date : ");
+    move_cursor(x + 10, y + 26);
     fgets(project.start_date, sizeof(project.start_date), stdin);
     project.start_date[strcspn(project.start_date, "\n")] = '\0';
 
-    printf("\nDeadline : ");
+    move_cursor(x + 10, y + 31);
     fgets(project.end_date, sizeof(project.end_date), stdin);
     project.end_date[strcspn(project.end_date, "\n")] = '\0';
 
-    strcpy(project.created_by, "arafatanowar");
+    get_user_name(project.created_by);
 
-    FILE *open_projectDBS = fopen("..\\database\\projectDBS.csv", "a");
+    get_path(filepath);
+    strcat(filepath, "projectsDBS.csv");
 
-    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id,
-            project.name, project.category, project.description,
-            project.priority, project.status,
-            project.start_date, project.end_date, project.created_by);
+    open_projectDBS = fopen(filepath, "a");
+
+    fprintf(open_projectDBS,
+            "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+            project.id,
+            project.name,
+            project.category,
+            project.description,
+            project.priority,
+            project.status,
+            project.start_date,
+            project.end_date,
+            project.created_by);
 
     fclose(open_projectDBS);
 
-    char filepath[100];
-    strcpy(filepath, ".\\database\\Projects\\");
+    get_path(filepath);
+    strcat(filepath, "Projects\\");
     strcat(filepath, strlwr(project.name));
     strcat(filepath, ".csv");
 
-    FILE *project_file_create = fopen(filepath, "w");
+    project_file_create = fopen(filepath, "w");
     fclose(project_file_create);
 
     return 0;
@@ -130,58 +154,68 @@ int view_projects()
 {
     struct p_details project;
 
-    FILE *projectDBS_open;
-    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
+    char path[200];
+    char row[MAX_LENGTH_OF_DATA_IN_FILE];
+    char *field;
 
-    char line[3000];
-    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    get_path(path);
+    strcat(path, "projectsDBS.csv");
+
+    FILE *projectDBS_open = fopen(path, "r");
+
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
-        line[strcspn(line, "\n")] = 0;
+        row[strcspn(row, "\n")] = '\0';
 
-        char *token;
+        field = strtok(row, ",");
+        strcpy(project.id, field);
 
-        token = strtok(line, ",");
-        strcpy(project.id, token);
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.name, token);
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.category, token);
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.description, token);
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.priority, token);
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.status, token);
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.start_date, token);
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.end_date, token);
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.created_by, token);
+        clear_screen();
+        header_screen();
 
-        printf("+----------------------------------------------------------------------+\n");
-        printf("|                         PROJECT DETAILS                              |\n");
-        printf("+----------------------+-----------------------------------------------+\n");
-        printf("| Project ID           | %-s |\n", project.id);
-        printf("| Category             | %-s |\n", project.category);
-        printf("| Project Name         | %-s |\n", project.name);
-        printf("| Description          | %-s |\n", project.description);
-        printf("| Priority             | %-s |\n", project.priority);
-        printf("| Status               | %-s |\n", project.status);
-        printf("| Starting Date        | %-s |\n", project.start_date);
-        printf("| Deadline             | %-s |\n", project.end_date);
-        printf("+----------------------+-----------------------------------------------+\n");
+        printf("╔══════════════════════════════════════════════════════════════════════════════╗\n");
+        printf("║                           PROJECT DETAILS                                   ║\n");
+        printf("╠══════════════════════╦═══════════════════════════════════════════════════════╣\n");
+        printf("║ Project ID           ║ %-53s ║\n", project.id);
+        printf("║ Project Name         ║ %-53s ║\n", project.name);
+        printf("║ Category             ║ %-53s ║\n", project.category);
+        printf("║ Description          ║ %-53s ║\n", project.description);
+        printf("║ Priority             ║ %-53s ║\n", project.priority);
+        printf("║ Status               ║ %-53s ║\n", project.status);
+        printf("║ Start Date           ║ %-53s ║\n", project.start_date);
+        printf("║ End Date             ║ %-53s ║\n", project.end_date);
+        printf("║ Created By           ║ %-53s ║\n", project.created_by);
+        printf("╚══════════════════════╩═══════════════════════════════════════════════════════╝\n");
+
+        printf("\nPress any key to view next project...");
+        getch();
     }
+
     fclose(projectDBS_open);
-    
 
     return 0;
 }
@@ -199,31 +233,31 @@ int update_project()
     FILE *projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
     FILE *tmp_project = fopen("..\\database\\tmp.csv", "w");
 
-    char line[3000];
+    char row[3000];
     int found = 0;
 
-    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
-        line[strcspn(line, "\n")] = '\0';
-        char *token;
-        token = strtok(line, ",");
-        strcpy(project.id, token);
-        token = strtok(NULL, ",");
-        strcpy(project.name, token);
-        token = strtok(NULL, ",");
-        strcpy(project.category, token);
-        token = strtok(NULL, ",");
-        strcpy(project.description, token);
-        token = strtok(NULL, ",");
-        strcpy(project.priority, token);
-        token = strtok(NULL, ",");
-        strcpy(project.status, token);
-        token = strtok(NULL, ",");
-        strcpy(project.start_date, token);
-        token = strtok(NULL, ",");
-        strcpy(project.end_date, token);
-        token = strtok(NULL, ",");
-        strcpy(project.created_by, token);
+        row[strcspn(row, "\n")] = '\0';
+        char *field;
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
 
         if (strcmp(project_id_or_name, project.id) == 0 || strcmp(project_id_or_name, project.name) == 0)
         {
@@ -254,40 +288,40 @@ int delete_project()
     FILE *file_for_delete_project = fopen("..\\database\\projectDBS.csv", "r");
     FILE *write_to_new_file = fopen("..\\database\\tmp.csv", "w");
 
-    char line[3000];
+    char row[3000];
 
-    while (fgets(line, sizeof(line), file_for_delete_project) != NULL)
+    while (fgets(row, sizeof(row), file_for_delete_project) != NULL)
     {
-        line[strcspn(line, "\n")] = '\0';
+        row[strcspn(row, "\n")] = '\0';
 
-        char *token;
+        char *field;
 
-        token = strtok(line, ",");
-        strcpy(project.id, token);
+        field = strtok(row, ",");
+        strcpy(project.id, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.name, token);
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.category, token);
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.description, token);
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.priority, token);
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.status, token);
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.start_date, token);
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.end_date, token);
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.created_by, token);
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
 
         if (strcmp(project.id, project_id_or_name) == 0 ||
             strcmp(project.name, project_id_or_name) == 0)
@@ -317,11 +351,9 @@ int delete_project()
     remove("..\\database\\projectDBS.csv");
     rename("..\\database\\tmp.csv", "..\\database\\projectDBS.csv");
 
-
     project_management_dashboard();
 
     return 0;
-
 }
 int change_project_name(char name[])
 {
@@ -355,7 +387,7 @@ int change_project_status(char status[])
 
 int change_project_priority(char priority[])
 {
-    project_priority_dashboard(priority);
+    // project_priority_dashboard(priority);
     return 0;
 }
 int change_project_start_date(char start_date[])
@@ -368,10 +400,10 @@ int change_project_start_date(char start_date[])
 }
 int extend_project_deadline(char deadline[])
 {
-    char updated_deadline[50];
-    fgets(updated_deadline, sizeof(updated_deadline), stdin);
-    updated_deadline[strcspn(updated_deadline, "\n")] = '\0';
-    strcpy(deadline, updated_deadline);
+    char updated_deadrow[50];
+    fgets(updated_deadrow, sizeof(updated_deadrow), stdin);
+    updated_deadrow[strcspn(updated_deadrow, "\n")] = '\0';
+    strcpy(deadline, updated_deadrow);
     return 0;
 }
 int sort_projects()
@@ -391,39 +423,39 @@ int search_by_project_id_or_name()
     FILE *projectDBS_open;
     projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
 
-    char line[3000];
-    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    char row[3000];
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
-        line[strcspn(line, "\n")] = 0;
+        row[strcspn(row, "\n")] = 0;
 
-        char *token;
+        char *field;
 
-        token = strtok(line, ",");
-        strcpy(project.id, token);
+        field = strtok(row, ",");
+        strcpy(project.id, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.name, token);
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.category, token);
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.description, token);
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.priority, token);
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.status, token);
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.start_date, token);
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.end_date, token);
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.created_by, token);
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
 
         if (strcmp(project_id_or_name, project.id) == 0 || strcmp(project_id_or_name, project.name) == 0)
         {
@@ -434,7 +466,7 @@ int search_by_project_id_or_name()
             printf("Priority    : %s\n", project.priority);
             printf("Status      : %s\n", project.status);
             printf("Start Date  : %s\n", project.start_date);
-            printf("Deadline    : %s\n", project.end_date);
+            printf("Deadrow    : %s\n", project.end_date);
             break;
         }
     }
@@ -454,39 +486,39 @@ int search_project_by_status()
     FILE *projectDBS_open;
     projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
 
-    char line[3000];
-    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    char row[3000];
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
-        line[strcspn(line, "\n")] = 0;
+        row[strcspn(row, "\n")] = 0;
 
-        char *token;
+        char *field;
 
-        token = strtok(line, ",");
-        strcpy(project.id, token);
+        field = strtok(row, ",");
+        strcpy(project.id, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.name, token);
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.category, token);
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.description, token);
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.priority, token);
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.status, token);
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.start_date, token);
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.end_date, token);
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.created_by, token);
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
 
         if (strcmp(status, project.status) == 0)
         {
@@ -497,7 +529,7 @@ int search_project_by_status()
             printf("Priority    : %s\n", project.priority);
             printf("Status      : %s\n", project.status);
             printf("Start Date  : %s\n", project.start_date);
-            printf("Deadline    : %s\n", project.end_date);
+            printf("Deadrow    : %s\n", project.end_date);
             break;
         }
     }
@@ -518,39 +550,39 @@ int search_project_by_priority()
     FILE *projectDBS_open;
     projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
 
-    char line[3000];
-    while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+    char row[3000];
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
-        line[strcspn(line, "\n")] = 0;
+        row[strcspn(row, "\n")] = 0;
 
-        char *token;
+        char *field;
 
-        token = strtok(line, ",");
-        strcpy(project.id, token);
+        field = strtok(row, ",");
+        strcpy(project.id, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.name, token);
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.category, token);
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.description, token);
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.priority, token);
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.status, token);
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.start_date, token);
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.end_date, token);
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
 
-        token = strtok(NULL, ",");
-        strcpy(project.created_by, token);
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
 
         if (strcmp(priority, project.priority) == 0)
         {
@@ -561,11 +593,23 @@ int search_project_by_priority()
             printf("Priority    : %s\n", project.priority);
             printf("Status      : %s\n", project.status);
             printf("Start Date  : %s\n", project.start_date);
-            printf("Deadline    : %s\n", project.end_date);
+            printf("Deadrow    : %s\n", project.end_date);
             break;
         }
     }
     fclose(projectDBS_open);
+
+    return 0;
+}
+
+int get_path(char path[])
+{
+    char username[30];
+    get_user_name(username);
+
+    strcpy(path, "..\\database\\");
+    strcat(path, username);
+    strcat(path, "\\");
 
     return 0;
 }
