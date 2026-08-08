@@ -166,9 +166,10 @@ int login()
 int logout()
 {
     char login_status[] = LOGOUT_STATUS;
+    FILE *log_open;
 
     change_login_status(login_status);
-
+    log_open=fopen("..\\database\\log.csv","w");
     main_menu();
 
     return 0;

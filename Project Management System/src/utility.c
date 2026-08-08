@@ -1,6 +1,75 @@
 #include "utility.h"
 
+int validate_date(char date[])
+{
+    int year, month, day, max_day;
 
+    if (strlen(date) != 10)
+    {
+        return 0;
+    }
+
+    for (int i = 0; i < 10; i++)
+    {
+        if (i == 4 || i == 7)
+        {
+            if (date[i] != '-')
+            {
+                return 0;
+            }
+        }
+        else
+        {
+            if (date[i] < '0' || date[i] > '9')
+            {
+                return 0;
+            }
+        }
+    }
+
+    year = (date[0] - '0') * 1000 +
+           (date[1] - '0') * 100 +
+           (date[2] - '0') * 10 +
+           (date[3] - '0');
+
+    month = (date[5] - '0') * 10 +
+            (date[6] - '0');
+
+    day = (date[8] - '0') * 10 +
+          (date[9] - '0');
+
+    if (month < 1 || month > 12)
+    {
+        return 0;
+    }
+
+    if (month == 2)
+    {
+        if ((year % 400 == 0) || (year % 4 == 0 && year % 100 != 0))
+        {
+            max_day = 29;
+        }
+        else
+        {
+            max_day = 28;
+        }
+    }
+    else if (month == 4 || month == 6 || month == 9 || month == 11)
+    {
+        max_day = 30;
+    }
+    else
+    {
+        max_day = 31;
+    }
+
+    if (day < 1 || day > max_day)
+    {
+        return 0;
+    }
+
+    return 1;
+}
 
 int login_invalid_screen()
 {
@@ -28,15 +97,6 @@ int clear_screen()
     return 0;
 }
 
-
-
-
-int validate_date()
-{
-    return 0;
-}
-
-//int current_date(char date[])
 // int current_date(char date[])
 // {
 //     return 0;
@@ -116,25 +176,22 @@ int init_console()
     return 0;
 }
 
-void clock()
-{
-   time_t now;
-    struct tm *current;
+// void clock()
+// {
+//    time_t now;
+//     struct tm *current;
 
-    time(&now);
-    current = localtime(&now);
+//     time(&now);
+//     current = localtime(&now);
 
-    printf("Date : %02d-%02d-%04d\n",
-           current->tm_mday,
-           current->tm_mon + 1,
-           current->tm_year + 1900);
+//     printf("Date : %02d-%02d-%04d\n",
+//            current->tm_mday,
+//            current->tm_mon + 1,
+//            current->tm_year + 1900);
 
-    printf("Time : %02d:%02d:%02d\n",
-           current->tm_hour,
-           current->tm_min,
-           current->tm_sec);
-    
-    
-}
+//     printf("Time : %02d:%02d:%02d\n",
+//            current->tm_hour,
+//            current->tm_min,
+//            current->tm_sec);
 
-
+// }

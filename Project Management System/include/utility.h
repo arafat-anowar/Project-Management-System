@@ -20,7 +20,7 @@ int task_details_screen();
 int pause_screen(int sec);
 int clear_screen();
 
-int validate_date();
+int validate_date(char date[]);
 //int current_date(char date[]);
 // int current_date();
 int compare_date();
@@ -30,7 +30,7 @@ int get_console_width();
 // void clock(void);
 int get_console_height();
 int init_console();
-void clock();
+// void clock();
 
 
 
