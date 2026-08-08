@@ -83,7 +83,7 @@ int main_menu()
     do
     {
         choice = get_input;
-    } while (choice < '1' || choice > '3');
+    } while ((choice < '1' || choice > '3') && choice != ESC);
     switch (choice)
     {
     case '1':
@@ -325,7 +325,7 @@ int task_management_dashboard()
     do
     {
         choice = get_input;
-    } while ((choice < '1' && choice > '8') && choice != ESC);
+    } while ((choice < '1' || choice > '8') && choice != ESC);
     switch (choice)
     {
     case '1':
@@ -665,7 +665,7 @@ int project_show_screen(int x, int y)
     printf("║                                                                                                  ║");
 
     move_cursor(x, y + 45);
-    printf("║                         [ ENTER ] Next Project        [ ESC ] Back                              ║");
+    printf("║                          [ ENTER ] Next Project        [ ESC ] Back                              ║");
 
     move_cursor(x, y + 46);
     printf("║                                                                                                  ║");
@@ -675,6 +675,37 @@ int project_show_screen(int x, int y)
 
     return 0;
 }
+int search_project_by_id_or_name_screen(int x, int y)
+{
+    move_cursor(x, y);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════╗");
+
+    move_cursor(x, y + 1);
+    printf("║                              SEARCH PROJECT                                                  ║");
+
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════╣");
+
+    move_cursor(x, y + 3);
+    printf("║    Project ID or Name :                                                                      ║");
+
+    move_cursor(x, y + 4);
+    printf("║    ┌────────────────────────────────────────────────────────────────────────────────────┐    ║");
+
+    move_cursor(x, y + 5);
+    printf("║    │                                                                                    │    ║");
+
+    move_cursor(x, y + 6);
+    printf("║    └────────────────────────────────────────────────────────────────────────────────────┘    ║");
+
+    move_cursor(x, y + 7);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════╝");
+
+    move_cursor(x + 24, y + 5);
+
+    return 0;
+}
+
 
 int task_update_dashboard(struct t_details *task)
 {
@@ -735,7 +766,7 @@ int task_status_dashboard(char status[])
     do
     {
         choice = get_input;
-    } while (choice < '1' && choice > '4');
+    } while ((choice < '1' || choice > '4') && choice != ESC);
     switch (choice)
     {
     case '1':
@@ -756,26 +787,63 @@ int task_status_dashboard(char status[])
     }
     return 0;
 }
-int project_status_dashboard(char status[])
+int project_status_dashboard(char status[], int x, int y)
 {
     char choice;
 
     clear_screen();
     header_screen();
 
-    printf("+---------------------[ PROJECT STATUS ]---------------------------+\n");
-    printf("|   [1]   -> Created                                               |\n");
-    printf("|   [2]   -> In Progress                                           |\n");
-    printf("|   [3]   -> Completed                                             |\n");
-    printf("|   [4]   -> Cancelled                                             |\n");
-    printf("|  [ESC]  -> Back                                                  |\n");
-    printf("+--------------------[PRESS YOUR CHOICE]---------------------------+\n");
+    move_cursor(x, y);
+
+    printf("╔══════════════════════════════════════════════════════════════════╗");
+
+    move_cursor(x, y + 1);
+    printf("║                        PROJECT STATUS                            ║");
+
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════╣");
+
+    move_cursor(x, y + 3);
+    printf("║                                                                  ║");
+
+    move_cursor(x, y + 4);
+    printf("║     [1]   Created                                                ║");
+
+    move_cursor(x, y + 5);
+    printf("║     [2]   In Progress                                            ║");
+
+    move_cursor(x, y + 6);
+    printf("║     [3]   Completed                                              ║");
+
+    move_cursor(x, y + 7);
+    printf("║     [4]   Cancelled                                              ║");
+
+    move_cursor(x, y + 8);
+    printf("║                                                                  ║");
+
+    move_cursor(x, y + 9);
+    printf("║     [ESC]  Back                                                  ║");
+
+    move_cursor(x, y + 10);
+    printf("║                                                                  ║");
+
+    move_cursor(x, y + 11);
+    printf("╠══════════════════════════════════════════════════════════════════╣");
+
+    move_cursor(x, y + 12);
+    printf("║                     SELECT YOUR CHOICE                           ║");
+
+    move_cursor(x, y + 13);
+    printf("╚══════════════════════════════════════════════════════════════════╝");
+
 
     do
     {
         choice = get_input;
 
     } while ((choice < '1' || choice > '4') && choice != ESC);
+
 
     switch (choice)
     {
@@ -793,6 +861,81 @@ int project_status_dashboard(char status[])
 
     case '4':
         strcpy(status, "Cancelled");
+        break;
+
+    case ESC:
+        project_management_dashboard();
+        break;
+    }
+
+    return 0;
+}
+int project_priority_dashboard(char priority[], int x, int y)
+{
+    char choice;
+
+    clear_screen();
+    header_screen();
+
+    move_cursor(x, y);
+    printf("╔══════════════════════════════════════════════════════════════════╗");
+
+    move_cursor(x, y + 1);
+    printf("║                       PROJECT PRIORITY                           ║");
+
+    move_cursor(x, y + 2);
+    printf("╠══════════════════════════════════════════════════════════════════╣");
+
+    move_cursor(x, y + 3);
+    printf("║                                                                  ║");
+
+    move_cursor(x, y + 4);
+    printf("║     [1]   High                                                   ║");
+
+    move_cursor(x, y + 5);
+    printf("║     [2]   Medium                                                 ║");
+
+    move_cursor(x, y + 6);
+    printf("║     [3]   Low                                                    ║");
+
+    move_cursor(x, y + 7);
+    printf("║                                                                  ║");
+
+    move_cursor(x, y + 8);
+    printf("║     [ESC]  Back                                                  ║");
+
+    move_cursor(x, y + 9);
+    printf("║                                                                  ║");
+
+    move_cursor(x, y + 10);
+    printf("╠══════════════════════════════════════════════════════════════════╣");
+
+    move_cursor(x, y + 11);
+    printf("║                     SELECT YOUR CHOICE                           ║");
+
+    move_cursor(x, y + 12);
+    printf("╚══════════════════════════════════════════════════════════════════╝");
+
+
+    do
+    {
+        choice = get_input;
+
+    } while ((choice < '1' || choice > '3') && choice != ESC);
+
+
+    switch (choice)
+    {
+    case '1':
+        strcpy(priority, "High");
+        break;
+
+    case '2':
+        strcpy(priority, "Medium");
+        break;
+
+    case '3':
+        strcpy(priority, "Low");
         break;
 
     case ESC:
@@ -836,25 +979,6 @@ int task_priority_dashboard(char priority[])
         break;
         ;
     }
-    return 0;
-}
-int project_priority_dashboard(char priority[], char priority_choice)
-{
-    switch (priority_choice)
-    {
-    case '1':
-        strcpy(priority, "High");
-        break;
-
-    case '2':
-        strcpy(priority, "Medium");
-        break;
-
-    case '3':
-        strcpy(priority, "Low");
-        break;
-    }
-
     return 0;
 }
 int report_dashboard()
@@ -911,7 +1035,7 @@ int report_dashboard()
     do
     {
         choice = get_input;
-    } while ((choice < '1' && choice > '6') && choice != ESC);
+    } while ((choice < '1' || choice > '6') && choice != ESC);
     switch (choice)
     {
         // case '1':
@@ -941,6 +1065,11 @@ int report_dashboard()
 }
 int search_dashboard()
 {
+    char choice;
+
+    clear_screen();
+    header_screen();
+
     printf("+-------------------------[ SEARCH ]----------------------------+\n");
     printf("|   [1]   -> Search Project by ID or Name                       |\n");
     printf("|   [2]   -> Search Task by ID or Name                          |\n");
@@ -948,6 +1077,35 @@ int search_dashboard()
     printf("|   [4]   -> Search by Priority                                 |\n");
     printf("|  [ESC]  -> Back                                               |\n");
     printf("+--------------------[PRESS YOUR CHOICE]------------------------+\n");
+
+    do
+    {
+        choice = get_input;
+    } while ((choice < '1' || choice > '4') && choice != ESC);
+
+    switch (choice)
+    {
+    case '1':
+        search_by_project_id_or_name();
+        break;
+
+    case '2':
+        search_by_task_id_or_name();
+        break;
+
+    case '3':
+        search_project_by_status();
+        break;
+
+    case '4':
+        search_project_by_priority();
+        break;
+
+    case ESC:
+        dashboard();
+        break;
+    }
+
     return 0;
 }
 

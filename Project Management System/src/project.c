@@ -5,10 +5,18 @@ int generate_project_id(char id[])
 {
     struct p_details project;
 
-    int found = 0, num_id[20] = {0}, project_id = 0;
-    int id_len = 0, tmp = 0, i = 0, j = 0, digit = 0;
+    int found = 0;
+    int num_id[20] = {0};
+    int project_id = 0;
+    int id_len = 0;
+    int tmp = 0;
+    int i = 0;
+    int j = 0;
+    int digit = 0;
 
-    char path[200], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    char path[200];
+    char row[MAX_LENGTH_OF_DATA_IN_FILE];
+    char *field;
 
     FILE *projectDBS_open;
 
@@ -43,18 +51,18 @@ int generate_project_id(char id[])
 
     strcpy(id, project.id);
 
-    for (i = 0, j = 1; id[j] != '\0'; i++, j++)
+    id_len = strlen(id);
+
+    for (i = 0, j = 1; j < id_len; i++, j++)
     {
         num_id[i] = id[j] - '0';
     }
 
-    id_len = strlen(id);
-
-    for (i = 0; i <= id_len - 2; i++)
+    for (i = 0; i < id_len - 1; i++)
     {
         digit = num_id[i];
 
-        for (j = i; j <= id_len - 3; j++)
+        for (j = i; j < id_len - 2; j++)
         {
             digit *= 10;
         }
@@ -65,9 +73,9 @@ int generate_project_id(char id[])
     project_id++;
 
     tmp = project_id;
-    j = strlen(id) - 1;
+    j = id_len - 1;
 
-    while (tmp != 0)
+    while (tmp != 0 && j > 0)
     {
         id[j] = (tmp % 10) + '0';
         tmp /= 10;
@@ -82,14 +90,25 @@ int create_project()
 {
     struct p_details project;
 
-    int terminal_width = 0, terminal_height = 0;
-    int box_width = 100, box_height = 39;
-    int x = 0, y = 0;
-    int is_start_date_valid = 0, is_end_date_valid = 0;
+    int terminal_width = 0;
+    int terminal_height = 0;
+    int box_width = 100;
+    int box_height = 39;
+    int x = 0;
+    int y = 0;
 
-    char priority_choice, filepath[200];
+    int priority_box_width = 68;
+    int priority_box_height = 13;
+    int priority_x = 0;
+    int priority_y = 0;
 
-    FILE *open_projectDBS, *project_file_create;
+    int is_start_date_valid = 0;
+    int is_end_date_valid = 0;
+
+    char filepath[200];
+
+    FILE *open_projectDBS;
+    FILE *project_file_create;
 
     init_console();
     header_screen();
@@ -116,15 +135,25 @@ int create_project()
     fgets(project.description, sizeof(project.description), stdin);
     project.description[strcspn(project.description, "\n")] = '\0';
 
-    do
-    {
-        move_cursor(x + 10, y + 23);
+    priority_x = (terminal_width - priority_box_width) / 2;
+    priority_y = (terminal_height - priority_box_height) / 2;
 
-        priority_choice = get_input;
+    project.priority[0] = '\0';
 
-    } while (priority_choice < '1' || priority_choice > '3');
+    project_priority_dashboard(project.priority, priority_x, priority_y);
 
-    project_priority_dashboard(project.priority, priority_choice);
+    clear_screen();
+    header_screen();
+    create_project_screen(x, y);
+
+    move_cursor(x + 10, y + 6);
+    printf("%s", project.name);
+
+    move_cursor(x + 10, y + 11);
+    printf("%s", project.category);
+
+    move_cursor(x + 10, y + 16);
+    printf("%s", project.description);
 
     move_cursor(x + 10, y + 23);
     printf("%s", project.priority);
@@ -148,7 +177,6 @@ int create_project()
 
     } while (is_start_date_valid != 1);
 
-
     do
     {
         move_cursor(x + 10, y + 33);
@@ -165,7 +193,6 @@ int create_project()
         is_end_date_valid = validate_date(project.end_date);
 
     } while (is_end_date_valid != 1);
-
 
     get_user_name(project.created_by);
 
@@ -188,14 +215,12 @@ int create_project()
 
     fclose(open_projectDBS);
 
-
     get_path(filepath);
     strcat(filepath, "Projects\\");
     strcat(filepath, strlwr(project.name));
     strcat(filepath, ".csv");
 
     project_file_create = fopen(filepath, "w");
-
     fclose(project_file_create);
 
     project_management_dashboard();
@@ -208,92 +233,23 @@ int delete_project()
 {
     struct p_details project;
 
-    FILE *projectDBS_open;
-    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
-
-    char row[3000];
-    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
-    {
-        row[strcspn(row, "\n")] = '\0';
-
-        field = strtok(row, ",");
-
-        if (field == NULL)
-        {
-            continue;
-        }
-
-        strcpy(project.id, field);
-
-        field = strtok(NULL, ",");
-        if (field == NULL) continue;
-        strcpy(project.name, field);
-
-        field = strtok(NULL, ",");
-        if (field == NULL) continue;
-        strcpy(project.category, field);
-
-        field = strtok(NULL, ",");
-        if (field == NULL) continue;
-        strcpy(project.description, field);
-
-        field = strtok(NULL, ",");
-        if (field == NULL) continue;
-        strcpy(project.priority, field);
-
-        field = strtok(NULL, ",");
-        if (field == NULL) continue;
-        strcpy(project.status, field);
-
-        field = strtok(NULL, ",");
-        if (field == NULL) continue;
-        strcpy(project.start_date, field);
-
-        field = strtok(NULL, ",");
-        if (field == NULL) continue;
-        strcpy(project.end_date, field);
-
-        field = strtok(NULL, ",");
-        if (field == NULL) continue;
-        strcpy(project.created_by, field);
-
-        printf("+----------------------------------------------------------------------+\n");
-        printf("|                         PROJECT DETAILS                              |\n");
-        printf("+----------------------+-----------------------------------------------+\n");
-        printf("| Project ID           | %-s |\n", project.id);
-        printf("| Category             | %-s |\n", project.category);
-        printf("| Project Name         | %-s |\n", project.name);
-        printf("| Description          | %-s |\n", project.description);
-        printf("| Priority             | %-s |\n", project.priority);
-        printf("| Status               | %-s |\n", project.status);
-        printf("| Starting Date        | %-s |\n", project.start_date);
-        printf("| Deadrow             | %-s |\n", project.end_date);
-        printf("+----------------------+-----------------------------------------------+\n");
-    }
-    fclose(projectDBS_open);
-
-    return 0;
-}
-
-int update_project()
-{
     char project_id_or_name[50];
+    char projectDBS_path[200];
+    char tmp_projectDBS_path[200];
+    char project_file_path[200];
+    char project_file_name[100];
+    char row[MAX_LENGTH_OF_DATA_IN_FILE];
+    char *field;
 
-    printf("\nProject ID or Name : ");
-    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
-    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
+    int terminal_width = 0;
+    int terminal_height = 0;
+    int box_width = 100;
+    int box_height = 13;
+    int x = 0;
+    int y = 0;
 
-    struct p_details project;
-
-    char status[50], projectDBS_path[200];
-    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-
-    int terminal_width = 0, terminal_height = 0;
-    int box_width = 0, box_height = 0;
-    int x = 0, y = 0;
-    int found = 0;
-
-    FILE *projectDBS_open;
+    FILE *file_for_delete_project;
+    FILE *write_to_new_file;
 
     init_console();
     header_screen();
@@ -301,23 +257,29 @@ int update_project()
     terminal_width = get_console_width();
     terminal_height = get_console_height();
 
-    box_width = BOX_WIDTH;
-    box_height = 48;
-
     x = (terminal_width - box_width) / 2;
     y = ((terminal_height - box_height) / 2) + SCREEN_OFFSET_Y;
 
-    printf("\nEnter your status : ");
+    search_project_by_id_or_name_screen(x, y);
 
-    fgets(status, sizeof(status), stdin);
-    status[strcspn(status, "\n")] = '\0';
+    move_cursor(x + 10, y + 5);
+
+    fgets(project_id_or_name,
+          sizeof(project_id_or_name),
+          stdin);
+
+    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
     get_path(projectDBS_path);
+    get_path(tmp_projectDBS_path);
+
     strcat(projectDBS_path, "projectsDBS.csv");
+    strcat(tmp_projectDBS_path, "tmp_projectsDBS.csv");
 
-    projectDBS_open = fopen(projectDBS_path, "r");
+    file_for_delete_project = fopen(projectDBS_path, "r");
+    write_to_new_file = fopen(tmp_projectDBS_path, "w");
 
-    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    while (fgets(row, sizeof(row), file_for_delete_project) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
@@ -331,75 +293,64 @@ int update_project()
         strcpy(project.id, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.name, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.category, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.description, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.priority, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.status, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.start_date, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.end_date, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.created_by, field);
 
-        if (strcmp(status, project.status) == 0)
+        if (strcmp(project.id, project_id_or_name) == 0 ||
+            strcmp(project.name, project_id_or_name) == 0)
         {
-            found = 1;
+            strcpy(project.status, "Deleted");
 
-            clear_screen();
-            header_screen();
+            get_path(project_file_path);
+            strcat(project_file_path, "Projects\\");
 
-            project_show_screen(x, y);
+            strcpy(project_file_name, project.name);
+            strlwr(project_file_name);
 
-            move_cursor(x + 12, y + 5);
-            printf("%s", project.id);
+            strcat(project_file_path, project_file_name);
+            strcat(project_file_path, ".csv");
 
-            move_cursor(x + 12, y + 10);
-            printf("%s", project.name);
-
-            move_cursor(x + 12, y + 15);
-            printf("%s", project.category);
-
-            move_cursor(x + 12, y + 20);
-            printf("%s", project.description);
-
-            move_cursor(x + 12, y + 27);
-            printf("%s", project.priority);
-
-            move_cursor(x + 12, y + 32);
-            printf("%s", project.status);
-
-            move_cursor(x + 12, y + 37);
-            printf("%s", project.start_date);
-
-            move_cursor(x + 12, y + 42);
-            printf("%s", project.end_date);
-
-            get_input;
+            remove(project_file_path);
         }
+
+        fprintf(write_to_new_file,
+                "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+                project.id,
+                project.name,
+                project.category,
+                project.description,
+                project.priority,
+                project.status,
+                project.start_date,
+                project.end_date,
+                project.created_by);
     }
 
-    fclose(projectDBS_open);
+    fclose(file_for_delete_project);
+    fclose(write_to_new_file);
+
+    remove(projectDBS_path);
+    rename(tmp_projectDBS_path, projectDBS_path);
 
     project_management_dashboard();
 
@@ -411,13 +362,22 @@ int search_project_by_priority()
 {
     struct p_details project;
 
-    char priority[50], projectDBS_path[200];
-    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    char priority[50];
+    char projectDBS_path[200];
+    char row[MAX_LENGTH_OF_DATA_IN_FILE];
+    char *field;
 
-    int terminal_width = 0, terminal_height = 0;
-    int box_width = 0, box_height = 0;
-    int x = 0, y = 0;
-    int found = 0;
+    int terminal_width = 0;
+    int terminal_height = 0;
+    int box_width = 0;
+    int box_height = 48;
+    int x = 0;
+    int y = 0;
+
+    int priority_box_width = 68;
+    int priority_box_height = 13;
+    int priority_x = 0;
+    int priority_y = 0;
 
     FILE *projectDBS_open;
 
@@ -433,10 +393,18 @@ int search_project_by_priority()
     x = (terminal_width - box_width) / 2;
     y = ((terminal_height - box_height) / 2) + SCREEN_OFFSET_Y;
 
-    printf("\nEnter your priority : ");
+    priority_x = (terminal_width - priority_box_width) / 2;
+    priority_y = (terminal_height - priority_box_height) / 2;
 
-    fgets(priority, sizeof(priority), stdin);
-    priority[strcspn(priority, "\n")] = '\0';
+    priority[0] = '\0';
+
+    project_priority_dashboard(priority, priority_x, priority_y);
+
+    if (priority[0] == '\0')
+    {
+        project_management_dashboard();
+        return 0;
+    }
 
     get_path(projectDBS_path);
     strcat(projectDBS_path, "projectsDBS.csv");
@@ -448,50 +416,34 @@ int search_project_by_priority()
         row[strcspn(row, "\n")] = '\0';
 
         field = strtok(row, ",");
-
-        if (field == NULL)
-        {
-            continue;
-        }
-
         strcpy(project.id, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.name, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.category, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.description, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.priority, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.status, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.start_date, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.end_date, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.created_by, field);
 
         if (strcmp(priority, project.priority) == 0)
         {
-            found = 1;
-
             clear_screen();
             header_screen();
 
@@ -526,7 +478,6 @@ int search_project_by_priority()
     }
 
     fclose(projectDBS_open);
-
     project_management_dashboard();
 
     return 0;
@@ -537,13 +488,17 @@ int search_by_project_id_or_name()
 {
     struct p_details project;
 
-    char project_id_or_name[50], projectDBS_path[200];
-    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    char project_id_or_name[50];
+    char projectDBS_path[200];
+    char row[MAX_LENGTH_OF_DATA_IN_FILE];
+    char *field;
 
-    int terminal_width = 0, terminal_height = 0;
-    int box_width = 0, box_height = 0;
-    int x = 0, y = 0;
-    int found = 0;
+    int terminal_width = 0;
+    int terminal_height = 0;
+    int box_width = BOX_WIDTH;
+    int box_height = 48;
+    int x = 0;
+    int y = 0;
 
     FILE *projectDBS_open;
 
@@ -553,13 +508,12 @@ int search_by_project_id_or_name()
     terminal_width = get_console_width();
     terminal_height = get_console_height();
 
-    box_width = BOX_WIDTH;
-    box_height = 48;
-
     x = (terminal_width - box_width) / 2;
     y = ((terminal_height - box_height) / 2) + SCREEN_OFFSET_Y;
 
-    printf("\nProject ID or Name : ");
+    search_project_by_id_or_name_screen(x, y);
+
+    move_cursor(x + 10, y + 5);
 
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
@@ -574,51 +528,35 @@ int search_by_project_id_or_name()
         row[strcspn(row, "\n")] = '\0';
 
         field = strtok(row, ",");
-
-        if (field == NULL)
-        {
-            continue;
-        }
-
         strcpy(project.id, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.name, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.category, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.description, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.priority, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.status, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.start_date, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.end_date, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.created_by, field);
 
         if (strcmp(project_id_or_name, project.id) == 0 ||
             strcmp(project_id_or_name, project.name) == 0)
         {
-            found = 1;
-
             clear_screen();
             header_screen();
 
@@ -655,7 +593,6 @@ int search_by_project_id_or_name()
     }
 
     fclose(projectDBS_open);
-
     project_management_dashboard();
 
     return 0;
@@ -666,11 +603,16 @@ int view_projects()
 {
     struct p_details project;
 
-    char path[200], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    char path[200];
+    char row[MAX_LENGTH_OF_DATA_IN_FILE];
+    char *field;
 
-    int terminal_width = 0, terminal_height = 0;
-    int box_width = 0, box_height = 0;
-    int x = 0, y = 0;
+    int terminal_width = 0;
+    int terminal_height = 0;
+    int box_width = BOX_WIDTH;
+    int box_height = 48;
+    int x = 0;
+    int y = 0;
 
     FILE *projectDBS_open;
 
@@ -679,9 +621,6 @@ int view_projects()
 
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
-    box_width = BOX_WIDTH;
-    box_height = 48;
 
     x = (terminal_width - box_width) / 2;
     y = ((terminal_height - box_height) / 2) + SCREEN_OFFSET_Y;
@@ -696,44 +635,30 @@ int view_projects()
         row[strcspn(row, "\n")] = '\0';
 
         field = strtok(row, ",");
-
-        if (field == NULL)
-        {
-            continue;
-        }
-
         strcpy(project.id, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.name, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.category, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.description, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.priority, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.status, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.start_date, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.end_date, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
         strcpy(project.created_by, field);
 
         clear_screen();
@@ -769,12 +694,29 @@ int view_projects()
     }
 
     fclose(projectDBS_open);
-
     project_management_dashboard();
 
     return 0;
 }
 
+
+int get_path(char path[])
+{
+    char username[30];
+
+    get_user_name(username);
+
+    strcpy(path, "..\\database\\");
+    strcat(path, username);
+    strcat(path, "\\");
+
+    return 0;
+}
+
+
+
+
+// Need to work
 
 int update_project()
 {
@@ -790,8 +732,8 @@ int update_project()
     int terminal_width = 0, terminal_height = 0;
     int box_width = 100, box_height = 48;
     int x = 0, y = 0;
-    int found = 0;
-
+    int priority_box_width = 68, priority_box_height = 13;
+    int priority_x = 0, priority_y = 0, found = 0;
     FILE *projectDBS_open, *tmp_project;
 
     init_console();
@@ -816,6 +758,8 @@ int update_project()
 
     projectDBS_open = fopen(path, "r");
     tmp_project = fopen(tmp_path, "w");
+    priority_x = (terminal_width - priority_box_width) / 2;
+    priority_y = (terminal_height - priority_box_height) / 2;
 
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
@@ -831,42 +775,40 @@ int update_project()
         strcpy(project.id, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
+
         strcpy(project.name, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
+
         strcpy(project.category, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
+
         strcpy(project.description, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
+
         strcpy(project.priority, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
+
         strcpy(project.status, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
+
         strcpy(project.start_date, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
+
         strcpy(project.end_date, field);
 
         field = strtok(NULL, ",");
-        if (field == NULL) continue;
+
         strcpy(project.created_by, field);
 
         if (strcmp(project_id_or_name, project.id) == 0 ||
             strcmp(project_id_or_name, project.name) == 0)
         {
-            found = 1;
-
             strcpy(old_project_name, project.name);
 
             clear_screen();
@@ -907,11 +849,64 @@ int update_project()
             move_cursor(x + 12, y + 20);
             change_project_description(project.description);
 
+            project_priority_dashboard(project.priority,
+                                       priority_x,
+                                       priority_y);
+
+            if (project.priority[0] == '\0')
+            {
+                fclose(projectDBS_open);
+                fclose(tmp_project);
+                remove(tmp_path);
+
+                project_management_dashboard();
+
+                return 0;
+            }
+
+            project_status_dashboard(project.status,
+                                     priority_x,
+                                     priority_y);
+
+            if (project.status[0] == '\0')
+            {
+                fclose(projectDBS_open);
+                fclose(tmp_project);
+                remove(tmp_path);
+
+                project_management_dashboard();
+
+                return 0;
+            }
+
+            clear_screen();
+            header_screen();
+
+            project_show_screen(x, y);
+
+            move_cursor(x + 12, y + 5);
+            printf("%s", project.id);
+
+            move_cursor(x + 12, y + 10);
+            printf("%s", project.name);
+
+            move_cursor(x + 12, y + 15);
+            printf("%s", project.category);
+
+            move_cursor(x + 12, y + 20);
+            printf("%s", project.description);
+
             move_cursor(x + 12, y + 27);
-            change_project_priority(project.priority);
+            printf("%s", project.priority);
 
             move_cursor(x + 12, y + 32);
-            change_project_status(project.status);
+            printf("%s", project.status);
+
+            move_cursor(x + 12, y + 37);
+            printf("%s", project.start_date);
+
+            move_cursor(x + 12, y + 42);
+            printf("%s", project.end_date);
 
             move_cursor(x + 12, y + 37);
             change_project_start_date(project.start_date);
@@ -961,11 +956,16 @@ int update_project()
     remove(path);
     rename(tmp_path, path);
 
+    if (found == 0)
+    {
+        printf("\nProject not found.\n");
+        get_input;
+    }
+
     project_management_dashboard();
 
     return 0;
 }
-
 
 int change_project_name(char name[])
 {
@@ -984,7 +984,6 @@ int change_project_name(char name[])
     return 0;
 }
 
-
 int change_project_category(char category[])
 {
     char updated_category[50];
@@ -1001,7 +1000,6 @@ int change_project_category(char category[])
 
     return 0;
 }
-
 
 int change_project_description(char description[])
 {
@@ -1020,34 +1018,19 @@ int change_project_description(char description[])
     return 0;
 }
 
-
-int change_project_status(char status[])
+int change_project_status(char status[], int x, int y)
 {
-    printf("%-86s", "");
-
-    project_status_dashboard(status);
+    project_status_dashboard(status, x, y);
 
     return 0;
 }
 
-
-int change_project_priority(char priority[])
+int change_project_priority(char priority[], int x, int y)
 {
-    char priority_choice;
-
-    printf("%-86s", "");
-
-    do
-    {
-        priority_choice = get_input;
-
-    } while (priority_choice < '1' || priority_choice > '3');
-
-    project_priority_dashboard(priority, priority_choice);
+    project_priority_dashboard(priority, x, y);
 
     return 0;
 }
-
 
 int change_project_start_date(char start_date[])
 {
@@ -1069,7 +1052,6 @@ int change_project_start_date(char start_date[])
     return 0;
 }
 
-
 int extend_project_deadline(char deadline[])
 {
     char updated_deadline[15];
@@ -1089,21 +1071,6 @@ int extend_project_deadline(char deadline[])
 
     return 0;
 }
-
-
-int get_path(char path[])
-{
-    char username[30];
-
-    get_user_name(username);
-
-    strcpy(path, "..\\database\\");
-    strcat(path, username);
-    strcat(path, "\\");
-
-    return 0;
-}
-
 
 int sort_projects()
 {

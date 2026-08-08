@@ -169,7 +169,7 @@ int logout()
     FILE *log_open;
 
     change_login_status(login_status);
-    log_open=fopen("..\\database\\log.csv","w");
+    log_open = fopen("..\\database\\log.csv", "w");
     main_menu();
 
     return 0;
@@ -684,5 +684,17 @@ int create_directories(char username[])
     }
     fclose(necessary_file_create);
 
+    strcpy(path, DATABASE_PATH);
+    strcat(path, username);
+    strcat(path, "\\");
+    strcat(path, SORT_PROJECT_DBS);
+
+    necessary_file_create = fopen(path, WRITE_MODE);
+    if (necessary_file_create == NULL)
+    {
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
+    fclose(necessary_file_create);
     return 0;
 }
