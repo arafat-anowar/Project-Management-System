@@ -208,30 +208,11 @@ int delete_project()
 {
     struct p_details project;
 
-    char project_id_or_name[50];
-    char projectDBS_path[200], tmp_projectDBS_path[200];
-    char project_file_path[200], project_file_name[100];
-    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *projectDBS_open;
+    projectDBS_open = fopen("..\\database\\projectDBS.csv", "r");
 
-    int found = 0;
-
-    FILE *file_for_delete_project, *write_to_new_file;
-
-    printf("\nEnter Project ID or Project Name : ");
-
-    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
-    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
-
-    get_path(projectDBS_path);
-    get_path(tmp_projectDBS_path);
-
-    strcat(projectDBS_path, "projectsDBS.csv");
-    strcat(tmp_projectDBS_path, "tmp_projectsDBS.csv");
-
-    file_for_delete_project = fopen(projectDBS_path, "r");
-    write_to_new_file = fopen(tmp_projectDBS_path, "w");
-
-    while (fgets(row, sizeof(row), file_for_delete_project) != NULL)
+    char row[3000];
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
@@ -276,52 +257,32 @@ int delete_project()
         if (field == NULL) continue;
         strcpy(project.created_by, field);
 
-        if (strcmp(project.id, project_id_or_name) == 0 ||
-            strcmp(project.name, project_id_or_name) == 0)
-        {
-            found = 1;
-
-            strcpy(project.status, "Deleted");
-
-            get_path(project_file_path);
-            strcat(project_file_path, "Projects\\");
-
-            strcpy(project_file_name, project.name);
-            strlwr(project_file_name);
-
-            strcat(project_file_path, project_file_name);
-            strcat(project_file_path, ".csv");
-
-            remove(project_file_path);
-        }
-
-        fprintf(write_to_new_file,
-                "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                project.id,
-                project.name,
-                project.category,
-                project.description,
-                project.priority,
-                project.status,
-                project.start_date,
-                project.end_date,
-                project.created_by);
+        printf("+----------------------------------------------------------------------+\n");
+        printf("|                         PROJECT DETAILS                              |\n");
+        printf("+----------------------+-----------------------------------------------+\n");
+        printf("| Project ID           | %-s |\n", project.id);
+        printf("| Category             | %-s |\n", project.category);
+        printf("| Project Name         | %-s |\n", project.name);
+        printf("| Description          | %-s |\n", project.description);
+        printf("| Priority             | %-s |\n", project.priority);
+        printf("| Status               | %-s |\n", project.status);
+        printf("| Starting Date        | %-s |\n", project.start_date);
+        printf("| Deadrow             | %-s |\n", project.end_date);
+        printf("+----------------------+-----------------------------------------------+\n");
     }
-
-    fclose(file_for_delete_project);
-    fclose(write_to_new_file);
-
-    remove(projectDBS_path);
-    rename(tmp_projectDBS_path, projectDBS_path);
-
-    project_management_dashboard();
+    fclose(projectDBS_open);
 
     return 0;
 }
 
-
-int search_project_by_status()
+int update_project()
 {
+    char project_id_or_name[50];
+
+    printf("\nProject ID or Name : ");
+    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
+    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
+
     struct p_details project;
 
     char status[50], projectDBS_path[200];
