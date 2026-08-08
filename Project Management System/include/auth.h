@@ -11,10 +11,10 @@
 // Macros
 #define DATABASE_PATH "..\\database\\"
 
-#define USER_DBS DATABASE_PATH "userDBS.csv"
-#define CREDENTIAL_DBS DATABASE_PATH "credentialDBS.csv"
-#define TMP_CREDENTIAL_DBS DATABASE_PATH "tmp_credentialDBS.csv"
-#define LOG_DBS DATABASE_PATH "log.csv"
+#define USER_DBS "..\\database\\userDBS.csv"
+#define CREDENTIAL_DBS  "..\\database\\credentialDBS.csv"
+#define TMP_CREDENTIAL_DBS  "..\\database\\tmp_credentialDBS.csv"
+#define LOG_DBS "..\\database\\log.csv"
 
 #define PROJECT_FOLDER "Projects"
 #define PROJECT_DBS "projectsDBS.csv"
@@ -61,8 +61,8 @@
 
 #define PHONE_LENGTH 10
 
-#define USERNAME_BUFFER_SIZE 30
-#define PATH_BUFFER_SIZE 200
+#define USERNAME_SIZE 30
+#define PATH_SIZE 200
 
 #define READ_MODE "r"
 #define WRITE_MODE "w"

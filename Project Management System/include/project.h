@@ -11,7 +11,7 @@
 #include "utility.h"
 #include "ui.h"
 
-#define PROJECT_ID_INITIAL "P1001"
+#define FIRST_PROJECT_ID "P1001"
 
 #define PROJECT_BOX_WIDTH 100
 #define PROJECT_BOX_HEIGHT 48
@@ -36,8 +36,8 @@
 #define TEMP_PROJECT_DBS_FILE "tmp_projectsDBS.csv"
 #define PROJECT_FILE_EXTENSION ".csv"
 
-#define STATUS_BUFFER_SIZE 50
-#define PATH_BUFFER_SIZE 200
+#define STATUS_SIZE 50
+#define PATH_SIZE 200
 
 #define PROJECT_SHOW_BOX_HEIGHT 48
 
@@ -59,6 +59,7 @@ struct p_details
 };
 
 // Function Prototypes
+
 int create_project();
 int view_projects();
 int update_project();
@@ -77,5 +78,6 @@ int search_project_by_status();
 int search_project_by_priority();
 int get_path(char path[]);
 int create_project_screen(int x, int y);
+
 
 #endif

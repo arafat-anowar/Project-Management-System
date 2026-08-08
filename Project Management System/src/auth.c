@@ -346,7 +346,7 @@ int change_login_status(char status[])
 
     FILE *credentialDBS_open, *tmp_credentialDBS_open;
 
-    char username[USERNAME_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    char username[USERNAME_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
 
     get_user_name(username);
 
@@ -631,7 +631,7 @@ int validate_phone(char phone[])
 
 int create_directories(char username[])
 {
-    char path[PATH_BUFFER_SIZE];
+    char path[PATH_SIZE];
 
     FILE *necessary_file_create;
 
