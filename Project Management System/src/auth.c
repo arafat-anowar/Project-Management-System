@@ -3,7 +3,9 @@
 int create_user()
 {
     struct r_account user;
-    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0, user_name_found = VALID, is_email_valid = VALID, is_phone_valid = VALID;
+
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO, user_name_found = VALID, is_email_valid = VALID, is_phone_valid = VALID;
+
     FILE *userDBS_open, *credentialDBS_open;
 
     init_console();
@@ -13,8 +15,8 @@ int create_user()
     terminal_height = get_console_height();
     box_width = BOX_WIDTH;
     box_height = REGISTER_BOX_HEIGHT;
-    x = (terminal_width - box_width) / 2;
-    y = ((terminal_height - box_height) / 2) + SCREEN_OFFSET_Y;
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
 
     user_registration_screen(x, y);
 
@@ -87,30 +89,31 @@ int create_user()
 
     if (userDBS_open == NULL || credentialDBS_open == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
 
-    fprintf(userDBS_open, "%s,%s,%s,%s,%s\n",
-            user.id,
-            user.name,
-            user.email,
-            user.phone,
-            user.role);
+    fprintf(userDBS_open, "%s,%s,%s,%s,%s\n", user.id, user.name, user.email, user.phone, user.role);
 
-    fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n",
-            user.id,
-            user.user_name,
-            user.email,
-            user.pass,
-            user.security_question,
-            LOGOUT_STATUS);
+    fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, LOGOUT_STATUS);
 
     fclose(userDBS_open);
     fclose(credentialDBS_open);
 
     create_directories(user.user_name);
 
+    account_create_success_screen(x, y);
     login();
 
     return 0;
@@ -119,7 +122,8 @@ int create_user()
 int login()
 {
     struct l_account user;
-    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0;
+
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
 
     init_console();
     header_screen();
@@ -130,8 +134,8 @@ int login()
     box_width = BOX_WIDTH;
     box_height = LOGIN_BOX_HEIGHT;
 
-    x = (terminal_width - box_width) / 2;
-    y = ((terminal_height - box_height) / 2) + SCREEN_OFFSET_Y;
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
 
     user_login_screen(x, y);
 
@@ -149,27 +153,44 @@ int login()
     {
         char login_status[] = LOGIN_STATUS;
         change_login_status(login_status);
+        login_success_screen(x, y);
+        redirecting_screen(x,y);
         dashboard();
         return 0;
     }
 
-    clear_screen();
-    header_screen();
-    login_invalid_screen();
-    pause_screen(1500);
-
-    login();
+    invalid_login_screen(x, y);
+    main_menu();
 
     return 0;
 }
 
 int logout()
 {
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
+
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    box_width = BOX_WIDTH;
+    box_height = CHANGE_PASSWORD_BOX_HEIGHT;
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
     char login_status[] = LOGOUT_STATUS;
     FILE *log_open;
 
     change_login_status(login_status);
-    log_open = fopen("..\\database\\log.csv", "w");
+
+    log_open = fopen(LOG_DBS, WRITE_MODE);
+
+    fclose(log_open);
+
+    logout_successful_screen(x, y);
     main_menu();
 
     return 0;
@@ -178,9 +199,10 @@ int logout()
 int change_password()
 {
     struct r_account user;
+
     struct account change_password;
 
-    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO, found = ZERO;
 
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
 
@@ -195,8 +217,8 @@ int change_password()
     box_width = BOX_WIDTH;
     box_height = CHANGE_PASSWORD_BOX_HEIGHT;
 
-    x = (terminal_width - box_width) / 2;
-    y = ((terminal_height - box_height) / 2) + SCREEN_OFFSET_Y;
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
 
     change_password_screen(x, y);
 
@@ -217,6 +239,17 @@ int change_password()
 
     if (credentialDBS_open == NULL || tmp_credentialDBS_open == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
@@ -243,20 +276,12 @@ int change_password()
         field = strtok(NULL, ",");
         strcpy(user.login_status, field);
 
-        if (strcmp(change_password.email, user.email) == 0 &&
-            strcmp(change_password.security_question, user.security_question) == 0)
+        if (strcmp(change_password.email, user.email) == 0 && strcmp(change_password.security_question, user.security_question) == 0)
         {
+            found = 1;
             strcpy(user.pass, change_password.new_pass);
         }
-
-        fprintf(tmp_credentialDBS_open,
-                "%s,%s,%s,%s,%s,%s\n",
-                user.id,
-                user.user_name,
-                user.email,
-                user.pass,
-                user.security_question,
-                user.login_status);
+        fprintf(tmp_credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, user.login_status);
     }
 
     fclose(credentialDBS_open);
@@ -265,6 +290,13 @@ int change_password()
     remove(CREDENTIAL_DBS);
     rename(TMP_CREDENTIAL_DBS, CREDENTIAL_DBS);
 
+    if (found == 0)
+    {
+        change_password_failed_screen(x, y);
+        return 0;
+    }
+
+    change_password_successful_screen(x, y);
     login();
 
     return 0;
@@ -274,8 +306,10 @@ int generate_user_id(char id[])
 {
     struct r_account user;
 
-    int data_found_in_file = 0, user_id_in_integer = 0, id_length = 0, i = 0, j = 0, tmp_user_id = 0, num_id[20] = {0}, digit = 0;
+    int data_found_in_file = ZERO, user_id_in_integer = ZERO, id_length = ZERO, i = ZERO, j = ZERO, tmp_user_id = ZERO, num_id[20] = {ZERO}, digit = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
+
     char *field, row[MAX_LENGTH_OF_DATA_IN_FILE];
+
     FILE *userDBS_open;
 
     strcpy(id, FIRST_USER_ID);
@@ -283,6 +317,17 @@ int generate_user_id(char id[])
     userDBS_open = fopen(USER_DBS, READ_MODE);
     if (userDBS_open == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
@@ -344,6 +389,7 @@ int change_login_status(char status[])
 {
     struct r_account user;
 
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
     FILE *credentialDBS_open, *tmp_credentialDBS_open;
 
     char username[USERNAME_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
@@ -355,6 +401,17 @@ int change_login_status(char status[])
 
     if (credentialDBS_open == NULL || tmp_credentialDBS_open == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
@@ -386,14 +443,7 @@ int change_login_status(char status[])
             strcpy(user.login_status, status);
         }
 
-        fprintf(tmp_credentialDBS_open,
-                "%s,%s,%s,%s,%s,%s\n",
-                user.id,
-                user.user_name,
-                user.email,
-                user.pass,
-                user.security_question,
-                user.login_status);
+        fprintf(tmp_credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, user.login_status);
     }
 
     fclose(credentialDBS_open);
@@ -411,7 +461,7 @@ int password_verify(char username_or_email[], char password[])
 
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
 
-    int found = INVALID;
+    int found = INVALID, terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
 
     FILE *credentialDBS_open, *log_open;
 
@@ -420,6 +470,17 @@ int password_verify(char username_or_email[], char password[])
 
     if (credentialDBS_open == NULL || log_open == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
@@ -440,10 +501,7 @@ int password_verify(char username_or_email[], char password[])
         field = strtok(NULL, ",");
         strcpy(user.pass, field);
 
-        if ((strcmp(username_or_email, user.email) == 0 &&
-             strcmp(password, user.pass) == 0) ||
-            (strcmp(username_or_email, user.user_name) == 0 &&
-             strcmp(password, user.pass) == 0))
+        if ((strcmp(username_or_email, user.email) == 0 && strcmp(password, user.pass) == 0) || (strcmp(username_or_email, user.user_name) == 0 && strcmp(password, user.pass) == 0))
         {
             found = VALID;
             fprintf(log_open, "%s\n", user.user_name);
@@ -493,11 +551,25 @@ int input_password(char password[])
 int get_user_name(char username[])
 {
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
+
     FILE *log_open;
 
     log_open = fopen(LOG_DBS, READ_MODE);
     if (log_open == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
@@ -520,13 +592,27 @@ int validate_user_name(char username[])
 {
     struct r_account user;
 
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
+
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
 
     FILE *credentialDBS_open;
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
+
     if (credentialDBS_open == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
@@ -557,7 +643,7 @@ int validate_email(char email[])
 {
     struct r_account user;
 
-    int is_email_valid = INVALID;
+    int is_email_valid = INVALID, terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
 
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
 
@@ -573,8 +659,20 @@ int validate_email(char email[])
     }
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
+
     if (credentialDBS_open == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
@@ -633,6 +731,8 @@ int create_directories(char username[])
 {
     char path[PATH_SIZE];
 
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
+
     FILE *necessary_file_create;
 
     strcpy(path, DATABASE_PATH);
@@ -651,11 +751,24 @@ int create_directories(char username[])
     strcat(path, PROJECT_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
+
     if (necessary_file_create == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
+
     fclose(necessary_file_create);
 
     strcpy(path, DATABASE_PATH);
@@ -664,11 +777,24 @@ int create_directories(char username[])
     strcat(path, TASK_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
+
     if (necessary_file_create == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
+
     fclose(necessary_file_create);
 
     strcpy(path, DATABASE_PATH);
@@ -677,11 +803,24 @@ int create_directories(char username[])
     strcat(path, SORT_TASK_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
+
     if (necessary_file_create == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
+
     fclose(necessary_file_create);
 
     strcpy(path, DATABASE_PATH);
@@ -690,11 +829,25 @@ int create_directories(char username[])
     strcat(path, SORT_PROJECT_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
+
     if (necessary_file_create == NULL)
     {
+        init_console();
+
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+        box_width = BOX_WIDTH;
+        box_height = REGISTER_BOX_HEIGHT;
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
         printf("Error: %s\n", strerror(errno));
         return 0;
     }
+
     fclose(necessary_file_create);
+
     return 0;
 }

@@ -88,6 +88,7 @@ int task_details_screen()
 
 int pause_screen(int sec)
 {
+    Sleep(sec);
     return 0;
 }
 

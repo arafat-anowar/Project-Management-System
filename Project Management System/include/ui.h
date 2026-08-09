@@ -43,8 +43,19 @@ int search_project_by_priority();
 int project_show_screen(int x, int y);
 
 int change_password_screen(int x, int y);
+
+// auth.c
 int user_registration_screen(int x, int y);
+int account_create_success_screen(int x, int y);
 int user_login_screen(int x, int y);
+int login_success_screen(int x, int y);
+int redirecting_screen(int x, int y);
+int something_wrong_screen(int x, int y);
+int invalid_login_screen(int x, int y);
+int change_password_successful_screen(int x, int y);
+int change_password_failed_screen(int x, int y);
+int logout_successful_screen(int x, int y);
+
 
 int show_project_screen(
     char id[],
