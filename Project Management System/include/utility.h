@@ -32,6 +32,7 @@ int get_console_height();
 int init_console();
 // void clock();
 
+int back_main_menu_from_register_login_changepassword(char field[],int size);
 
 
 

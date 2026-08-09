@@ -23,7 +23,7 @@ int create_user()
     generate_user_id(user.id);
 
     move_cursor(x + INPUT_OFFSET_X, y + REGISTER_NAME_Y);
-    fgets(user.name, sizeof(user.name), stdin);
+    validate_input(user.name, sizeof(user.name));
     user.name[strcspn(user.name, "\n")] = '\0';
 
     do
@@ -35,7 +35,7 @@ int create_user()
             move_cursor(x + INPUT_OFFSET_X, y + REGISTER_EMAIL_Y);
         }
 
-        fgets(user.email, sizeof(user.email), stdin);
+        validate_input(user.email, sizeof(user.email));
         user.email[strcspn(user.email, "\n")] = '\0';
         is_email_valid = validate_email(user.email);
 
@@ -51,7 +51,7 @@ int create_user()
             move_cursor(x + PHONE_INPUT_OFFSET_X, y + REGISTER_PHONE_Y);
         }
 
-        fgets(user.phone, sizeof(user.phone), stdin);
+        validate_input(user.phone, sizeof(user.phone));
         user.phone[strcspn(user.phone, "\n")] = '\0';
         is_phone_valid = validate_phone(user.phone);
 
@@ -67,7 +67,7 @@ int create_user()
             move_cursor(x + INPUT_OFFSET_X, y + REGISTER_USERNAME_Y);
         }
 
-        fgets(user.user_name, sizeof(user.user_name), stdin);
+        validate_input(user.user_name, sizeof(user.user_name));
         user.user_name[strcspn(user.user_name, "\n")] = '\0';
 
         user_name_found = validate_user_name(user.user_name);
@@ -79,7 +79,7 @@ int create_user()
     user.pass[strcspn(user.pass, "\n")] = '\0';
 
     move_cursor(x + INPUT_OFFSET_X, y + REGISTER_SECURITY_Y);
-    fgets(user.security_question, sizeof(user.security_question), stdin);
+    validate_input(user.security_question, sizeof(user.security_question));
     user.security_question[strcspn(user.security_question, "\n")] = '\0';
 
     strcpy(user.role, DEFAULT_ROLE);
@@ -140,7 +140,7 @@ int login()
     user_login_screen(x, y);
 
     move_cursor(x + INPUT_OFFSET_X, y + LOGIN_USERNAME_Y);
-    fgets(user.user_name_or_email, sizeof(user.user_name_or_email), stdin);
+    validate_input(user.user_name_or_email, sizeof(user.user_pass));
     user.user_name_or_email[strcspn(user.user_name_or_email, "\n")] = '\0';
 
     move_cursor(x + INPUT_OFFSET_X, y + LOGIN_PASSWORD_Y);
@@ -154,7 +154,7 @@ int login()
         char login_status[] = LOGIN_STATUS;
         change_login_status(login_status);
         login_success_screen(x, y);
-        redirecting_screen(x,y);
+        redirecting_screen(x, y);
         dashboard();
         return 0;
     }
@@ -223,11 +223,11 @@ int change_password()
     change_password_screen(x, y);
 
     move_cursor(x + INPUT_OFFSET_X, y + CHANGE_PASSWORD_EMAIL_Y);
-    fgets(change_password.email, sizeof(change_password.email), stdin);
+    validate_input(change_password.email, sizeof(change_password.email));
     change_password.email[strcspn(change_password.email, "\n")] = '\0';
 
     move_cursor(x + INPUT_OFFSET_X, y + CHANGE_PASSWORD_SECURITY_Y);
-    fgets(change_password.security_question, sizeof(change_password.security_question), stdin);
+    validate_input(change_password.security_question, sizeof(change_password.security_question));
     change_password.security_question[strcspn(change_password.security_question, "\n")] = '\0';
 
     move_cursor(x + INPUT_OFFSET_X, y + CHANGE_PASSWORD_NEWPASS_Y);
@@ -522,8 +522,24 @@ int password_verify(char username_or_email[], char password[])
 
 int input_password(char password[])
 {
-    int i = 0;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO, i = 0;
     char each_character;
+
+    init_console();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    box_width = BOX_WIDTH;
+    box_height = REGISTER_BOX_HEIGHT;
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    if (each_character == ESC_KEY)
+    {
+        redirecting_screen(x, y);
+        main_menu();
+        return 0;
+    }
 
     while ((each_character = getch()) != ENTER_KEY)
     {
@@ -725,6 +741,59 @@ int validate_phone(char phone[])
     }
 
     return INVALID;
+}
+
+int validate_input(char field[], int size)
+{
+    int i = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
+
+    char ch;
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    box_width = BOX_WIDTH;
+    box_height = CHANGE_PASSWORD_BOX_HEIGHT;
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    while (i < size - 1)
+    {
+        ch = getch();
+
+        if (ch == ESC_KEY)
+        {
+            redirecting_screen(x, y);
+            main_menu();
+
+            return ESC_KEY;
+        }
+
+        if (ch == ENTER_KEY)
+        {
+            break;
+        }
+
+        if (ch == BACKSPACE_KEY)
+        {
+            if (i > ZERO)
+            {
+                i--;
+                printf("\b \b");
+            }
+        }
+        else
+        {
+            field[i] = ch;
+            printf("%c", ch);
+            i++;
+        }
+    }
+
+    field[i] = '\0';
+
+    return ENTER_KEY;
 }
 
 int create_directories(char username[])
