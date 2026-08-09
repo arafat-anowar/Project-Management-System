@@ -31,8 +31,8 @@ int get_console_width();
 int get_console_height();
 int init_console();
 // void clock();
+int validate_input(char field[], int size);
 
-int back_main_menu_from_register_login_changepassword(char field[],int size);
 
 
 

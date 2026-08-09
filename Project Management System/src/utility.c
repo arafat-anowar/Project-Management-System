@@ -132,7 +132,58 @@ int get_console_width()
 
     return csbi.srWindow.Right - csbi.srWindow.Left + 1;
 }
+int validate_input(char field[], int size)
+{
+    int i = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
 
+    char ch,row[3000];
+
+    FILE *log_open=fopen("..\\database\\log.csv","r");
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    box_width = BOX_WIDTH;
+    box_height = CHANGE_PASSWORD_BOX_HEIGHT;
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    while (i < size - 1)
+    {
+        ch = getch();
+
+        if (ch == ESC_KEY)
+        {
+            redirecting_screen(x, y);
+            main_menu();
+            return ESC_KEY;
+        }
+
+        if (ch == ENTER_KEY)
+        {
+            break;
+        }
+
+        if (ch == BACKSPACE_KEY)
+        {
+            if (i > ZERO)
+            {
+                i--;
+                printf("\b \b");
+            }
+        }
+        else
+        {
+            field[i] = ch;
+            printf("%c", ch);
+            i++;
+        }
+    }
+
+    field[i] = '\0';
+
+    return ENTER_KEY;
+}
 //  void clock(void)
 // {
 //     while (!_kbhit())

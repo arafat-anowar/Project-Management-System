@@ -11,18 +11,24 @@
 #include "utility.h"
 #include "ui.h"
 
-#define FIRST_PROJECT_ID "P1001"
+#define TWO 2
+#define PROJECT_DBS_FILE "projectsDBS.csv"
+#define TEMP_PROJECT_DBS_FILE "tmp_projectsDBS.csv"
+#define SORT_PROJECT_FILE "sort_project.csv"
+#define PROJECTS_FOLDER "Projects\\"
+#define PROJECT_FILE_EXTENSION ".csv"
 
-#define PROJECT_BOX_WIDTH 100
-#define PROJECT_BOX_HEIGHT 48
-#define CREATE_PROJECT_BOX_HEIGHT 39
+#define READ_MODE "r"
+#define WRITE_MODE "w"
+#define APPEND_MODE "a"
 
-#define PRIORITY_BOX_WIDTH 68
-#define PRIORITY_BOX_HEIGHT 13
+#define PROJECT_BOX_HEIGHT 39
+#define UPDATE_PROJECT_BOX_HEIGHT 48
+#define PROJECT_INPUT_BOX_HEIGHT 23
+#define PROJECT_DELETE_BOX_HEIGHT 13
+#define PROJECT_SHOW_BOX_HEIGHT 48
 
-#define PROJECT_INPUT_X 10
 #define PROJECT_SHOW_X 12
-
 #define PROJECT_ID_Y 5
 #define PROJECT_NAME_Y 10
 #define PROJECT_CATEGORY_Y 15
@@ -32,15 +38,15 @@
 #define PROJECT_START_DATE_Y 37
 #define PROJECT_END_DATE_Y 42
 
-#define PROJECT_DBS_FILE "projectsDBS.csv"
-#define TEMP_PROJECT_DBS_FILE "tmp_projectsDBS.csv"
-#define PROJECT_FILE_EXTENSION ".csv"
+#define PROJECT_INPUT_X 10
+#define PROJECT_INPUT_Y 6
 
-#define STATUS_SIZE 50
-#define PATH_SIZE 200
+#define PROJECT_FILE_PATH_SIZE 200
+#define PROJECT_ID_OR_NAME_SIZE 50
+#define PROJECT_FILE_NAME_SIZE 100
+#define PROJECT_ARRAY_SIZE 1000
 
-#define PROJECT_SHOW_BOX_HEIGHT 48
-
+#define STATUS_SIZE 20
 #define STATUS_BOX_WIDTH 68
 #define STATUS_BOX_HEIGHT 13
 
@@ -78,6 +84,6 @@ int search_project_by_status();
 int search_project_by_priority();
 int get_path(char path[]);
 int create_project_screen(int x, int y);
-
+int compare_project_priority(const void *a, const void *b);
 
 #endif

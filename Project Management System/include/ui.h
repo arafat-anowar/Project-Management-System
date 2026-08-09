@@ -55,7 +55,15 @@ int invalid_login_screen(int x, int y);
 int change_password_successful_screen(int x, int y);
 int change_password_failed_screen(int x, int y);
 int logout_successful_screen(int x, int y);
+// end
 
+
+
+int update_project_dashboard(struct p_details *project,
+                             int x,
+                             int y,
+                             int priority_x,
+                             int priority_y);
 
 int show_project_screen(
     char id[],
@@ -70,7 +78,14 @@ int show_project_screen(
 );
 
 int search_project_by_id_or_name_screen(int x, int y);
-int search_project_by_status_screen(int x, int y);
-int search_project_by_priority_screen(int x, int y);
+// int search_project_by_status_screen(int x, int y);
+// int search_project_by_priority_screen(int x, int y);
+int change_project_name_screen(int x,int y);
+int change_project_category_screen(int x,int y);
+int change_project_description_screen(int x,int y);
+// int change_project_priority_screen(int x,int y);
+// int change_project_status_screen(int x,int y);
+int change_project_start_date_screen(int x,int y);
+int extend_project_deadline_screen(int x,int y);
 
 #endif

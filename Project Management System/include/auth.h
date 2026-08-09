@@ -125,7 +125,6 @@ int get_user_name(char username[]);
 int validate_user_name(char username[]);
 int validate_email(char email[]);
 int validate_phone(char phone[]);
-int validate_input(char field[], int size);
 int create_directories(char username[]);
 
 
