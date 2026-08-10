@@ -4,10 +4,12 @@
 #include <locale.h>
 // Local Header File
 #include "include\ui.h"
+#include "include\project.h"
 #include "include\task.h"
 
 int main()
 {
+    sort_projects();
     main_menu();
     return 0;
 }

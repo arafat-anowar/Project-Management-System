@@ -1,25 +1,29 @@
 #ifndef UI_H
 #define UI_H
 
-
 #include <stdio.h>
 #include <conio.h>
 #include <windows.h>
-
 
 #include "project.h"
 #include "task.h"
 #include "auth.h"
 
-
 // Macros
 #define get_input _getch()
 #define ESC 27
 
-
 struct t_details;
 struct p_details;
 
+enum menu_code
+{
+    MAIN_MENU = 'M',
+    DASHBOARD = 'D',
+    PROJECT_MENU = 'P',
+    TASK_MENU = 'T',
+    REPORT_MENU = 'R'
+};
 
 // Function Prototypes
 int header_screen();
@@ -35,8 +39,8 @@ int search_dashboard();
 int task_status_dashboard(char status[]);
 int task_priority_dashboard(char priority[]);
 
-int project_status_dashboard(char status[],int x,int y);
-int project_priority_dashboard(char priority[],int x,int y);
+int project_status_dashboard(char status[], int x, int y);
+int project_priority_dashboard(char priority[], int x, int y);
 
 int search_project_by_priority();
 
@@ -57,8 +61,6 @@ int change_password_failed_screen(int x, int y);
 int logout_successful_screen(int x, int y);
 // end
 
-
-
 int update_project_dashboard(struct p_details *project,
                              int x,
                              int y,
@@ -74,18 +76,18 @@ int show_project_screen(
     char status[],
     char start_date[],
     char end_date[],
-    char created_by[]
-);
+    char created_by[]);
 
 int search_project_by_id_or_name_screen(int x, int y);
 // int search_project_by_status_screen(int x, int y);
 // int search_project_by_priority_screen(int x, int y);
-int change_project_name_screen(int x,int y);
-int change_project_category_screen(int x,int y);
-int change_project_description_screen(int x,int y);
+int change_project_name_screen(int x, int y);
+int change_project_category_screen(int x, int y);
+int change_project_description_screen(int x, int y);
 // int change_project_priority_screen(int x,int y);
 // int change_project_status_screen(int x,int y);
-int change_project_start_date_screen(int x,int y);
-int extend_project_deadline_screen(int x,int y);
+int change_project_start_date_screen(int x, int y);
+int extend_project_deadline_screen(int x, int y);
+// int want_to_go_back(int x, int y, char menu_code);
 
 #endif

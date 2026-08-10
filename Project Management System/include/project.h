@@ -49,6 +49,8 @@
 #define STATUS_SIZE 20
 #define STATUS_BOX_WIDTH 68
 #define STATUS_BOX_HEIGHT 13
+#define PRIORITY_BOX_WIDTH 68
+#define PRIORITY_BOX_HEIGHT 13
 
 // Structures
 struct p_details

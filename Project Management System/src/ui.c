@@ -75,7 +75,7 @@ int user_registration_screen(int x, int y)
     move_cursor(x, y + 33);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 34);
-    printf("║                             [ ENTER ] Register        [ ESC ] Cancel                             ║\n");
+    printf("║                                           [ ENTER ] Register                                     ║\n");
     move_cursor(x, y + 35);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 36);
@@ -146,7 +146,7 @@ int user_login_screen(int x, int y)
     move_cursor(x, y + 15);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 16);
-    printf("║                               [ ENTER ] Login        [ ESC ] Back                                ║\n");
+    printf("║                                                 [ ENTER ] Login                                  ║\n");
     move_cursor(x, y + 17);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 18);
@@ -200,7 +200,7 @@ int redirecting_screen(int x, int y)
             printf(".");
         }
 
-        pause_screen(1000);
+        pause_screen(500);
     }
 
     return 0;
@@ -383,7 +383,7 @@ int change_password_screen(int x, int y)
     move_cursor(x, y + 19);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 20);
-    printf("║                    [ ENTER ] Change Password        [ ESC ] Cancel                               ║\n");
+    printf("║                                          [ ENTER ] Change Password                               ║\n");
     move_cursor(x, y + 21);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 22);
@@ -623,7 +623,6 @@ int update_project_dashboard(struct p_details *project,
                              int priority_y)
 {
     char choice;
-
     clear_screen();
     header_screen();
 
@@ -763,7 +762,6 @@ int update_project_dashboard(struct p_details *project,
         project_management_dashboard();
 
         break;
-
     }
 
     return 0;
@@ -810,7 +808,7 @@ int change_project_name_screen(int x, int y)
 
 int change_project_category_screen(int x, int y)
 {
-        clear_screen();
+    clear_screen();
     header_screen();
     move_cursor(x, y);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════╗");
@@ -849,7 +847,7 @@ int change_project_category_screen(int x, int y)
 
 int change_project_description_screen(int x, int y)
 {
-        clear_screen();
+    clear_screen();
     header_screen();
     move_cursor(x, y);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════╗");
@@ -894,7 +892,7 @@ int change_project_description_screen(int x, int y)
 
 int change_project_start_date_screen(int x, int y)
 {
-        clear_screen();
+    clear_screen();
     header_screen();
     move_cursor(x, y);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════╗");
@@ -932,7 +930,7 @@ int change_project_start_date_screen(int x, int y)
 }
 int extend_project_deadline_screen(int x, int y)
 {
-        clear_screen();
+    clear_screen();
     header_screen();
     move_cursor(x, y);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════╗");
@@ -968,7 +966,6 @@ int extend_project_deadline_screen(int x, int y)
 
     return 0;
 }
-
 
 // project.c UI END
 
@@ -1840,3 +1837,59 @@ int show_project_screen(char id[],
 
     return 0;
 }
+
+// int want_to_go_back(int x, int y, char menu_code)
+// {
+//     char choice;
+//     move_cursor(x, y + 0);
+//     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗");
+
+//     move_cursor(x, y + 1);
+//     printf("║                              ARE YOU WANT TO CONTINUE?                                           ║");
+
+//     move_cursor(x, y + 2);
+//     printf("║                                                                                                  ║");
+
+//     move_cursor(x, y + 3);
+//     printf("║                               [ 1 ] YES                                            [ 2 ] NO      ║");
+
+//     move_cursor(x, y + 4);
+//     printf("║                                                                                                  ║");
+
+//     move_cursor(x, y + 5);
+//     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
+
+//     choice = get_input;
+
+//     if (choice == '1')
+//     {
+        
+//     }
+//     else
+//     {
+//         switch (menu_code)
+//         {
+//         case MAIN_MENU:
+//             redirecting_screen(x, y);
+//             main_menu();
+//             break;
+//         case DASHBOARD:
+//             redirecting_screen(x, y);
+//             dashboard();
+//             break;
+//         case PROJECT_MENU:
+//             redirecting_screen(x, y);
+//             project_management_dashboard();
+//             break;
+//         case TASK_MENU:
+//             redirecting_screen(x, y);
+//             task_management_dashboard();
+//             break;
+//         case REPORT_MENU:
+//             redirecting_screen(x, y);
+//             report_dashboard();
+//             break;
+//         }
+//     }
+//             return 0;
+// }
