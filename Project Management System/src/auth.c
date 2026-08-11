@@ -121,10 +121,8 @@ int login()
 
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     box_width = BOX_WIDTH;
     box_height = LOGIN_BOX_HEIGHT;
-
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
 
@@ -167,10 +165,8 @@ int logout()
 
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     box_width = BOX_WIDTH;
     box_height = CHANGE_PASSWORD_BOX_HEIGHT;
-
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
 
@@ -179,6 +175,14 @@ int logout()
     change_login_status(login_status);
 
     log_open = fopen(LOG_DBS, WRITE_MODE);
+
+    if (log_open == NULL)
+    {
+        something_wrong_screen(x, y);
+        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
+        printf("Error: %s\n", strerror(errno));
+        return 0;
+    }
 
     fclose(log_open);
 
@@ -201,10 +205,8 @@ int change_password()
 
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     box_width = BOX_WIDTH;
     box_height = CHANGE_PASSWORD_BOX_HEIGHT;
-
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
 
@@ -292,7 +294,7 @@ int generate_user_id(char id[])
     strcpy(id, FIRST_USER_ID);
 
     userDBS_open = fopen(USER_DBS, READ_MODE);
-    
+
     if (userDBS_open == NULL)
     {
         something_wrong_screen(x, y);
@@ -451,6 +453,7 @@ int password_verify(char username_or_email[], char password[])
         {
             found = VALID;
             fprintf(log_open, "%s\n", user.user_name);
+            sort_projects();
             break;
         }
     }

@@ -9,7 +9,6 @@
 
 int main()
 {
-    sort_projects();
     main_menu();
     return 0;
 }
