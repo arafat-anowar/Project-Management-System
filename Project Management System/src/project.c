@@ -4,7 +4,8 @@ int create_project()
 {
     struct p_details project;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = PROJECT_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO, is_start_date_valid = ZERO, is_end_date_valid = ZERO;
-    char filepath[PATH_SIZE];
+    char filepath[PATH_SIZE], *username;
+    ;
     FILE *open_projectDBS, *project_file_create;
 
     init_console();
@@ -85,7 +86,9 @@ int create_project()
 
     } while (is_end_date_valid != 1);
 
-    get_user_name(project.created_by);
+    username = get_user_name();
+    strcpy(project.created_by, username);
+    free(username);
 
     get_path(filepath);
     strcat(filepath, PROJECT_DBS_FILE);
@@ -999,13 +1002,14 @@ int generate_project_id(char id[])
 
 int get_path(char path[])
 {
-    char username[30];
-
-    get_user_name(username);
+    char *username;
+    username = get_user_name();
 
     strcpy(path, "..\\database\\");
     strcat(path, username);
     strcat(path, "\\");
+
+    free(username);
 
     return 0;
 }

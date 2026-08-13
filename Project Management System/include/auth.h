@@ -121,7 +121,7 @@ int generate_user_id(char id[]);
 int change_login_status(char status[]);
 int password_verify(char username_or_email[], char password[]);
 int input_password(char password[]);
-int get_user_name(char username[]);
+char *get_user_name();
 int validate_user_name(char username[]);
 int validate_email(char email[]);
 int validate_phone(char phone[]);
