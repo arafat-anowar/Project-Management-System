@@ -89,14 +89,6 @@ int create_user()
     userDBS_open = fopen(USER_DBS, APPEND_MODE);
     credentialDBS_open = fopen(CREDENTIAL_DBS, APPEND_MODE);
 
-    if (userDBS_open == NULL || credentialDBS_open == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
-
     fprintf(userDBS_open, "%s,%s,%s,%s,%s\n", user.id, user.name, user.email, user.phone, user.role);
     fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, LOGOUT_STATUS);
 
@@ -176,14 +168,6 @@ int logout()
 
     log_open = fopen(LOG_DBS, WRITE_MODE);
 
-    if (log_open == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
-
     fclose(log_open);
 
     logout_successful_screen(x, y);
@@ -226,14 +210,6 @@ int change_password()
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
     tmp_credentialDBS_open = fopen(TMP_CREDENTIAL_DBS, WRITE_MODE);
-
-    if (credentialDBS_open == NULL || tmp_credentialDBS_open == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -294,14 +270,6 @@ int generate_user_id(char id[])
     strcpy(id, FIRST_USER_ID);
 
     userDBS_open = fopen(USER_DBS, READ_MODE);
-
-    if (userDBS_open == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), userDBS_open) != NULL)
     {
@@ -368,14 +336,6 @@ int change_login_status(char status[])
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
     tmp_credentialDBS_open = fopen(TMP_CREDENTIAL_DBS, WRITE_MODE);
 
-    if (credentialDBS_open == NULL || tmp_credentialDBS_open == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
-
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
@@ -424,14 +384,6 @@ int password_verify(char username_or_email[], char password[])
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
     log_open = fopen(LOG_DBS, WRITE_MODE);
-
-    if (credentialDBS_open == NULL || log_open == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -497,27 +449,22 @@ int input_password(char password[])
     return 0;
 }
 
-int get_user_name(char username[])
+char *get_user_name()
 {
-    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    char *username, row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
 
     int x = ZERO, y = ZERO;
 
     FILE *log_open;
 
     log_open = fopen(LOG_DBS, READ_MODE);
-    if (log_open == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), log_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        username = malloc(strlen(row) + 1);
+        
         field = strtok(row, ",");
 
         strcpy(username, field);
@@ -525,7 +472,7 @@ int get_user_name(char username[])
 
     fclose(log_open);
 
-    return 0;
+    return username;
 }
 
 int validate_user_name(char username[])
@@ -536,14 +483,6 @@ int validate_user_name(char username[])
     FILE *credentialDBS_open;
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
-
-    if (credentialDBS_open == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -584,14 +523,6 @@ int validate_email(char email[])
     }
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
-
-    if (credentialDBS_open == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -666,14 +597,6 @@ int create_directories(char username[])
 
     necessary_file_create = fopen(path, WRITE_MODE);
 
-    if (necessary_file_create == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
-
     fclose(necessary_file_create);
 
     strcpy(path, DATABASE_PATH);
@@ -682,14 +605,6 @@ int create_directories(char username[])
     strcat(path, TASK_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
-
-    if (necessary_file_create == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     fclose(necessary_file_create);
 
@@ -700,14 +615,6 @@ int create_directories(char username[])
 
     necessary_file_create = fopen(path, WRITE_MODE);
 
-    if (necessary_file_create == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
-
     fclose(necessary_file_create);
 
     strcpy(path, DATABASE_PATH);
@@ -716,14 +623,6 @@ int create_directories(char username[])
     strcat(path, SORT_PROJECT_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
-
-    if (necessary_file_create == NULL)
-    {
-        something_wrong_screen(x, y);
-        move_cursor(x + SOMETHING_WENT_WRONG_OFFSET_X, y);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     fclose(necessary_file_create);
 
