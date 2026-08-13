@@ -1003,6 +1003,10 @@ int generate_project_id(char id[])
 int get_path(char path[])
 {
     char *username;
+<<<<<<< HEAD
+=======
+
+>>>>>>> a31f9528ca1068348b1dcabe3eba7168cf545b15
     username = get_user_name();
 
     strcpy(path, "..\\database\\");
