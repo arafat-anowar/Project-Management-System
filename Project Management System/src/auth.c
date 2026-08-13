@@ -406,7 +406,6 @@ int password_verify(char username_or_email[], char password[])
         {
             found = VALID;
             fprintf(log_open, "%s\n", user.user_name);
-            sort_projects();
             break;
         }
     }
@@ -453,12 +452,6 @@ int input_password(char password[])
 char *get_user_name()
 {
     char *username, row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-<<<<<<< HEAD
-=======
-
-    int x = ZERO, y = ZERO;
-
->>>>>>> a31f9528ca1068348b1dcabe3eba7168cf545b15
     FILE *log_open;
 
     log_open = fopen(LOG_DBS, READ_MODE);
@@ -468,11 +461,6 @@ char *get_user_name()
         row[strcspn(row, "\n")] = '\0';
 
         username = malloc(strlen(row) + 1);
-<<<<<<< HEAD
-=======
-        
-        field = strtok(row, ",");
->>>>>>> a31f9528ca1068348b1dcabe3eba7168cf545b15
 
         field = strtok(row, ",");
         strcpy(username, field);

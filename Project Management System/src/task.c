@@ -207,7 +207,7 @@ int create_task()
     fgets(task.end_date, sizeof(task.end_date), stdin);
     task.end_date[strcspn(task.end_date, "\n")] = '\0';
 
-    get_user_name(task.created_by);
+    // get_user_name(task.created_by);
 
     get_path(taskDBS_path);
     strcat(taskDBS_path, TASK_DBS);
