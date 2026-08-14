@@ -1,9 +1,13 @@
+/*
+    ID : 2026-2-60-022
+*/
+
 #include "auth.h"
 
 int create_user()
 {
     struct r_account user;
-    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0, user_name_found = VALID, is_email_valid = VALID, is_phone_valid = VALID;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO, user_name_found = VALID, is_email_valid = VALID, is_phone_valid = VALID;
     FILE *userDBS_open, *credentialDBS_open;
 
     init_console();
@@ -13,8 +17,8 @@ int create_user()
     terminal_height = get_console_height();
     box_width = BOX_WIDTH;
     box_height = REGISTER_BOX_HEIGHT;
-    x = (terminal_width - box_width) / 2;
-    y = ((terminal_height - box_height) / 2) + SCREEN_OFFSET_Y;
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
 
     user_registration_screen(x, y);
 
@@ -85,32 +89,15 @@ int create_user()
     userDBS_open = fopen(USER_DBS, APPEND_MODE);
     credentialDBS_open = fopen(CREDENTIAL_DBS, APPEND_MODE);
 
-    if (userDBS_open == NULL || credentialDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
-
-    fprintf(userDBS_open, "%s,%s,%s,%s,%s\n",
-            user.id,
-            user.name,
-            user.email,
-            user.phone,
-            user.role);
-
-    fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n",
-            user.id,
-            user.user_name,
-            user.email,
-            user.pass,
-            user.security_question,
-            LOGOUT_STATUS);
+    fprintf(userDBS_open, "%s,%s,%s,%s,%s\n", user.id, user.name, user.email, user.phone, user.role);
+    fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, LOGOUT_STATUS);
 
     fclose(userDBS_open);
     fclose(credentialDBS_open);
 
     create_directories(user.user_name);
 
+    account_create_success_screen(x, y);
     login();
 
     return 0;
@@ -119,19 +106,17 @@ int create_user()
 int login()
 {
     struct l_account user;
-    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
 
     init_console();
     header_screen();
 
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     box_width = BOX_WIDTH;
     box_height = LOGIN_BOX_HEIGHT;
-
-    x = (terminal_width - box_width) / 2;
-    y = ((terminal_height - box_height) / 2) + SCREEN_OFFSET_Y;
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
 
     user_login_screen(x, y);
 
@@ -147,28 +132,45 @@ int login()
 
     if (is_verified == VALID)
     {
+        sort_projects();
         char login_status[] = LOGIN_STATUS;
         change_login_status(login_status);
+        login_success_screen(x, y);
+        redirecting_screen(x, y);
         dashboard();
         return 0;
     }
 
-    clear_screen();
-    header_screen();
-    login_invalid_screen();
-    pause_screen(1500);
-
-    login();
+    invalid_login_screen(x, y);
+    main_menu();
 
     return 0;
 }
 
 int logout()
 {
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
+    FILE *log_open;
+
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    box_width = BOX_WIDTH;
+    box_height = CHANGE_PASSWORD_BOX_HEIGHT;
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
     char login_status[] = LOGOUT_STATUS;
 
     change_login_status(login_status);
 
+    log_open = fopen(LOG_DBS, WRITE_MODE);
+
+    fclose(log_open);
+
+    logout_successful_screen(x, y);
     main_menu();
 
     return 0;
@@ -178,11 +180,8 @@ int change_password()
 {
     struct r_account user;
     struct account change_password;
-
-    int terminal_width = 0, terminal_height = 0, box_width = 0, box_height = 0, x = 0, y = 0;
-
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO, found = ZERO;
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-
     FILE *credentialDBS_open, *tmp_credentialDBS_open;
 
     init_console();
@@ -190,12 +189,10 @@ int change_password()
 
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     box_width = BOX_WIDTH;
     box_height = CHANGE_PASSWORD_BOX_HEIGHT;
-
-    x = (terminal_width - box_width) / 2;
-    y = ((terminal_height - box_height) / 2) + SCREEN_OFFSET_Y;
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
 
     change_password_screen(x, y);
 
@@ -213,12 +210,6 @@ int change_password()
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
     tmp_credentialDBS_open = fopen(TMP_CREDENTIAL_DBS, WRITE_MODE);
-
-    if (credentialDBS_open == NULL || tmp_credentialDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -242,20 +233,13 @@ int change_password()
         field = strtok(NULL, ",");
         strcpy(user.login_status, field);
 
-        if (strcmp(change_password.email, user.email) == 0 &&
-            strcmp(change_password.security_question, user.security_question) == 0)
+        if (strcmp(change_password.email, user.email) == 0 && strcmp(change_password.security_question, user.security_question) == 0)
         {
+            found = 1;
             strcpy(user.pass, change_password.new_pass);
         }
 
-        fprintf(tmp_credentialDBS_open,
-                "%s,%s,%s,%s,%s,%s\n",
-                user.id,
-                user.user_name,
-                user.email,
-                user.pass,
-                user.security_question,
-                user.login_status);
+        fprintf(tmp_credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, user.login_status);
     }
 
     fclose(credentialDBS_open);
@@ -264,6 +248,13 @@ int change_password()
     remove(CREDENTIAL_DBS);
     rename(TMP_CREDENTIAL_DBS, CREDENTIAL_DBS);
 
+    if (found == 0)
+    {
+        change_password_failed_screen(x, y);
+        return 0;
+    }
+
+    change_password_successful_screen(x, y);
     login();
 
     return 0;
@@ -272,19 +263,13 @@ int change_password()
 int generate_user_id(char id[])
 {
     struct r_account user;
-
-    int data_found_in_file = 0, user_id_in_integer = 0, id_length = 0, i = 0, j = 0, tmp_user_id = 0, num_id[20] = {0}, digit = 0;
+    int data_found_in_file = ZERO, user_id_in_integer = ZERO, id_length = ZERO, i = ZERO, j = ZERO, tmp_user_id = ZERO, num_id[20] = {ZERO}, digit = ZERO;
     char *field, row[MAX_LENGTH_OF_DATA_IN_FILE];
     FILE *userDBS_open;
 
     strcpy(id, FIRST_USER_ID);
 
     userDBS_open = fopen(USER_DBS, READ_MODE);
-    if (userDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), userDBS_open) != NULL)
     {
@@ -342,21 +327,13 @@ int generate_user_id(char id[])
 int change_login_status(char status[])
 {
     struct r_account user;
-
     FILE *credentialDBS_open, *tmp_credentialDBS_open;
+    char *username, row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
 
-    char username[USERNAME_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-
-    get_user_name(username);
+    username = get_user_name();
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
     tmp_credentialDBS_open = fopen(TMP_CREDENTIAL_DBS, WRITE_MODE);
-
-    if (credentialDBS_open == NULL || tmp_credentialDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -385,15 +362,10 @@ int change_login_status(char status[])
             strcpy(user.login_status, status);
         }
 
-        fprintf(tmp_credentialDBS_open,
-                "%s,%s,%s,%s,%s,%s\n",
-                user.id,
-                user.user_name,
-                user.email,
-                user.pass,
-                user.security_question,
-                user.login_status);
+        fprintf(tmp_credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, user.login_status);
     }
+
+    free(username);
 
     fclose(credentialDBS_open);
     fclose(tmp_credentialDBS_open);
@@ -407,21 +379,12 @@ int change_login_status(char status[])
 int password_verify(char username_or_email[], char password[])
 {
     struct r_account user;
-
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-
     int found = INVALID;
-
     FILE *credentialDBS_open, *log_open;
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
     log_open = fopen(LOG_DBS, WRITE_MODE);
-
-    if (credentialDBS_open == NULL || log_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -439,10 +402,7 @@ int password_verify(char username_or_email[], char password[])
         field = strtok(NULL, ",");
         strcpy(user.pass, field);
 
-        if ((strcmp(username_or_email, user.email) == 0 &&
-             strcmp(password, user.pass) == 0) ||
-            (strcmp(username_or_email, user.user_name) == 0 &&
-             strcmp(password, user.pass) == 0))
+        if ((strcmp(username_or_email, user.email) == 0 && strcmp(password, user.pass) == 0) || (strcmp(username_or_email, user.user_name) == 0 && strcmp(password, user.pass) == 0))
         {
             found = VALID;
             fprintf(log_open, "%s\n", user.user_name);
@@ -489,46 +449,35 @@ int input_password(char password[])
     return 0;
 }
 
-int get_user_name(char username[])
+char *get_user_name()
 {
-    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    char *username, row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     FILE *log_open;
 
     log_open = fopen(LOG_DBS, READ_MODE);
-    if (log_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), log_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
-        field = strtok(row, ",");
+        username = malloc(strlen(row) + 1);
 
+        field = strtok(row, ",");
         strcpy(username, field);
     }
 
     fclose(log_open);
 
-    return 0;
+    return username;
 }
 
 int validate_user_name(char username[])
 {
     struct r_account user;
-
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-
     FILE *credentialDBS_open;
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
-    if (credentialDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -555,11 +504,8 @@ int validate_user_name(char username[])
 int validate_email(char email[])
 {
     struct r_account user;
-
     int is_email_valid = INVALID;
-
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-
     FILE *credentialDBS_open;
 
     for (int i = 0; email[i] != '\0'; i++)
@@ -572,11 +518,6 @@ int validate_email(char email[])
     }
 
     credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
-    if (credentialDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -630,8 +571,7 @@ int validate_phone(char phone[])
 
 int create_directories(char username[])
 {
-    char path[PATH_BUFFER_SIZE];
-
+    char path[PATH_SIZE];
     FILE *necessary_file_create;
 
     strcpy(path, DATABASE_PATH);
@@ -650,11 +590,7 @@ int create_directories(char username[])
     strcat(path, PROJECT_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
-    if (necessary_file_create == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+
     fclose(necessary_file_create);
 
     strcpy(path, DATABASE_PATH);
@@ -663,11 +599,7 @@ int create_directories(char username[])
     strcat(path, TASK_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
-    if (necessary_file_create == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+
     fclose(necessary_file_create);
 
     strcpy(path, DATABASE_PATH);
@@ -676,11 +608,16 @@ int create_directories(char username[])
     strcat(path, SORT_TASK_DBS);
 
     necessary_file_create = fopen(path, WRITE_MODE);
-    if (necessary_file_create == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+
+    fclose(necessary_file_create);
+
+    strcpy(path, DATABASE_PATH);
+    strcat(path, username);
+    strcat(path, "\\");
+    strcat(path, SORT_PROJECT_DBS);
+
+    necessary_file_create = fopen(path, WRITE_MODE);
+
     fclose(necessary_file_create);
 
     return 0;
