@@ -1,5 +1,110 @@
 #include "ui.h"
 
+// main menu UI START
+int header_screen()
+{
+    init_console();
+    clear_screen();
+
+    int terminal_width = get_console_width();
+    int terminal_height = get_console_height();
+    int box_width = 100, box_height = 13;
+    int x = (terminal_width - box_width) / 2, y = 1;
+
+    move_cursor(x, y + 0);
+    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
+    move_cursor(x, y + 1);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 2);
+    printf("║                              ██████╗      ███╗   ███╗       ███████╗                             ║\n");
+    move_cursor(x, y + 3);
+    printf("║                              ██╔══██╗     ████╗ ████║       ██╔════╝                             ║\n");
+    move_cursor(x, y + 4);
+    printf("║                              ██████╔╝     ██╔████╔██║       ███████╗                             ║\n");
+    move_cursor(x, y + 5);
+    printf("║                              ██╔═══╝      ██║╚██╔╝██║       ╚════██║                             ║\n");
+    move_cursor(x, y + 6);
+    printf("║                              ██║     ██   ██║ ╚═╝ ██║  ██   ███████║                             ║\n");
+    move_cursor(x, y + 7);
+    printf("║                              ╚═╝          ╚═╝     ╚═╝      ╚══════╝                              ║\n");
+    move_cursor(x, y + 8);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 9);
+    printf("║                                    PROJECT MANAGEMENT SYSTEM                                     ║\n");
+    move_cursor(x, y + 10);
+    printf("║                                Plan • Organize • Track • Complete                                ║\n");
+    move_cursor(x, y + 11);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 12);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+
+    return 0;
+}
+
+int main_menu()
+{
+    init_console();
+    header_screen();
+
+    int terminal_width = get_console_width();
+    int terminal_height = get_console_height();
+    int box_width = 100, box_height = 14;
+    int x = (terminal_width - box_width) / 2, y = ((terminal_height - box_height) / 2) + 13;
+
+    move_cursor(x, y + 0);
+    printf("╔══════════════════════════════════════════[ MAIN  MENU ]══════════════════════════════════════════╗\n");
+    move_cursor(x, y + 1);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 2);
+    printf("║   [1]  Register                                                                                  ║\n");
+    move_cursor(x, y + 3);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 4);
+    printf("║   [2]  Login                                                                                     ║\n");
+    move_cursor(x, y + 5);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 6);
+    printf("║   [3]  Forgot Password                                                                           ║\n");
+    move_cursor(x, y + 7);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 8);
+    printf("║  [ESC] Exit                                                                                      ║\n");
+    move_cursor(x, y + 9);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 10);
+    printf("║                                                                                                  ║\n");
+    move_cursor(x, y + 11);
+    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
+    move_cursor(x, y + 12);
+    printf("║                                        PRESS YOUR CHOICE                                         ║\n");
+    move_cursor(x, y + 13);
+    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+
+    char choice;
+    do
+    {
+        choice = get_input;
+    } while ((choice < '1' || choice > '3') && choice != ESC);
+    switch (choice)
+    {
+    case '1':
+        create_user();
+        login();
+        break;
+    case '2':
+        login();
+        main_menu();
+        break;
+    case '3':
+        change_password();
+        main_menu();
+        break;
+        // case ESC: // Terminate Program
+    }
+    return 0;
+}
+// main menu UI END
+
 // auth.c UI START
 int user_registration_screen(int x, int y)
 {
@@ -75,11 +180,12 @@ int user_registration_screen(int x, int y)
     move_cursor(x, y + 33);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 34);
-    printf("║                                           [ ENTER ] Register                                     ║\n");
+    printf("║                                        [ ENTER ] Register                                        ║\n");
     move_cursor(x, y + 35);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 36);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
+
     return 0;
 }
 
@@ -90,16 +196,12 @@ int account_create_success_screen(int x, int y)
 
     move_cursor(x, y + 0);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗");
-
     move_cursor(x, y + 1);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 2);
     printf("║                                   ACCOUNT CREATED SUCCESSFULLY                                   ║");
-
     move_cursor(x, y + 3);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 4);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
 
@@ -146,7 +248,7 @@ int user_login_screen(int x, int y)
     move_cursor(x, y + 15);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 16);
-    printf("║                                                 [ ENTER ] Login                                  ║\n");
+    printf("║                                         [ ENTER ] Login                                          ║\n");
     move_cursor(x, y + 17);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 18);
@@ -164,16 +266,12 @@ int login_success_screen(int x, int y)
 
     move_cursor(x, y + 0);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗");
-
     move_cursor(x, y + 1);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 2);
     printf("║                                         LOGIN SUCCESSFUL                                         ║");
-
     move_cursor(x, y + 3);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 4);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
 
@@ -213,27 +311,20 @@ int something_wrong_screen(int x, int y)
 
     move_cursor(x, y + 0);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗");
-
     move_cursor(x, y + 1);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 2);
     printf("║                                       SOMETHING WENT WRONG                                       ║");
-
     move_cursor(x, y + 3);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 4);
     printf("║                                            TRY AGAIN                                             ║");
-
     move_cursor(x, y + 5);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 6);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
 
     pause_screen(1000);
-    clear_screen();
 
     return 0;
 }
@@ -245,16 +336,12 @@ int invalid_login_screen(int x, int y)
 
     move_cursor(x, y + 0);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗");
-
     move_cursor(x, y + 1);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 2);
     printf("║                                      INVALID LOGIN DETAILS                                       ║");
-
     move_cursor(x, y + 3);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 4);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
 
@@ -270,16 +357,12 @@ int change_password_successful_screen(int x, int y)
 
     move_cursor(x, y + 0);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗");
-
     move_cursor(x, y + 1);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 2);
     printf("║                                  PASSWORD CHANGED SUCCESSFULLY                                   ║");
-
     move_cursor(x, y + 3);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 4);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
 
@@ -295,16 +378,12 @@ int change_password_failed_screen(int x, int y)
 
     move_cursor(x, y + 0);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗");
-
     move_cursor(x, y + 1);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 2);
     printf("║                                      PASSWORD CHANGE FAILED                                      ║");
-
     move_cursor(x, y + 3);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 4);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
 
@@ -320,16 +399,12 @@ int logout_successful_screen(int x, int y)
 
     move_cursor(x, y + 0);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗");
-
     move_cursor(x, y + 1);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 2);
-    printf("║                                      LOGOUT SUCCESSFUL                                           ║");
-
+    printf("║                                        LOGOUT SUCCESSFUL                                         ║");
     move_cursor(x, y + 3);
     printf("║                                                                                                  ║");
-
     move_cursor(x, y + 4);
     printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝");
 
@@ -342,6 +417,7 @@ int change_password_screen(int x, int y)
 {
     clear_screen();
     header_screen();
+
     move_cursor(x, y + 0);
     printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
     move_cursor(x, y + 1);
@@ -383,7 +459,7 @@ int change_password_screen(int x, int y)
     move_cursor(x, y + 19);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 20);
-    printf("║                                          [ ENTER ] Change Password                               ║\n");
+    printf("║                                    [ ENTER ] Change Password                                     ║\n");
     move_cursor(x, y + 21);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 22);
@@ -978,105 +1054,7 @@ int extend_project_deadline_screen(int x, int y)
 
 // project.c UI END
 
-int header_screen()
-{
-    init_console();
-    clear_screen();
-    int terminal_width = get_console_width();
-    int terminal_height = get_console_height();
-    int box_width = 100, box_height = 13;
-    int x = (terminal_width - box_width) / 2, y = 1;
-    move_cursor(x, y + 0);
-    printf("╔══════════════════════════════════════════════════════════════════════════════════════════════════╗\n");
-    move_cursor(x, y + 1);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y + 2);
-    printf("║                              ██████╗      ███╗   ███╗       ███████╗                             ║\n");
-    move_cursor(x, y + 3);
-    printf("║                              ██╔══██╗     ████╗ ████║       ██╔════╝                             ║\n");
-    move_cursor(x, y + 4);
-    printf("║                              ██████╔╝     ██╔████╔██║       ███████╗                             ║\n");
-    move_cursor(x, y + 5);
-    printf("║                              ██╔═══╝      ██║╚██╔╝██║       ╚════██║                             ║\n");
-    move_cursor(x, y + 6);
-    printf("║                              ██║     ██   ██║ ╚═╝ ██║  ██   ███████║                             ║\n");
-    move_cursor(x, y + 7);
-    printf("║                              ╚═╝          ╚═╝     ╚═╝      ╚══════╝                              ║\n");
-    move_cursor(x, y + 8);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y + 9);
-    printf("║                                    PROJECT MANAGEMENT SYSTEM                                     ║\n");
-    move_cursor(x, y + 10);
-    printf("║                                Plan • Organize • Track • Complete                                ║\n");
-    move_cursor(x, y + 11);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y + 12);
-    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
-    return 0;
-}
 
-int main_menu()
-{
-    init_console();
-    header_screen();
-    int terminal_width = get_console_width();
-    int terminal_height = get_console_height();
-    int box_width = 100, box_height = 14;
-    int x = (terminal_width - box_width) / 2, y = ((terminal_height - box_height) / 2) + 13;
-    move_cursor(x, y + 0);
-    printf("╔══════════════════════════════════════════[ MAIN  MENU ]══════════════════════════════════════════╗\n");
-
-    move_cursor(x, y + 1);
-    printf("║                                                                                                  ║\n");
-
-    move_cursor(x, y + 2);
-    printf("║   [1]  Register                                                                                  ║\n");
-    move_cursor(x, y + 3);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y + 4);
-    printf("║   [2]  Login                                                                                     ║\n");
-    move_cursor(x, y + 5);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y + 6);
-    printf("║   [3]  Forgot Password                                                                           ║\n");
-    move_cursor(x, y + 7);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y + 8);
-    printf("║  [ESC] Exit                                                                                      ║\n");
-    move_cursor(x, y + 9);
-    printf("║                                                                                                  ║\n");
-    move_cursor(x, y + 10);
-    printf("║                                                                                                  ║\n");
-
-    move_cursor(x, y + 11);
-    printf("╠══════════════════════════════════════════════════════════════════════════════════════════════════╣\n");
-
-    move_cursor(x, y + 12);
-    printf("║                                        PRESS YOUR CHOICE                                         ║\n");
-
-    move_cursor(x, y + 13);
-    printf("╚══════════════════════════════════════════════════════════════════════════════════════════════════╝\n");
-    // Take Input from user and validate that
-    char choice;
-    do
-    {
-        choice = get_input;
-    } while ((choice < '1' || choice > '3') && choice != ESC);
-    switch (choice)
-    {
-    case '1':
-        create_user();
-        break;
-    case '2':
-        login();
-        break;
-    case '3':
-        change_password();
-        break;
-        // case ESC: // Terminate Program
-    }
-    return 0;
-}
 
 int dashboard()
 {

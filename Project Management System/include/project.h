@@ -1,27 +1,22 @@
 #ifndef PROJECT_H
 #define PROJECT_H
 
-
 #include <stdio.h>
 #include <string.h>
-
 
 #include "auth.h"
 #include "utility.h"
 #include "ui.h"
 
+#define PROJECT_FILE_MODE_READ "r"
+#define PROJECT_FILE_MODE_WRITE "w"
+#define PROJECT_FILE_MODE_APPEND "a"
 
-#define TWO 2
+#define PROJECT_DATABASE_FILE "projectsDBS.csv"
+#define TEMP_PROJECT_DATABASE_FILE "tmp_projectsDBS.csv"
+#define SORTED_PROJECT_FILE "sort_project.csv"
 
-#define READ_MODE "r"
-#define WRITE_MODE "w"
-#define APPEND_MODE "a"
-
-#define PROJECT_DBS_FILE "projectsDBS.csv"
-#define TEMP_PROJECT_DBS_FILE "tmp_projectsDBS.csv"
-#define SORT_PROJECT_FILE "sort_project.csv"
-
-#define PROJECTS_FOLDER "Projects\\"
+#define PROJECT_FOLDER_NAME "Projects\\"
 #define PROJECT_FILE_EXTENSION ".csv"
 
 #define PROJECT_BOX_HEIGHT 39
@@ -47,25 +42,22 @@
 #define PROJECT_ID_OR_NAME_SIZE 50
 #define PROJECT_FILE_NAME_SIZE 100
 #define PROJECT_ARRAY_SIZE 1000
-
 #define PROJECT_ID_SIZE 20
 
-#define CATEGORY_SIZE 50
-#define DESCRIPTION_SIZE 200
-#define STARTDATE_SIZE 12
-#define EXTENDDATE_SIZE 12
-#define PRIORITY_SIZE 50
-#define STATUS_SIZE 20
+#define PROJECT_CATEGORY_SIZE 50
+#define PROJECT_DESCRIPTION_SIZE 200
+#define PROJECT_START_DATE_SIZE 12
+#define PROJECT_END_DATE_SIZE 12
+#define PROJECT_PRIORITY_SIZE 50
+#define PROJECT_STATUS_SIZE 20
 
 #define STATUS_BOX_WIDTH 68
 #define STATUS_BOX_HEIGHT 13
-
 #define PRIORITY_BOX_WIDTH 68
 #define PRIORITY_BOX_HEIGHT 13
 
-#define DEFAULT_STATUS "Created"
-#define DELETE_STATUS "Deleted"
-
+#define DEFAULT_PROJECT_STATUS "Created"
+#define DELETED_PROJECT_STATUS "Deleted"
 
 struct p_details
 {
@@ -79,7 +71,6 @@ struct p_details
     char end_date[15];
     char created_by[20];
 };
-
 
 int create_project();
 int view_projects();
@@ -100,6 +91,5 @@ int search_project_by_priority();
 int get_path(char path[]);
 int create_project_screen(int x, int y);
 int compare_project_priority(const void *a, const void *b);
-
 
 #endif

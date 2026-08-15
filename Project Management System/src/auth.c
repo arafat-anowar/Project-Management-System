@@ -15,26 +15,26 @@ int create_user()
 
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-    box_width = BOX_WIDTH;
-    box_height = REGISTER_BOX_HEIGHT;
+    box_width = CONTAINER_WIDTH;
+    box_height = REGISTER_FORM_HEIGHT;
     x = (terminal_width - box_width) / TWO;
-    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
     user_registration_screen(x, y);
 
     generate_user_id(user.id);
 
-    move_cursor(x + INPUT_OFFSET_X, y + REGISTER_NAME_Y);
+    move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_NAME_FIELD_Y);
     fgets(user.name, sizeof(user.name), stdin);
     user.name[strcspn(user.name, "\n")] = '\0';
 
     do
     {
-        move_cursor(x + INPUT_OFFSET_X, y + REGISTER_EMAIL_Y);
+        move_cursor(x + INPUT_FIELD_OFFSET_X, y +REGISTER_EMAIL_FIELD_Y);
         if (is_email_valid == INVALID)
         {
             printf("                                                                             ");
-            move_cursor(x + INPUT_OFFSET_X, y + REGISTER_EMAIL_Y);
+            move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_EMAIL_FIELD_Y);
         }
 
         fgets(user.email, sizeof(user.email), stdin);
@@ -45,12 +45,11 @@ int create_user()
 
     do
     {
-        move_cursor(x + PHONE_INPUT_OFFSET_X, y + REGISTER_PHONE_Y);
-
+        move_cursor(x + PHONE_FIELD_OFFSET_X, y + REGISTER_PHONE_FIELD_Y);
         if (is_phone_valid == INVALID)
         {
             printf("                                                                             ");
-            move_cursor(x + PHONE_INPUT_OFFSET_X, y + REGISTER_PHONE_Y);
+            move_cursor(x + PHONE_FIELD_OFFSET_X, y + REGISTER_PHONE_FIELD_Y);
         }
 
         fgets(user.phone, sizeof(user.phone), stdin);
@@ -61,36 +60,34 @@ int create_user()
 
     do
     {
-        move_cursor(x + INPUT_OFFSET_X, y + REGISTER_USERNAME_Y);
-
+        move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_USERNAME_FIELD_Y);
         if (user_name_found == INVALID)
         {
             printf("                                                                             ");
-            move_cursor(x + INPUT_OFFSET_X, y + REGISTER_USERNAME_Y);
+            move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_USERNAME_FIELD_Y);
         }
 
         fgets(user.user_name, sizeof(user.user_name), stdin);
         user.user_name[strcspn(user.user_name, "\n")] = '\0';
-
         user_name_found = validate_user_name(user.user_name);
 
     } while (user_name_found != VALID);
 
-    move_cursor(x + INPUT_OFFSET_X, y + REGISTER_PASSWORD_Y);
+    move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_PASSWORD_FIELD_Y);
     input_password(user.pass);
     user.pass[strcspn(user.pass, "\n")] = '\0';
 
-    move_cursor(x + INPUT_OFFSET_X, y + REGISTER_SECURITY_Y);
+    move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_SECURITY_FIELD_Y);
     fgets(user.security_question, sizeof(user.security_question), stdin);
     user.security_question[strcspn(user.security_question, "\n")] = '\0';
 
-    strcpy(user.role, DEFAULT_ROLE);
+    strcpy(user.role, DEFAULT_ROLE_NAME);
 
-    userDBS_open = fopen(USER_DBS, APPEND_MODE);
-    credentialDBS_open = fopen(CREDENTIAL_DBS, APPEND_MODE);
+    userDBS_open = fopen(USER_DATABASE_FILE, FILE_MODE_APPEND);
+    credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_APPEND);
 
     fprintf(userDBS_open, "%s,%s,%s,%s,%s\n", user.id, user.name, user.email, user.phone, user.role);
-    fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, LOGOUT_STATUS);
+    fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, LOGOUT_STATUS_VALUE);
 
     fclose(userDBS_open);
     fclose(credentialDBS_open);
@@ -98,7 +95,6 @@ int create_user()
     create_directories(user.user_name);
 
     account_create_success_screen(x, y);
-    login();
 
     return 0;
 }
@@ -113,18 +109,18 @@ int login()
 
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-    box_width = BOX_WIDTH;
-    box_height = LOGIN_BOX_HEIGHT;
+    box_width = CONTAINER_WIDTH;
+    box_height = LOGIN_FORM_HEIGHT;
     x = (terminal_width - box_width) / TWO;
-    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
     user_login_screen(x, y);
 
-    move_cursor(x + INPUT_OFFSET_X, y + LOGIN_USERNAME_Y);
+    move_cursor(x + INPUT_FIELD_OFFSET_X, y +LOGIN_USERNAME_FIELD_Y);
     fgets(user.user_name_or_email, sizeof(user.user_name_or_email), stdin);
     user.user_name_or_email[strcspn(user.user_name_or_email, "\n")] = '\0';
 
-    move_cursor(x + INPUT_OFFSET_X, y + LOGIN_PASSWORD_Y);
+    move_cursor(x + INPUT_FIELD_OFFSET_X, y +LOGIN_PASSWORD_FIELD_Y);
     input_password(user.user_pass);
     user.user_pass[strcspn(user.user_pass, "\n")] = '\0';
 
@@ -132,8 +128,7 @@ int login()
 
     if (is_verified == VALID)
     {
-        sort_projects();
-        char login_status[] = LOGIN_STATUS;
+        char login_status[] = LOGIN_STATUS_VALUE;
         change_login_status(login_status);
         login_success_screen(x, y);
         redirecting_screen(x, y);
@@ -142,7 +137,6 @@ int login()
     }
 
     invalid_login_screen(x, y);
-    main_menu();
 
     return 0;
 }
@@ -157,21 +151,20 @@ int logout()
 
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-    box_width = BOX_WIDTH;
-    box_height = CHANGE_PASSWORD_BOX_HEIGHT;
+    box_width = CONTAINER_WIDTH;
+    box_height = CHANGE_PASSWORD_FORM_HEIGHT;
     x = (terminal_width - box_width) / TWO;
-    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
-    char login_status[] = LOGOUT_STATUS;
+    char login_status[] = LOGOUT_STATUS_VALUE;
 
     change_login_status(login_status);
 
-    log_open = fopen(LOG_DBS, WRITE_MODE);
+    log_open = fopen(LOG_FILE, FILE_MODE_WRITE);
 
     fclose(log_open);
 
     logout_successful_screen(x, y);
-    main_menu();
 
     return 0;
 }
@@ -189,27 +182,27 @@ int change_password()
 
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-    box_width = BOX_WIDTH;
-    box_height = CHANGE_PASSWORD_BOX_HEIGHT;
+    box_width = CONTAINER_WIDTH;
+    box_height = CHANGE_PASSWORD_FORM_HEIGHT;
     x = (terminal_width - box_width) / TWO;
-    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
     change_password_screen(x, y);
 
-    move_cursor(x + INPUT_OFFSET_X, y + CHANGE_PASSWORD_EMAIL_Y);
+    move_cursor(x + INPUT_FIELD_OFFSET_X, y + CHANGE_PASSWORD_EMAIL_FIELD_Y);
     fgets(change_password.email, sizeof(change_password.email), stdin);
     change_password.email[strcspn(change_password.email, "\n")] = '\0';
 
-    move_cursor(x + INPUT_OFFSET_X, y + CHANGE_PASSWORD_SECURITY_Y);
+    move_cursor(x + INPUT_FIELD_OFFSET_X, y + CHANGE_PASSWORD_SECURITY_FIELD_Y);
     fgets(change_password.security_question, sizeof(change_password.security_question), stdin);
     change_password.security_question[strcspn(change_password.security_question, "\n")] = '\0';
 
-    move_cursor(x + INPUT_OFFSET_X, y + CHANGE_PASSWORD_NEWPASS_Y);
+    move_cursor(x + INPUT_FIELD_OFFSET_X, y + CHANGE_PASSWORD_NEW_PASSWORD_FIELD_Y);
     input_password(change_password.new_pass);
     change_password.new_pass[strcspn(change_password.new_pass, "\n")] = '\0';
 
-    credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
-    tmp_credentialDBS_open = fopen(TMP_CREDENTIAL_DBS, WRITE_MODE);
+    credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
+    tmp_credentialDBS_open = fopen(TEMP_CREDENTIAL_DATABASE_FILE, FILE_MODE_WRITE);
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -245,8 +238,8 @@ int change_password()
     fclose(credentialDBS_open);
     fclose(tmp_credentialDBS_open);
 
-    remove(CREDENTIAL_DBS);
-    rename(TMP_CREDENTIAL_DBS, CREDENTIAL_DBS);
+    remove(CREDENTIAL_DATABASE_FILE);
+    rename(TEMP_CREDENTIAL_DATABASE_FILE, CREDENTIAL_DATABASE_FILE);
 
     if (found == 0)
     {
@@ -255,7 +248,6 @@ int change_password()
     }
 
     change_password_successful_screen(x, y);
-    login();
 
     return 0;
 }
@@ -267,9 +259,9 @@ int generate_user_id(char id[])
     char *field, row[MAX_LENGTH_OF_DATA_IN_FILE];
     FILE *userDBS_open;
 
-    strcpy(id, FIRST_USER_ID);
+    strcpy(id, FIRST_USER_ID_VALUE);
 
-    userDBS_open = fopen(USER_DBS, READ_MODE);
+    userDBS_open = fopen(USER_DATABASE_FILE, FILE_MODE_READ);
 
     while (fgets(row, sizeof(row), userDBS_open) != NULL)
     {
@@ -332,8 +324,8 @@ int change_login_status(char status[])
 
     username = get_user_name();
 
-    credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
-    tmp_credentialDBS_open = fopen(TMP_CREDENTIAL_DBS, WRITE_MODE);
+    credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
+    tmp_credentialDBS_open = fopen(TEMP_CREDENTIAL_DATABASE_FILE, FILE_MODE_WRITE);
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -370,8 +362,8 @@ int change_login_status(char status[])
     fclose(credentialDBS_open);
     fclose(tmp_credentialDBS_open);
 
-    remove(CREDENTIAL_DBS);
-    rename(TMP_CREDENTIAL_DBS, CREDENTIAL_DBS);
+    remove(CREDENTIAL_DATABASE_FILE);
+    rename(TEMP_CREDENTIAL_DATABASE_FILE, CREDENTIAL_DATABASE_FILE);
 
     return 0;
 }
@@ -383,8 +375,8 @@ int password_verify(char username_or_email[], char password[])
     int found = INVALID;
     FILE *credentialDBS_open, *log_open;
 
-    credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
-    log_open = fopen(LOG_DBS, WRITE_MODE);
+    credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
+    log_open = fopen(LOG_FILE, FILE_MODE_WRITE);
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -426,9 +418,9 @@ int input_password(char password[])
     int i = 0;
     char each_character;
 
-    while ((each_character = getch()) != ENTER_KEY)
+    while ((each_character = getch()) != ENTER)
     {
-        if (each_character == BACKSPACE_KEY)
+        if (each_character == BACKSPACE)
         {
             if (i > 0)
             {
@@ -454,7 +446,7 @@ char *get_user_name()
     char *username, row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     FILE *log_open;
 
-    log_open = fopen(LOG_DBS, READ_MODE);
+    log_open = fopen(LOG_FILE, FILE_MODE_READ);
 
     while (fgets(row, sizeof(row), log_open) != NULL)
     {
@@ -477,7 +469,7 @@ int validate_user_name(char username[])
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     FILE *credentialDBS_open;
 
-    credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
+    credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -517,7 +509,7 @@ int validate_email(char email[])
         }
     }
 
-    credentialDBS_open = fopen(CREDENTIAL_DBS, READ_MODE);
+    credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -561,7 +553,7 @@ int validate_phone(char phone[])
         }
     }
 
-    if (count == PHONE_LENGTH && phone_length == PHONE_LENGTH)
+    if (count == MAX_PHONE_LENGTH && phone_length == MAX_PHONE_LENGTH)
     {
         return VALID;
     }
@@ -571,52 +563,52 @@ int validate_phone(char phone[])
 
 int create_directories(char username[])
 {
-    char path[PATH_SIZE];
+    char path[MAX_PATH_LENGTH];
     FILE *necessary_file_create;
 
-    strcpy(path, DATABASE_PATH);
+    strcpy(path, DATABASE_DIR);
     strcat(path, username);
 
     CreateDirectory(path, NULL);
 
     strcat(path, "\\");
-    strcat(path, PROJECT_FOLDER);
+    strcat(path, PROJECTS_FOLDER);
 
     CreateDirectory(path, NULL);
 
-    strcpy(path, DATABASE_PATH);
+    strcpy(path, DATABASE_DIR);
     strcat(path, username);
     strcat(path, "\\");
-    strcat(path, PROJECT_DBS);
+    strcat(path, PROJECT_DATABASE_FILE);
 
-    necessary_file_create = fopen(path, WRITE_MODE);
+    necessary_file_create = fopen(path, FILE_MODE_WRITE);
 
     fclose(necessary_file_create);
 
-    strcpy(path, DATABASE_PATH);
+    strcpy(path, DATABASE_DIR);
     strcat(path, username);
     strcat(path, "\\");
-    strcat(path, TASK_DBS);
+    strcat(path, TASK_DATABASE_FILE);
 
-    necessary_file_create = fopen(path, WRITE_MODE);
+    necessary_file_create = fopen(path, FILE_MODE_WRITE);
 
     fclose(necessary_file_create);
 
-    strcpy(path, DATABASE_PATH);
+    strcpy(path, DATABASE_DIR);
     strcat(path, username);
     strcat(path, "\\");
-    strcat(path, SORT_TASK_DBS);
+    strcat(path, SORTED_TASK_FILE);
 
-    necessary_file_create = fopen(path, WRITE_MODE);
+    necessary_file_create = fopen(path, FILE_MODE_WRITE);
 
     fclose(necessary_file_create);
 
-    strcpy(path, DATABASE_PATH);
+    strcpy(path, DATABASE_DIR);
     strcat(path, username);
     strcat(path, "\\");
-    strcat(path, SORT_PROJECT_DBS);
+    strcat(path, SORTED_PROJECT_FILE);
 
-    necessary_file_create = fopen(path, WRITE_MODE);
+    necessary_file_create = fopen(path, FILE_MODE_WRITE);
 
     fclose(necessary_file_create);
 
