@@ -111,8 +111,6 @@ int create_project()
 
     fclose(project_file_create);
 
-    project_management_dashboard();
-
     return 0;
 }
 
@@ -193,8 +191,6 @@ int update_project()
 
     remove(path);
     rename(tmp_path, path);
-
-    project_management_dashboard();
 
     return 0;
 }
@@ -428,8 +424,6 @@ int delete_project()
     remove(projectDBS_path);
     rename(tmp_projectDBS_path, projectDBS_path);
 
-    project_management_dashboard();
-
     return 0;
 }
 
@@ -517,8 +511,6 @@ int view_projects()
     }
 
     fclose(projectDBS_open);
-
-    project_management_dashboard();
 
     return 0;
 }
@@ -622,8 +614,6 @@ int search_by_project_id_or_name()
 
     fclose(projectDBS_open);
 
-    project_management_dashboard();
-
     return 0;
 }
 
@@ -719,8 +709,6 @@ int search_project_by_status()
 
     fclose(projectDBS_open);
 
-    project_management_dashboard();
-
     return 0;
 }
 
@@ -815,8 +803,6 @@ int search_project_by_priority()
     }
 
     fclose(projectDBS_open);
-
-    project_management_dashboard();
 
     return 0;
 }

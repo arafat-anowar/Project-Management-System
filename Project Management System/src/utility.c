@@ -71,20 +71,11 @@ int validate_date(char date[])
     return 1;
 }
 
-int login_invalid_screen()
-{
-    return 0;
-}
 
-int project_details_screen()
-{
-    return 0;
-}
 
-int task_details_screen()
-{
-    return 0;
-}
+
+
+
 
 int pause_screen(int sec)
 {

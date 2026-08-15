@@ -3,118 +3,95 @@
 int unique_task_id_generator()
 {
     struct t_details task;
-    int found = 0, id = 10001;
-    char path[PATH_BUFFER_SIZE], line[MAX_LENGTH_OF_DATA_IN_FILE], *token;
+    int found = ZERO, id = UNIQUE_TASK_ID_INITIAL;
+    char path[PATH_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     FILE *taskDBS_open;
 
     get_path(path);
     strcat(path, TASK_DBS);
+
     taskDBS_open = fopen(path, READ_MODE);
 
-    if (taskDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
-
-    while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
         found = 1;
-        line[strcspn(line, "\n")] = '\0';
 
-        token = strtok(line, ",");
-        task.unique_id = atoi(token);
-        token = strtok(NULL, ","); strcpy(task.task_id, token);
-        token = strtok(NULL, ","); strcpy(task.project_id, token);
-        token = strtok(NULL, ","); strcpy(task.name, token);
-        token = strtok(NULL, ","); strcpy(task.description, token);
-        token = strtok(NULL, ","); strcpy(task.priority, token);
-        token = strtok(NULL, ","); strcpy(task.status, token);
-        token = strtok(NULL, ","); strcpy(task.start_date, token);
-        token = strtok(NULL, ","); strcpy(task.end_date, token);
-        token = strtok(NULL, ","); strcpy(task.created_by, token);
+        row[strcspn(row, "\n")] = '\0';
+
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
     }
 
     fclose(taskDBS_open);
 
-    if (found == 0)
+    if (found == ZERO)
+    {
         return id;
+    }
 
     return task.unique_id + 1;
 }
 
 int generate_task_id(char id[], char path[])
 {
-    int found = 0;
     struct t_details task;
-    char line[MAX_LENGTH_OF_DATA_IN_FILE], *token;
+    int found = ZERO, num_id[15] = {ZERO}, task_id = ZERO, id_len = ZERO, i = ZERO, j = ZERO, digit = ZERO, tmp = ZERO;
+    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *taskDBS_open;
 
     strcpy(id, TASK_ID_INITIAL);
 
-    FILE *taskDBS_open = fopen(path, READ_MODE);
+    taskDBS_open = fopen(path, READ_MODE);
 
-    if (taskDBS_open == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
-
-    while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
         found = 1;
-        line[strcspn(line, "\n")] = '\0';
 
-        token = strtok(line, ",");
-        strcpy(task.task_id, token);
-        token = strtok(NULL, ","); strcpy(task.project_id, token);
-        token = strtok(NULL, ","); strcpy(task.name, token);
-        token = strtok(NULL, ","); strcpy(task.description, token);
-        token = strtok(NULL, ","); strcpy(task.priority, token);
-        token = strtok(NULL, ","); strcpy(task.status, token);
-        token = strtok(NULL, ","); strcpy(task.start_date, token);
-        token = strtok(NULL, ","); strcpy(task.end_date, token);
-        token = strtok(NULL, ","); strcpy(task.created_by, token);
+        row[strcspn(row, "\n")] = '\0';
+
+        field = strtok(row, ",");
+        strcpy(task.task_id, field);
     }
 
     fclose(taskDBS_open);
 
-    if (found == 0)
+    if (found == ZERO)
+    {
         return 0;
+    }
 
     strcpy(id, task.task_id);
 
+    id_len = strlen(id);
+
+    for (i = 0, j = 1; j < id_len; i++, j++)
     {
-        int num_id[15];
-        int task_id = 0;
-        int id_len = strlen(id);
-        int i, j;
+        num_id[i] = id[j] - '0';
+    }
 
-        for (i = 0, j = 1; j < id_len; i++, j++)
-            num_id[i] = id[j] - '0';
+    for (i = 0; i < id_len - 1; i++)
+    {
+        digit = num_id[i];
 
-        for (i = 0; i <= id_len - 2; i++)
+        for (j = i; j < id_len - 2; j++)
         {
-            int digit = num_id[i];
-
-            for (j = i; j <= id_len - 3; j++)
-                digit *= 10;
-
-            task_id += digit;
+            digit *= 10;
         }
 
-        task_id++;
+        task_id += digit;
+    }
 
-        {
-            int tmp = task_id;
-            j = id_len - 1;
+    task_id++;
 
-            while (tmp != 0)
-            {
-                id[j] = (tmp % 10) + '0';
-                tmp /= 10;
-                j--;
-            }
-        }
+    tmp = task_id;
+    j = id_len - 1;
+
+    while (tmp != 0)
+    {
+        id[j] = (tmp % 10) + '0';
+
+        tmp /= 10;
+        j--;
     }
 
     return 0;
@@ -122,123 +99,151 @@ int generate_task_id(char id[], char path[])
 
 int create_task()
 {
-    char project_id_or_name[50];
-    char projectDBS_path[PATH_BUFFER_SIZE];
-    char path[PATH_BUFFER_SIZE];
-    char taskDBS_path[PATH_BUFFER_SIZE];
     struct t_details task;
     struct p_details project;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = TASK_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO, status_box_width = STATUS_BOX_WIDTH, status_box_height = STATUS_BOX_HEIGHT, status_x = ZERO, status_y = ZERO, project_found = ZERO, is_start_date_valid = ZERO, is_end_date_valid = ZERO;
+    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], projectDBS_path[PATH_BUFFER_SIZE], project_task_path[PATH_BUFFER_SIZE], taskDBS_path[PATH_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field, *username;
+    FILE *projectDBS_open, *taskDBS_open, *project_task_open;
 
-    printf("\nProject ID or Name : ");
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    priority_x = (terminal_width - priority_box_width) / TWO;
+    priority_y = (terminal_height - priority_box_height) / TWO;
+
+    status_x = (terminal_width - status_box_width) / TWO;
+    status_y = (terminal_height - status_box_height) / TWO;
+
+    username = get_user_name();
+
+    search_project_by_id_or_name_screen(x, y);
+
+    move_cursor(x + PROJECT_INPUT_X, y + 5);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
     get_path(projectDBS_path);
     strcat(projectDBS_path, PROJECT_DBS);
 
-    FILE *projectDBS_open = fopen(projectDBS_path, READ_MODE);
+    projectDBS_open = fopen(projectDBS_path, READ_MODE);
 
-    if (projectDBS_open == NULL)
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+        row[strcspn(row, "\n")] = '\0';
 
-    {
-        char line[MAX_LENGTH_OF_DATA_IN_FILE];
+        field = strtok(row, ",");
+        strcpy(project.id, field);
 
-        while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
-            char *token;
-            line[strcspn(line, "\n")] = '\0';
-
-            token = strtok(line, ",");
-            strcpy(project.id, token);
-            token = strtok(NULL, ","); strcpy(project.name, token);
-            token = strtok(NULL, ","); strcpy(project.category, token);
-            token = strtok(NULL, ","); strcpy(project.description, token);
-            token = strtok(NULL, ","); strcpy(project.priority, token);
-            token = strtok(NULL, ","); strcpy(project.status, token);
-            token = strtok(NULL, ","); strcpy(project.start_date, token);
-            token = strtok(NULL, ","); strcpy(project.end_date, token);
-            token = strtok(NULL, ","); strcpy(project.created_by, token);
-
-            if (strcmp(project_id_or_name, project.id) == 0 ||
-                strcmp(project_id_or_name, project.name) == 0)
-            {
-                strcpy(project_id_or_name, project.name);
-                break;
-            }
+            project_found = 1;
+            break;
         }
     }
 
     fclose(projectDBS_open);
 
-    get_path(path);
-    strcat(path, PROJECT_FOLDER);
-    strcat(path, strlwr(project_id_or_name));
-    strcat(path, PROJECT_FILE_EXTENSION);
+    get_path(project_task_path);
+    strcat(project_task_path, PROJECT_FOLDER);
+    strcat(project_task_path, "\\");
+    strcat(project_task_path, strlwr(project.name));
+    strcat(project_task_path, PROJECT_FILE_EXTENSION);
 
     task.unique_id = unique_task_id_generator();
-    generate_task_id(task.task_id, path);
+
+    generate_task_id(task.task_id, project_task_path);
+
     strcpy(task.project_id, project.id);
 
-    printf("\nTask Name : ");
+    clear_screen();
+    header_screen();
+
+    create_task_screen(x, y);
+
+    move_cursor(x + TASK_INPUT_X, y + 6);
     fgets(task.name, sizeof(task.name), stdin);
     task.name[strcspn(task.name, "\n")] = '\0';
 
-    printf("\nTask Description : ");
+    move_cursor(x + TASK_INPUT_X, y + 11);
     fgets(task.description, sizeof(task.description), stdin);
     task.description[strcspn(task.description, "\n")] = '\0';
 
-    printf("\nTask Priority : ");
-    fgets(task.priority, sizeof(task.priority), stdin);
-    task.priority[strcspn(task.priority, "\n")] = '\0';
+    task_priority_dashboard(task.priority, priority_x, priority_y);
 
-    printf("\nTask Status : ");
-    fgets(task.status, sizeof(task.status), stdin);
-    task.status[strcspn(task.status, "\n")] = '\0';
+    clear_screen();
+    header_screen();
 
-    printf("\nTask Start Date : ");
-    fgets(task.start_date, sizeof(task.start_date), stdin);
-    task.start_date[strcspn(task.start_date, "\n")] = '\0';
+    create_task_screen(x, y);
 
-    printf("\nTask End Date : ");
-    fgets(task.end_date, sizeof(task.end_date), stdin);
-    task.end_date[strcspn(task.end_date, "\n")] = '\0';
+    move_cursor(x + TASK_INPUT_X, y + 6);
+    printf("%s", task.name);
 
-    // get_user_name(task.created_by);
+    move_cursor(x + TASK_INPUT_X, y + 11);
+    printf("%s", task.description);
+
+    move_cursor(x + TASK_INPUT_X, y + 18);
+    printf("%s", task.priority);
+
+    strcpy(task.status, DEFAULT_STATUS);
+
+    do
+    {
+        move_cursor(x + TASK_INPUT_X, y + 23);
+        if (is_start_date_valid == ZERO)
+        {
+            printf("                                                                             ");
+            move_cursor(x + TASK_INPUT_X, y + 23);
+        }
+
+        fgets(task.start_date, sizeof(task.start_date), stdin);
+        task.start_date[strcspn(task.start_date, "\n")] = '\0';
+        is_start_date_valid = validate_date(task.start_date);
+
+    } while (is_start_date_valid != VALID);
+
+    do
+    {
+        move_cursor(x + TASK_INPUT_X, y + 28);
+        if (is_end_date_valid == ZERO)
+        {
+            printf("                                                                             ");
+            move_cursor(x + TASK_INPUT_X, y + 28);
+        }
+
+        fgets(task.end_date, sizeof(task.end_date), stdin);
+        task.end_date[strcspn(task.end_date, "\n")] = '\0';
+        is_end_date_valid = validate_date(task.end_date);
+
+    } while (is_end_date_valid != VALID);
+
+    strcpy(task.created_by, username);
 
     get_path(taskDBS_path);
+
     strcat(taskDBS_path, TASK_DBS);
 
-    FILE *file_open_for_write_data = fopen(taskDBS_path, APPEND_MODE);
+    taskDBS_open = fopen(taskDBS_path, APPEND_MODE);
 
-    if (file_open_for_write_data == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+    fprintf(taskDBS_open, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
 
-    fprintf(file_open_for_write_data, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-            task.unique_id, task.task_id, task.project_id, task.name,
-            task.description, task.priority, task.status, task.start_date,
-            task.end_date, task.created_by);
-    fclose(file_open_for_write_data);
+    fclose(taskDBS_open);
 
-    FILE *file_open_for_write_data_in_separate_file = fopen(path, APPEND_MODE);
+    project_task_open = fopen(project_task_path, APPEND_MODE);
 
-    if (file_open_for_write_data_in_separate_file == NULL)
-    {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+    fprintf(project_task_open, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
 
-    fprintf(file_open_for_write_data_in_separate_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-            task.task_id, task.project_id, task.name, task.description,
-            task.priority, task.status, task.start_date, task.end_date,
-            task.created_by);
-    fclose(file_open_for_write_data_in_separate_file);
+    fclose(project_task_open);
+
+    free(username);
 
     return 0;
 }
@@ -246,535 +251,604 @@ int create_task()
 int view_tasks()
 {
     struct t_details task;
-    char path[PATH_BUFFER_SIZE], line[MAX_LENGTH_OF_DATA_IN_FILE];
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
+    char path[PATH_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *taskDBS_open;
+
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
 
     get_path(path);
     strcat(path, TASK_DBS);
 
-    FILE *taskDBS_open = fopen(path, READ_MODE);
+    taskDBS_open = fopen(path, READ_MODE);
 
-    if (taskDBS_open == NULL)
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+        row[strcspn(row, "\n")] = '\0';
 
-    task_details_screen();
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
 
-    while (fgets(line, sizeof(line), taskDBS_open) != NULL)
-    {
-        char *token;
-        line[strcspn(line, "\n")] = '\0';
+        field = strtok(NULL, ",");
+        strcpy(task.task_id, field);
 
-        token = strtok(line, ",");
-        task.unique_id = atoi(token);
-        token = strtok(NULL, ","); strcpy(task.task_id, token);
-        token = strtok(NULL, ","); strcpy(task.project_id, token);
-        token = strtok(NULL, ","); strcpy(task.name, token);
-        token = strtok(NULL, ","); strcpy(task.description, token);
-        token = strtok(NULL, ","); strcpy(task.priority, token);
-        token = strtok(NULL, ","); strcpy(task.status, token);
-        token = strtok(NULL, ","); strcpy(task.start_date, token);
-        token = strtok(NULL, ","); strcpy(task.end_date, token);
-        token = strtok(NULL, ","); strcpy(task.created_by, token);
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
 
-        printf("\n\n");
-        printf("Unique Task ID : %d\n", task.unique_id);
-        printf("Project ID     : %s\n", task.project_id);
-        printf("Task ID        : %s\n", task.task_id);
-        printf("Task Name      : %s\n", task.name);
-        printf("Description    : %s\n", task.description);
-        printf("Priority       : %s\n", task.priority);
-        printf("Status         : %s\n", task.status);
-        printf("Start Date     : %s\n", task.start_date);
-        printf("Deadline       : %s\n", task.end_date);
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
 
-        Sleep(1000);
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        clear_screen();
+        header_screen();
+
+        task_details_screen(x, y);
+
+        move_cursor(x + 10, y + 5);
+        printf("%d", task.unique_id);
+
+        move_cursor(x + 10, y + 10);
+        printf("%s", task.task_id);
+
+        move_cursor(x + 10, y + 15);
+        printf("%s", task.project_id);
+
+        move_cursor(x + 10, y + 20);
+        printf("%s", task.name);
+
+        move_cursor(x + 10, y + 25);
+        printf("%s", task.description);
+
+        move_cursor(x + 10, y + 32);
+        printf("%s", task.priority);
+
+        move_cursor(x + 10, y + 37);
+        printf("%s", task.status);
+
+        move_cursor(x + 10, y + 42);
+        printf("%s", task.start_date);
+
+        move_cursor(x + 10, y + 47);
+        printf("%s", task.end_date);
+
+        get_input;
     }
 
     fclose(taskDBS_open);
+
     return 0;
 }
 
 int update_task()
 {
-    char project_id_or_name[50];
-    char projectDBS_path[PATH_BUFFER_SIZE];
-    char path[PATH_BUFFER_SIZE];
-    char taskDBS_path[PATH_BUFFER_SIZE];
-    char tmp_task_path[PATH_BUFFER_SIZE];
-
-    printf("\nProject ID or Name : ");
-    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
-    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
-
     struct t_details task;
     struct p_details project;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO, task_found = ZERO;
+    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], task_id_or_name[TASK_ID_OR_NAME_SIZE], projectDBS_path[PATH_BUFFER_SIZE], taskDBS_path[PATH_BUFFER_SIZE], tmp_task_path[PATH_BUFFER_SIZE], project_task_path[PATH_BUFFER_SIZE], tmp_project_task_path[PATH_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *projectDBS_open, *taskDBS_open, *tmp_task, *project_task_open, *tmp_project_task;
+
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    search_project_by_id_or_name_screen(x, y);
+
+    move_cursor(x + PROJECT_INPUT_X, y + 5);
+    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
+    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
     get_path(projectDBS_path);
     strcat(projectDBS_path, PROJECT_DBS);
 
-    FILE *projectDBS_open = fopen(projectDBS_path, READ_MODE);
+    projectDBS_open = fopen(projectDBS_path, READ_MODE);
 
-    if (projectDBS_open == NULL)
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+        row[strcspn(row, "\n")] = '\0';
 
-    {
-        char line[MAX_LENGTH_OF_DATA_IN_FILE];
+        field = strtok(row, ",");
+        strcpy(project.id, field);
 
-        while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
-            char *token;
-            line[strcspn(line, "\n")] = '\0';
-
-            token = strtok(line, ",");
-            strcpy(project.id, token);
-            token = strtok(NULL, ","); strcpy(project.name, token);
-            token = strtok(NULL, ","); strcpy(project.category, token);
-            token = strtok(NULL, ","); strcpy(project.description, token);
-            token = strtok(NULL, ","); strcpy(project.priority, token);
-            token = strtok(NULL, ","); strcpy(project.status, token);
-            token = strtok(NULL, ","); strcpy(project.start_date, token);
-            token = strtok(NULL, ","); strcpy(project.end_date, token);
-            token = strtok(NULL, ","); strcpy(project.created_by, token);
-
-            if (strcmp(project_id_or_name, project.id) == 0 ||
-                strcmp(project_id_or_name, project.name) == 0)
-            {
-                strcpy(project_id_or_name, project.name);
-                break;
-            }
+            project_found = 1;
+            break;
         }
     }
 
     fclose(projectDBS_open);
 
-    get_path(path);
-    strcat(path, PROJECT_FOLDER);
-    strcat(path, strlwr(project_id_or_name));
-    strcat(path, PROJECT_FILE_EXTENSION);
+    search_task_by_id_or_name_screen(x, y);
 
-    char task_id_or_name[50];
-
-    printf("\nTask ID or Name : ");
+    move_cursor(x + TASK_INPUT_X, y + TASK_SEARCH_INPUT_Y);
     fgets(task_id_or_name, sizeof(task_id_or_name), stdin);
     task_id_or_name[strcspn(task_id_or_name, "\n")] = '\0';
 
     get_path(taskDBS_path);
-    get_path(tmp_task_path);
     strcat(taskDBS_path, TASK_DBS);
+
+    get_path(tmp_task_path);
     strcat(tmp_task_path, TMP_TASK_DBS);
 
-    FILE *task_dbs_open = fopen(taskDBS_path, READ_MODE);
-    FILE *tmp_task = fopen(tmp_task_path, WRITE_MODE);
+    taskDBS_open = fopen(taskDBS_path, READ_MODE);
+    tmp_task = fopen(tmp_task_path, WRITE_MODE);
 
-    if (task_dbs_open == NULL || tmp_task == NULL)
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
-        if (task_dbs_open != NULL) fclose(task_dbs_open);
-        if (tmp_task != NULL) fclose(tmp_task);
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+        row[strcspn(row, "\n")] = '\0';
 
-    {
-        char line[MAX_LENGTH_OF_DATA_IN_FILE];
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
 
-        while (fgets(line, sizeof(line), task_dbs_open) != NULL)
+        field = strtok(NULL, ",");
+        strcpy(task.task_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        if ((strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO) && strcmp(task.project_id, project.id) == ZERO)
         {
-            char *token;
-            line[strcspn(line, "\n")] = '\0';
-
-            token = strtok(line, ",");
-            task.unique_id = atoi(token);
-            token = strtok(NULL, ","); strcpy(task.task_id, token);
-            token = strtok(NULL, ","); strcpy(task.project_id, token);
-            token = strtok(NULL, ","); strcpy(task.name, token);
-            token = strtok(NULL, ","); strcpy(task.description, token);
-            token = strtok(NULL, ","); strcpy(task.priority, token);
-            token = strtok(NULL, ","); strcpy(task.status, token);
-            token = strtok(NULL, ","); strcpy(task.start_date, token);
-            token = strtok(NULL, ","); strcpy(task.end_date, token);
-            token = strtok(NULL, ","); strcpy(task.created_by, token);
-
-            if (strcmp(task.task_id, task_id_or_name) == 0 ||
-                strcmp(task.name, task_id_or_name) == 0)
-                task_update_dashboard(&task);
-
-            fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                    task.unique_id, task.task_id, task.project_id, task.name,
-                    task.description, task.priority, task.status,
-                    task.start_date, task.end_date, task.created_by);
+            task_found = 1;
+            task_update_dashboard(&task, x, y);
         }
+        fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
 
-    fclose(task_dbs_open);
+    fclose(taskDBS_open);
     fclose(tmp_task);
 
     remove(taskDBS_path);
+
     rename(tmp_task_path, taskDBS_path);
 
+    get_path(project_task_path);
+    strcat(project_task_path, PROJECT_FOLDER);
+    strcat(project_task_path, "\\");
+    strcat(project_task_path, strlwr(project.name));
+    strcat(project_task_path, PROJECT_FILE_EXTENSION);
+
+    get_path(tmp_project_task_path);
+    strcat(tmp_project_task_path, PROJECT_FOLDER);
+    strcat(tmp_project_task_path, "\\");
+    strcat(tmp_project_task_path, TEMP_TASK_FILE);
+
+    taskDBS_open = fopen(taskDBS_path, READ_MODE);
+
+    tmp_project_task = fopen(tmp_project_task_path, WRITE_MODE);
+
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
-        char tmp_project_task_path[PATH_BUFFER_SIZE];
+        row[strcspn(row, "\n")] = '\0';
 
-        get_path(tmp_project_task_path);
-        strcat(tmp_project_task_path, PROJECT_FOLDER);
-        strcat(tmp_project_task_path, TEMP_TASK_FILE);
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
 
-        FILE *separate_project_dbs_open = fopen(taskDBS_path, READ_MODE);
-        FILE *tmp_for_separate_project_file =
-            fopen(tmp_project_task_path, WRITE_MODE);
+        field = strtok(NULL, ",");
+        strcpy(task.task_id, field);
 
-        if (separate_project_dbs_open == NULL ||
-            tmp_for_separate_project_file == NULL)
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        if (strcmp(task.project_id, project.id) == ZERO)
         {
-            if (separate_project_dbs_open != NULL)
-                fclose(separate_project_dbs_open);
-            if (tmp_for_separate_project_file != NULL)
-                fclose(tmp_for_separate_project_file);
-
-            printf("Error: %s\n", strerror(errno));
-            return 0;
+            fprintf(tmp_project_task, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, project.id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
         }
-
-        {
-            char line[MAX_LENGTH_OF_DATA_IN_FILE];
-
-            while (fgets(line, sizeof(line), separate_project_dbs_open) != NULL)
-            {
-                char *token;
-                line[strcspn(line, "\n")] = '\0';
-
-                token = strtok(line, ",");
-                task.unique_id = atoi(token);
-                token = strtok(NULL, ","); strcpy(task.task_id, token);
-                token = strtok(NULL, ","); strcpy(task.project_id, token);
-                token = strtok(NULL, ","); strcpy(task.name, token);
-                token = strtok(NULL, ","); strcpy(task.description, token);
-                token = strtok(NULL, ","); strcpy(task.priority, token);
-                token = strtok(NULL, ","); strcpy(task.status, token);
-                token = strtok(NULL, ","); strcpy(task.start_date, token);
-                token = strtok(NULL, ","); strcpy(task.end_date, token);
-                token = strtok(NULL, ","); strcpy(task.created_by, token);
-
-                fprintf(tmp_for_separate_project_file,
-                        "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                        task.task_id, task.project_id, task.name,
-                        task.description, task.priority, task.status,
-                        task.start_date, task.end_date, task.created_by);
-            }
-        }
-
-        fclose(separate_project_dbs_open);
-        fclose(tmp_for_separate_project_file);
-
-        remove(path);
-        rename(tmp_project_task_path, path);
     }
+
+    fclose(project_task_open);
+    fclose(tmp_project_task);
+
+    remove(project_task_path);
+
+    rename(tmp_project_task_path, project_task_path);
 
     return 0;
 }
 
 int delete_task()
 {
-    char project_id_or_name[50];
-    char projectDBS_path[PATH_BUFFER_SIZE];
-    char path[PATH_BUFFER_SIZE];
-    char taskDBS_path[PATH_BUFFER_SIZE];
-    char tmp_task_path[PATH_BUFFER_SIZE];
-
-    printf("\nProject ID or Name : ");
-    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
-    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
-
     struct t_details task;
     struct p_details project;
+    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], task_id_or_name[TASK_ID_OR_NAME_SIZE], projectDBS_path[PATH_BUFFER_SIZE], taskDBS_path[PATH_BUFFER_SIZE], tmp_task_path[PATH_BUFFER_SIZE], project_task_path[PATH_BUFFER_SIZE], tmp_project_task_path[PATH_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int project_found = ZERO, task_found = ZERO, x = ZERO, y = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO;
+    FILE *projectDBS_open, *taskDBS_open, *tmp_task, *project_task_open, *tmp_project_task;
+
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    search_project_by_id_or_name_screen(x, y);
+    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
+    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
     get_path(projectDBS_path);
     strcat(projectDBS_path, PROJECT_DBS);
 
-    FILE *projectDBS_open = fopen(projectDBS_path, READ_MODE);
+    projectDBS_open = fopen(projectDBS_path, READ_MODE);
 
-    if (projectDBS_open == NULL)
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+        row[strcspn(row, "\n")] = '\0';
 
-    {
-        char line[MAX_LENGTH_OF_DATA_IN_FILE];
+        field = strtok(row, ",");
+        strcpy(project.id, field);
 
-        while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
-            char *token;
-            line[strcspn(line, "\n")] = '\0';
-
-            token = strtok(line, ",");
-            strcpy(project.id, token);
-            token = strtok(NULL, ","); strcpy(project.name, token);
-            token = strtok(NULL, ","); strcpy(project.category, token);
-            token = strtok(NULL, ","); strcpy(project.description, token);
-            token = strtok(NULL, ","); strcpy(project.priority, token);
-            token = strtok(NULL, ","); strcpy(project.status, token);
-            token = strtok(NULL, ","); strcpy(project.start_date, token);
-            token = strtok(NULL, ","); strcpy(project.end_date, token);
-            token = strtok(NULL, ","); strcpy(project.created_by, token);
-
-            if (strcmp(project_id_or_name, project.id) == 0 ||
-                strcmp(project_id_or_name, project.name) == 0)
-            {
-                strcpy(project_id_or_name, project.name);
-                break;
-            }
+            project_found = 1;
+            break;
         }
     }
 
     fclose(projectDBS_open);
 
-    get_path(path);
-    strcat(path, PROJECT_FOLDER);
-    strcat(path, strlwr(project_id_or_name));
-    strcat(path, PROJECT_FILE_EXTENSION);
+    get_path(project_task_path);
+    strcat(project_task_path, PROJECT_FOLDER);
+    strcat(project_task_path, "\\");
+    strcat(project_task_path, strlwr(project.name));
+    strcat(project_task_path, PROJECT_FILE_EXTENSION);
 
-    char task_id_or_name[50];
+    search_task_by_id_or_name_screen(x, y);
 
-    printf("\nTask ID or Name : ");
+    move_cursor(x + TASK_INPUT_X, y + TASK_SEARCH_INPUT_Y);
     fgets(task_id_or_name, sizeof(task_id_or_name), stdin);
     task_id_or_name[strcspn(task_id_or_name, "\n")] = '\0';
 
+    get_path(tmp_project_task_path);
+    strcat(tmp_project_task_path, PROJECT_FOLDER);
+    strcat(tmp_project_task_path, "\\");
+    strcat(tmp_project_task_path, TEMP_TASK_FILE);
+
+    project_task_open = fopen(project_task_path, READ_MODE);
+
+    tmp_project_task = fopen(tmp_project_task_path, WRITE_MODE);
+
+    while (fgets(row, sizeof(row), project_task_open) != NULL)
     {
-        char tmp_project_task_path[PATH_BUFFER_SIZE];
+        row[strcspn(row, "\n")] = '\0';
 
-        get_path(tmp_project_task_path);
-        strcat(tmp_project_task_path, PROJECT_FOLDER);
-        strcat(tmp_project_task_path, TEMP_TASK_FILE);
+        field = strtok(row, ",");
+        strcpy(task.task_id, field);
 
-        FILE *separate_project_dbs_open = fopen(path, READ_MODE);
-        FILE *tmp_for_separate_project_file =
-            fopen(tmp_project_task_path, WRITE_MODE);
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
 
-        if (separate_project_dbs_open == NULL ||
-            tmp_for_separate_project_file == NULL)
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        if (strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO)
         {
-            if (separate_project_dbs_open != NULL)
-                fclose(separate_project_dbs_open);
-            if (tmp_for_separate_project_file != NULL)
-                fclose(tmp_for_separate_project_file);
-
-            printf("Error: %s\n", strerror(errno));
-            return 0;
+            strcpy(task.status, DELETE_STATUS);
+            task_found = 1;
         }
 
-        {
-            char line[MAX_LENGTH_OF_DATA_IN_FILE];
-
-            while (fgets(line, sizeof(line), separate_project_dbs_open) != NULL)
-            {
-                char *token;
-                line[strcspn(line, "\n")] = '\0';
-
-                token = strtok(line, ",");
-                strcpy(task.task_id, token);
-                token = strtok(NULL, ","); strcpy(task.project_id, token);
-                token = strtok(NULL, ","); strcpy(task.name, token);
-                token = strtok(NULL, ","); strcpy(task.description, token);
-                token = strtok(NULL, ","); strcpy(task.priority, token);
-                token = strtok(NULL, ","); strcpy(task.status, token);
-                token = strtok(NULL, ","); strcpy(task.start_date, token);
-                token = strtok(NULL, ","); strcpy(task.end_date, token);
-                token = strtok(NULL, ","); strcpy(task.created_by, token);
-
-                if (strcmp(task.task_id, task_id_or_name) == 0 ||
-                    strcmp(task.name, task_id_or_name) == 0)
-                    strcpy(task.status, "Deleted");
-
-                fprintf(tmp_for_separate_project_file,
-                        "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                        task.task_id, task.project_id, task.name,
-                        task.description, task.priority, task.status,
-                        task.start_date, task.end_date, task.created_by);
-            }
-        }
-
-        fclose(separate_project_dbs_open);
-        fclose(tmp_for_separate_project_file);
-
-        remove(path);
-        rename(tmp_project_task_path, path);
+        fprintf(tmp_project_task, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
+
+    fclose(project_task_open);
+    fclose(tmp_project_task);
+
+    remove(project_task_path);
+    rename(tmp_project_task_path, project_task_path);
 
     get_path(taskDBS_path);
-    get_path(tmp_task_path);
     strcat(taskDBS_path, TASK_DBS);
+
+    get_path(tmp_task_path);
     strcat(tmp_task_path, TMP_TASK_DBS);
 
+    taskDBS_open = fopen(taskDBS_path, READ_MODE);
+
+    tmp_task = fopen(tmp_task_path, WRITE_MODE);
+
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
-        FILE *task_dbs_open = fopen(taskDBS_path, READ_MODE);
-        FILE *tmp_task = fopen(tmp_task_path, WRITE_MODE);
+        row[strcspn(row, "\n")] = '\0';
 
-        if (task_dbs_open == NULL || tmp_task == NULL)
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.task_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        if ((strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO))
         {
-            if (task_dbs_open != NULL) fclose(task_dbs_open);
-            if (tmp_task != NULL) fclose(tmp_task);
-
-            printf("Error: %s\n", strerror(errno));
-            return 0;
+            strcpy(task.status, DELETE_STATUS);
         }
 
-        {
-            char line[MAX_LENGTH_OF_DATA_IN_FILE];
-
-            while (fgets(line, sizeof(line), task_dbs_open) != NULL)
-            {
-                char *token;
-                line[strcspn(line, "\n")] = '\0';
-
-                token = strtok(line, ",");
-                task.unique_id = atoi(token);
-                token = strtok(NULL, ","); strcpy(task.task_id, token);
-                token = strtok(NULL, ","); strcpy(task.project_id, token);
-                token = strtok(NULL, ","); strcpy(task.name, token);
-                token = strtok(NULL, ","); strcpy(task.description, token);
-                token = strtok(NULL, ","); strcpy(task.priority, token);
-                token = strtok(NULL, ","); strcpy(task.status, token);
-                token = strtok(NULL, ","); strcpy(task.start_date, token);
-                token = strtok(NULL, ","); strcpy(task.end_date, token);
-                token = strtok(NULL, ","); strcpy(task.created_by, token);
-
-                if (strcmp(task.task_id, task_id_or_name) == 0 ||
-                    strcmp(task.name, task_id_or_name) == 0)
-                    strcpy(task.status, "Deleted");
-
-                fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                        task.unique_id, task.task_id, task.project_id,
-                        task.name, task.description, task.priority,
-                        task.status, task.start_date, task.end_date,
-                        task.created_by);
-            }
-        }
-
-        fclose(task_dbs_open);
-        fclose(tmp_task);
-
-        remove(taskDBS_path);
-        rename(tmp_task_path, taskDBS_path);
+        fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
+
+    fclose(taskDBS_open);
+    fclose(tmp_task);
+
+    remove(taskDBS_path);
+    rename(tmp_task_path, taskDBS_path);
 
     return 0;
 }
 
 int view_tasks_by_project()
 {
-    char project_id_or_name[50];
-    char projectDBS_path[PATH_BUFFER_SIZE];
-    char path[PATH_BUFFER_SIZE];
+    struct p_details project;
+    struct t_details task;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO;
+    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], projectDBS_path[PATH_BUFFER_SIZE], project_task_path[PATH_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *projectDBS_open, *project_task_open;
 
-    printf("\nProject ID or Name : ");
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    search_project_by_id_or_name_screen(x, y);
+
+    move_cursor(x + PROJECT_INPUT_X, y + 5);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
-
-    struct p_details project;
 
     get_path(projectDBS_path);
     strcat(projectDBS_path, PROJECT_DBS);
 
-    FILE *projectDBS_open = fopen(projectDBS_path, READ_MODE);
+    projectDBS_open = fopen(projectDBS_path, READ_MODE);
 
-    if (projectDBS_open == NULL)
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+        row[strcspn(row, "\n")] = '\0';
 
-    {
-        char line[MAX_LENGTH_OF_DATA_IN_FILE];
+        field = strtok(row, ",");
+        strcpy(project.id, field);
 
-        while (fgets(line, sizeof(line), projectDBS_open) != NULL)
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
-            char *token;
-            line[strcspn(line, "\n")] = '\0';
-
-            token = strtok(line, ",");
-            strcpy(project.id, token);
-            token = strtok(NULL, ","); strcpy(project.name, token);
-            token = strtok(NULL, ","); strcpy(project.category, token);
-            token = strtok(NULL, ","); strcpy(project.description, token);
-            token = strtok(NULL, ","); strcpy(project.priority, token);
-            token = strtok(NULL, ","); strcpy(project.status, token);
-            token = strtok(NULL, ","); strcpy(project.start_date, token);
-            token = strtok(NULL, ","); strcpy(project.end_date, token);
-            token = strtok(NULL, ","); strcpy(project.created_by, token);
-
-            if (strcmp(project_id_or_name, project.id) == 0 ||
-                strcmp(project_id_or_name, project.name) == 0)
-            {
-                strcpy(project_id_or_name, project.name);
-                break;
-            }
+            project_found = 1;
+            break;
         }
     }
 
     fclose(projectDBS_open);
 
-    get_path(path);
-    strcat(path, PROJECT_FOLDER);
-    strcat(path, strlwr(project_id_or_name));
-    strcat(path, PROJECT_FILE_EXTENSION);
+    get_path(project_task_path);
+    strcat(project_task_path, PROJECT_FOLDER);
+    strcat(project_task_path, "\\");
+    strcat(project_task_path, strlwr(project.name));
+    strcat(project_task_path, PROJECT_FILE_EXTENSION);
 
-    struct t_details task;
-    FILE *separate_project_dbs_open = fopen(path, READ_MODE);
+    project_task_open = fopen(project_task_path, READ_MODE);
 
-    if (separate_project_dbs_open == NULL)
+    while (fgets(row, sizeof(row), project_task_open) != NULL)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
+        row[strcspn(row, "\n")] = '\0';
+
+        field = strtok(row, ",");
+        strcpy(task.task_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        clear_screen();
+        header_screen();
+
+        task_details_screen_for_separate_project(x, y);
+
+        move_cursor(x + 10, y + 6);
+        printf("%s", task.task_id);
+
+        move_cursor(x + 10, y + 11);
+        printf("%s", task.project_id);
+
+        move_cursor(x + 10, y + 16);
+        printf("%s", task.name);
+
+        move_cursor(x + 10, y + 21);
+        printf("%s", task.description);
+
+        move_cursor(x + 10, y + 28);
+        printf("%s", task.priority);
+
+        move_cursor(x + 10, y + 33);
+        printf("%s", task.status);
+
+        move_cursor(x + 10, y + 38);
+        printf("%s", task.start_date);
+
+        move_cursor(x + 10, y + 43);
+        printf("%s", task.end_date);
+
+        get_input;
     }
 
-    task_details_screen();
+    fclose(project_task_open);
 
-    {
-        char line[MAX_LENGTH_OF_DATA_IN_FILE];
-
-        while (fgets(line, sizeof(line), separate_project_dbs_open) != NULL)
-        {
-            char *token;
-            line[strcspn(line, "\n")] = '\0';
-
-            token = strtok(line, ",");
-            strcpy(task.task_id, token);
-            token = strtok(NULL, ","); strcpy(task.project_id, token);
-            token = strtok(NULL, ","); strcpy(task.name, token);
-            token = strtok(NULL, ","); strcpy(task.description, token);
-            token = strtok(NULL, ","); strcpy(task.priority, token);
-            token = strtok(NULL, ","); strcpy(task.status, token);
-            token = strtok(NULL, ","); strcpy(task.start_date, token);
-            token = strtok(NULL, ","); strcpy(task.end_date, token);
-            token = strtok(NULL, ","); strcpy(task.created_by, token);
-
-            printf("\n\n");
-            printf("Task ID     : %s\n", task.task_id);
-            printf("Project ID  : %s\n", task.project_id);
-            printf("Task Name   : %s\n", task.name);
-            printf("Description : %s\n", task.description);
-            printf("Priority    : %s\n", task.priority);
-            printf("Status      : %s\n", task.status);
-            printf("Start Date  : %s\n", task.start_date);
-            printf("Deadline    : %s\n", task.end_date);
-
-            Sleep(1000);
-        }
-    }
-
-    fclose(separate_project_dbs_open);
     return 0;
 }
 
 int change_task_name(char name[])
 {
-    char updated_name[50];
+    char updated_name[TASK_NAME_SIZE];
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO;
 
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    change_task_name_screen(x, y);
+
+    move_cursor(x + 10, y + 6);
     fgets(updated_name, sizeof(updated_name), stdin);
     updated_name[strcspn(updated_name, "\n")] = '\0';
     strcpy(name, updated_name);
@@ -784,8 +858,17 @@ int change_task_name(char name[])
 
 int change_task_description(char description[])
 {
-    char updated_description[50];
+    char updated_description[DESCRIPTION_SIZE];
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO;
 
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    change_task_description_screen(x, y);
+
+    move_cursor(x + 10, y + 6);
     fgets(updated_description, sizeof(updated_description), stdin);
     updated_description[strcspn(updated_description, "\n")] = '\0';
     strcpy(description, updated_description);
@@ -795,22 +878,55 @@ int change_task_description(char description[])
 
 int change_task_status(char status[])
 {
-    task_status_dashboard(status);
+    int terminal_width, terminal_height, x, y;
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - TASK_STATUS_BOX_WIDTH) / TWO;
+    y = (terminal_height - TASK_STATUS_BOX_HEIGHT) / TWO;
+
+    task_status_dashboard(status, x, y);
+
     return 0;
 }
 
 int change_task_priority(char priority[])
 {
-    task_priority_dashboard(priority);
+    int terminal_width, terminal_height, x, y;
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - TASK_PRIORITY_BOX_WIDTH) / TWO;
+    y = (terminal_height - TASK_PRIORITY_BOX_HEIGHT) / TWO;
+
+    task_priority_dashboard(priority, x, y);
+
     return 0;
 }
 
 int change_task_start_date(char start_date[])
 {
-    char updated_start_date[50];
+    char updated_start_date[STARTDATE_SIZE];
+    int is_valid = INVALID, terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO;
 
-    fgets(updated_start_date, sizeof(updated_start_date), stdin);
-    updated_start_date[strcspn(updated_start_date, "\n")] = '\0';
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    do
+    {
+        change_task_start_date_screen(x, y);
+
+        move_cursor(x + 10, y + 6);
+        fgets(updated_start_date, sizeof(updated_start_date), stdin);
+        updated_start_date[strcspn(updated_start_date, "\n")] = '\0';
+        is_valid = validate_date(updated_start_date);
+
+    } while (is_valid != VALID);
+
     strcpy(start_date, updated_start_date);
 
     return 0;
@@ -818,10 +934,25 @@ int change_task_start_date(char start_date[])
 
 int extend_task_deadline(char deadline[])
 {
-    char updated_deadline[50];
+    char updated_deadline[EXTENDDATE_SIZE];
+    int is_valid = INVALID, terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO;
 
-    fgets(updated_deadline, sizeof(updated_deadline), stdin);
-    updated_deadline[strcspn(updated_deadline, "\n")] = '\0';
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    do
+    {
+        extend_task_deadline_screen(x, y);
+
+        move_cursor(x + 10, y + 6);
+        fgets(updated_deadline, sizeof(updated_deadline), stdin);
+        updated_deadline[strcspn(updated_deadline, "\n")] = '\0';
+        is_valid = validate_date(updated_deadline);
+
+    } while (is_valid != VALID);
+
     strcpy(deadline, updated_deadline);
 
     return 0;
@@ -829,281 +960,413 @@ int extend_task_deadline(char deadline[])
 
 int search_by_task_id_or_name()
 {
-    char task_id_or_name[50];
-    char path[PATH_BUFFER_SIZE];
+    struct t_details task;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
+    char task_id_or_name[TASK_ID_OR_NAME_SIZE], path[PATH_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *taskDBS_open;
 
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+
+    search_task_by_id_or_name_screen(x, y);
+
+    move_cursor(x + TASK_INPUT_X, y + TASK_SEARCH_INPUT_Y);
     fgets(task_id_or_name, sizeof(task_id_or_name), stdin);
     task_id_or_name[strcspn(task_id_or_name, "\n")] = '\0';
 
     get_path(path);
     strcat(path, TASK_DBS);
 
-    FILE *taskDBS_open = fopen(path, READ_MODE);
-    struct t_details task;
+    taskDBS_open = fopen(path, READ_MODE);
 
-    if (taskDBS_open == NULL)
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+        row[strcspn(row, "\n")] = '\0';
 
-    {
-        char line[MAX_LENGTH_OF_DATA_IN_FILE];
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
 
-        while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+        field = strtok(NULL, ",");
+        strcpy(task.task_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        if (strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO)
         {
-            char *token;
-            line[strcspn(line, "\n")] = '\0';
+            clear_screen();
+            header_screen();
 
-            token = strtok(line, ",");
-            task.unique_id = atoi(token);
-            token = strtok(NULL, ","); strcpy(task.task_id, token);
-            token = strtok(NULL, ","); strcpy(task.project_id, token);
-            token = strtok(NULL, ","); strcpy(task.name, token);
-            token = strtok(NULL, ","); strcpy(task.description, token);
-            token = strtok(NULL, ","); strcpy(task.priority, token);
-            token = strtok(NULL, ","); strcpy(task.status, token);
-            token = strtok(NULL, ","); strcpy(task.start_date, token);
-            token = strtok(NULL, ","); strcpy(task.end_date, token);
-            token = strtok(NULL, ","); strcpy(task.created_by, token);
+            task_details_screen(x, y);
 
-            if ((task.unique_id == *(task_id_or_name)) ||
-                strcmp(task.name, task_id_or_name) == 0)
-            {
-                task_details_screen();
+            move_cursor(x + 10, y + 5);
+            printf("%d", task.unique_id);
 
-                printf("\n\n");
-                printf("Unique Task ID : %d\n", task.unique_id);
-                printf("Project ID     : %s\n", task.project_id);
-                printf("Task ID        : %s\n", task.task_id);
-                printf("Task Name      : %s\n", task.name);
-                printf("Description    : %s\n", task.description);
-                printf("Priority       : %s\n", task.priority);
-                printf("Status         : %s\n", task.status);
-                printf("Start Date     : %s\n", task.start_date);
-                printf("Deadline       : %s\n", task.end_date);
-                break;
-            }
+            move_cursor(x + 10, y + 10);
+            printf("%s", task.task_id);
+
+            move_cursor(x + 10, y + 15);
+            printf("%s", task.project_id);
+
+            move_cursor(x + 10, y + 28);
+            printf("%s", task.name);
+
+            move_cursor(x + 10, y + 25);
+            printf("%s", task.description);
+
+            move_cursor(x + 10, y + 32);
+            printf("%s", task.priority);
+
+            move_cursor(x + 10, y + 37);
+            printf("%s", task.status);
+
+            move_cursor(x + 10, y + 42);
+            printf("%s", task.start_date);
+
+            move_cursor(x + 10, y + 47);
+            printf("%s", task.end_date);
+
+            get_input;
+
+            break;
         }
     }
 
     fclose(taskDBS_open);
+
     return 0;
 }
 
 int search_task_by_status()
 {
-    char status[30];
-    char path[PATH_BUFFER_SIZE];
+    struct t_details task;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, status_box_width = STATUS_BOX_WIDTH, status_box_height = STATUS_BOX_HEIGHT, status_x = ZERO, status_y = ZERO;
+    char status[STATUS_SIZE], path[PATH_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *taskDBS_open;
 
-    task_status_dashboard(status);
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+    status_x = (terminal_width - status_box_width) / TWO;
+    status_y = (terminal_height - status_box_height) / TWO;
+
+    task_status_dashboard(status, status_x, status_y);
 
     get_path(path);
     strcat(path, TASK_DBS);
 
-    FILE *taskDBS_open = fopen(path, READ_MODE);
-    struct t_details task;
+    taskDBS_open = fopen(path, READ_MODE);
 
-    if (taskDBS_open == NULL)
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+        row[strcspn(row, "\n")] = '\0';
 
-    task_details_screen();
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
 
-    {
-        char line[MAX_LENGTH_OF_DATA_IN_FILE];
+        field = strtok(NULL, ",");
+        strcpy(task.task_id, field);
 
-        while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        if (strcmp(task.status, status) == ZERO)
         {
-            char *token;
-            line[strcspn(line, "\n")] = '\0';
+            clear_screen();
+            header_screen();
 
-            token = strtok(line, ",");
-            task.unique_id = atoi(token);
-            token = strtok(NULL, ","); strcpy(task.task_id, token);
-            token = strtok(NULL, ","); strcpy(task.project_id, token);
-            token = strtok(NULL, ","); strcpy(task.name, token);
-            token = strtok(NULL, ","); strcpy(task.description, token);
-            token = strtok(NULL, ","); strcpy(task.priority, token);
-            token = strtok(NULL, ","); strcpy(task.status, token);
-            token = strtok(NULL, ","); strcpy(task.start_date, token);
-            token = strtok(NULL, ","); strcpy(task.end_date, token);
-            token = strtok(NULL, ","); strcpy(task.created_by, token);
+            task_details_screen(x, y);
 
-            if (strcmp(task.status, status) == 0)
-            {
-                printf("\n\n");
-                printf("Task ID        : %s\n", task.task_id);
-                printf("Project ID     : %s\n", task.project_id);
-                printf("Task Name      : %s\n", task.name);
-                printf("Description    : %s\n", task.description);
-                printf("Priority       : %s\n", task.priority);
-                printf("Status         : %s\n", task.status);
-                printf("Start Date     : %s\n", task.start_date);
-                printf("Deadline       : %s\n", task.end_date);
-            }
+            move_cursor(x + 10, y + 5);
+            printf("%d", task.unique_id);
+
+            move_cursor(x + 10, y + 10);
+            printf("%s", task.task_id);
+
+            move_cursor(x + 10, y + 15);
+            printf("%s", task.project_id);
+
+            move_cursor(x + 10, y + 20);
+            printf("%s", task.name);
+
+            move_cursor(x + 10, y + 25);
+            printf("%s", task.description);
+
+            move_cursor(x + 10, y + 32);
+            printf("%s", task.priority);
+
+            move_cursor(x + 10, y + 37);
+            printf("%s", task.status);
+
+            move_cursor(x + 10, y + 42);
+            printf("%s", task.start_date);
+
+            move_cursor(x + 10, y + 47);
+            printf("%s", task.end_date);
+
+            get_input;
         }
     }
 
     fclose(taskDBS_open);
+
     return 0;
 }
 
 int search_task_by_priority()
 {
-    char priority[30];
-    char path[PATH_BUFFER_SIZE];
+    struct t_details task;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = BOX_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO;
+    char priority[PRIORITY_SIZE], path[PATH_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *taskDBS_open;
 
-    task_priority_dashboard(priority);
+    init_console();
+    header_screen();
+
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_OFFSET_Y;
+    priority_x = (terminal_width - priority_box_width) / TWO;
+    priority_y = (terminal_height - priority_box_height) / TWO;
+
+    task_priority_dashboard(priority, priority_x, priority_y);
 
     get_path(path);
     strcat(path, TASK_DBS);
 
-    FILE *taskDBS_open = fopen(path, READ_MODE);
-    struct t_details task;
+    taskDBS_open = fopen(path, READ_MODE);
 
-    if (taskDBS_open == NULL)
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+        row[strcspn(row, "\n")] = '\0';
 
-    task_details_screen();
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
 
-    {
-        char line[MAX_LENGTH_OF_DATA_IN_FILE];
+        field = strtok(NULL, ",");
+        strcpy(task.task_id, field);
 
-        while (fgets(line, sizeof(line), taskDBS_open) != NULL)
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        if (strcmp(task.priority, priority) == ZERO)
         {
-            char *token;
-            line[strcspn(line, "\n")] = '\0';
+            clear_screen();
+            header_screen();
 
-            token = strtok(line, ",");
-            task.unique_id = atoi(token);
-            token = strtok(NULL, ","); strcpy(task.task_id, token);
-            token = strtok(NULL, ","); strcpy(task.project_id, token);
-            token = strtok(NULL, ","); strcpy(task.name, token);
-            token = strtok(NULL, ","); strcpy(task.description, token);
-            token = strtok(NULL, ","); strcpy(task.priority, token);
-            token = strtok(NULL, ","); strcpy(task.status, token);
-            token = strtok(NULL, ","); strcpy(task.start_date, token);
-            token = strtok(NULL, ","); strcpy(task.end_date, token);
-            token = strtok(NULL, ","); strcpy(task.created_by, token);
+            task_details_screen(x, y);
 
-            if (strcmp(task.status, priority) == 0)
-            {
-                printf("\n\n");
-                printf("Task ID        : %s\n", task.task_id);
-                printf("Project ID     : %s\n", task.project_id);
-                printf("Task Name      : %s\n", task.name);
-                printf("Description    : %s\n", task.description);
-                printf("Priority       : %s\n", task.priority);
-                printf("Status         : %s\n", task.status);
-                printf("Start Date     : %s\n", task.start_date);
-                printf("Deadline       : %s\n", task.end_date);
-            }
+            move_cursor(x + 10, y + 5);
+            printf("%d", task.unique_id);
+
+            move_cursor(x + 10, y + 10);
+            printf("%s", task.task_id);
+
+            move_cursor(x + 10, y + 15);
+            printf("%s", task.project_id);
+
+            move_cursor(x + 10, y + 20);
+            printf("%s", task.name);
+
+            move_cursor(x + 10, y + 25);
+            printf("%s", task.description);
+
+            move_cursor(x + 10, y + 32);
+            printf("%s", task.priority);
+
+            move_cursor(x + 10, y + 37);
+            printf("%s", task.status);
+
+            move_cursor(x + 10, y + 42);
+            printf("%s", task.start_date);
+
+            move_cursor(x + 10, y + 47);
+            printf("%s", task.end_date);
+
+            get_input;
         }
     }
 
     fclose(taskDBS_open);
+
     return 0;
 }
 
 int sort_tasks()
 {
-    char taskDBS_path[PATH_BUFFER_SIZE];
-    char sort_task_path[PATH_BUFFER_SIZE];
+    struct t_details task[TASK_ARRAY_SIZE];
+    char taskDBS_path[PATH_BUFFER_SIZE], sort_task_path[PATH_BUFFER_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int task_count = ZERO, i;
+    FILE *taskDBS_open, *sort_task_open;
 
     get_path(taskDBS_path);
-    get_path(sort_task_path);
-
     strcat(taskDBS_path, TASK_DBS);
+
+    get_path(sort_task_path);
     strcat(sort_task_path, SORT_TASK_DBS);
 
-    FILE *taskDBS_open = fopen(taskDBS_path, READ_MODE);
+    taskDBS_open = fopen(taskDBS_path, READ_MODE);
 
-    if (taskDBS_open == NULL)
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
+        row[strcspn(row, "\n")] = '\0';
 
-    struct t_details task[MAX];
-    char line[MAX_LENGTH_OF_DATA_IN_FILE];
-    int i = 0;
+        field = strtok(row, ",");
+        task[task_count].unique_id = atoi(field);
 
-    while (fgets(line, sizeof(line), taskDBS_open) != NULL)
-    {
-        char *token;
-        line[strcspn(line, "\n")] = '\0';
+        field = strtok(NULL, ",");
+        strcpy(task[task_count].task_id, field);
 
-        token = strtok(line, ",");
-        task[i].unique_id = atoi(token);
-        token = strtok(NULL, ","); strcpy(task[i].task_id, token);
-        token = strtok(NULL, ","); strcpy(task[i].project_id, token);
-        token = strtok(NULL, ","); strcpy(task[i].name, token);
-        token = strtok(NULL, ","); strcpy(task[i].description, token);
-        token = strtok(NULL, ","); strcpy(task[i].priority, token);
-        token = strtok(NULL, ","); strcpy(task[i].status, token);
-        token = strtok(NULL, ","); strcpy(task[i].start_date, token);
-        token = strtok(NULL, ","); strcpy(task[i].end_date, token);
-        token = strtok(NULL, ","); strcpy(task[i].created_by, token);
+        field = strtok(NULL, ",");
+        strcpy(task[task_count].project_id, field);
 
-        i++;
+        field = strtok(NULL, ",");
+        strcpy(task[task_count].name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task[task_count].description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task[task_count].priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task[task_count].status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task[task_count].start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task[task_count].end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task[task_count].created_by, field);
+
+        task_count++;
     }
 
     fclose(taskDBS_open);
 
-    qsort(task, i, sizeof(struct t_details), sort_by_priority);
+    qsort(task, task_count, sizeof(struct t_details), sort_by_priority);
 
-    FILE *sort_task_open = fopen(sort_task_path, WRITE_MODE);
+    sort_task_open = fopen(sort_task_path, WRITE_MODE);
 
-    if (sort_task_open == NULL)
+    for (i = ZERO; i < task_count; i++)
     {
-        printf("Error: %s\n", strerror(errno));
-        return 0;
-    }
-
-    for (int j = 0; j < i; j++)
-    {
-        fprintf(sort_task_open,
-                "%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                j + 1, task[j].unique_id, task[j].task_id,
-                task[j].project_id, task[j].name, task[j].description,
-                task[j].priority, task[j].status, task[j].start_date,
-                task[j].end_date, task[j].created_by);
+        fprintf(sort_task_open, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task[i].unique_id, task[i].task_id, task[i].project_id, task[i].name, task[i].description, task[i].priority, task[i].status, task[i].start_date, task[i].end_date, task[i].created_by);
     }
 
     fclose(sort_task_open);
+
     return 0;
 }
 
 int sort_by_priority(const void *a, const void *b)
 {
-    struct t_details *task_a = (struct t_details *)a;
-    struct t_details *task_b = (struct t_details *)b;
+    struct t_details *task_a = (struct t_details *)a, *task_b = (struct t_details *)b;
 
-    int priority_of_a;
-    int priority_of_b;
+    int priority_a = ZERO, priority_b = ZERO;
 
-    if (strcmp(task_a->priority, "High") == 0)
-        priority_of_a = 3;
-    else if (strcmp(task_a->priority, "Medium") == 0)
-        priority_of_a = 2;
-    else
-        priority_of_a = 1;
+    if (strcmp(task_a->priority, "High") == ZERO)
+    {
+        priority_a = 3;
+    }
+    else if (strcmp(task_a->priority, "Medium") == ZERO)
+    {
+        priority_a = 2;
+    }
+    else if (strcmp(task_a->priority, "Low") == ZERO)
+    {
+        priority_a = 1;
+    }
 
-    if (strcmp(task_b->priority, "High") == 0)
-        priority_of_b = 3;
-    else if (strcmp(task_b->priority, "Medium") == 0)
-        priority_of_b = 2;
-    else
-        priority_of_b = 1;
+    if (strcmp(task_b->priority, "High") == ZERO)
+    {
+        priority_b = 3;
+    }
+    else if (strcmp(task_b->priority, "Medium") == ZERO)
+    {
+        priority_b = 2;
+    }
+    else if (strcmp(task_b->priority, "Low") == ZERO)
+    {
+        priority_b = 1;
+    }
 
-    if (priority_of_b != priority_of_a)
-        return priority_of_b - priority_of_a;
-
-    return strcmp(task_a->end_date, task_b->end_date);
+    return priority_b - priority_a;
 }

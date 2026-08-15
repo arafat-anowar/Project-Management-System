@@ -14,9 +14,6 @@
 #define MAX_LENGTH_OF_DATA_IN_FILE 3000
 // Function Prototypes
 
-int login_invalid_screen();
-int project_details_screen();
-int task_details_screen();
 int pause_screen(int sec);
 int clear_screen();
 
@@ -31,7 +28,7 @@ int get_console_width();
 int get_console_height();
 int init_console();
 // void clock();
-int validate_input(char field[], int size);
+// int validate_input(char field[], int size);
 
 
 
