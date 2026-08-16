@@ -120,7 +120,7 @@ int create_task()
 
     search_project_by_id_or_name_screen(x, y);
 
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_NAME_OFFSET_Y);
+    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_NAME_OFFSET);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
@@ -162,11 +162,11 @@ int create_task()
 
     create_task_screen(x, y);
 
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_NAME_OFFSET_Y);
+    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_NAME_OFFSET);
     fgets(task.name, sizeof(task.name), stdin);
     task.name[strcspn(task.name, "\n")] = '\0';
 
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_DESCRIPTION_OFFSET_Y);
+    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_DESCRIPTION_OFFSET);
     fgets(task.description, sizeof(task.description), stdin);
     task.description[strcspn(task.description, "\n")] = '\0';
 
@@ -177,24 +177,24 @@ int create_task()
 
     create_task_screen(x, y);
 
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_NAME_OFFSET_Y);
+    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_NAME_OFFSET);
     printf("%s", task.name);
 
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_DESCRIPTION_OFFSET_Y);
+    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_DESCRIPTION_OFFSET);
     printf("%s", task.description);
 
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_PRIORITY_OFFSET_Y);
+    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_PRIORITY_OFFSET);
     printf("%s", task.priority);
 
     strcpy(task.status, DEFAULT_TASK_STATUS);
 
     do
     {
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_START_DATE_OFFSET_Y);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_START_DATE_OFFSET);
         if (is_start_date_valid == ZERO)
         {
             printf("                                                                             ");
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_START_DATE_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_START_DATE_OFFSET);
         }
 
         fgets(task.start_date, sizeof(task.start_date), stdin);
@@ -205,11 +205,11 @@ int create_task()
 
     do
     {
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_END_DATE_OFFSET_Y);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_END_DATE_OFFSET);
         if (is_end_date_valid == ZERO)
         {
             printf("                                                                             ");
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_END_DATE_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_END_DATE_OFFSET);
         }
         fgets(task.end_date, sizeof(task.end_date), stdin);
         task.end_date[strcspn(task.end_date, "\n")] = '\0';
@@ -257,7 +257,7 @@ int update_task()
 
     search_project_by_id_or_name_screen(x, y);
 
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_NAME_OFFSET_Y);
+    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_NAME_OFFSET);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
@@ -412,7 +412,7 @@ int update_task()
 
 int change_task_name(char name[])
 {
-    char updated_name[TASK_NAME_SIZE];
+    char new_name[TASK_NAME_SIZE];
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
 
     terminal_width = get_console_width();
@@ -423,16 +423,17 @@ int change_task_name(char name[])
     change_task_name_screen(x, y);
 
     move_cursor(x + PROJECT_INPUT_X, y + TASK_NAME_Y);
-    fgets(updated_name, sizeof(updated_name), stdin);
-    updated_name[strcspn(updated_name, "\n")] = '\0';
-    strcpy(name, updated_name);
+    fgets(new_name, sizeof(new_name), stdin);
+    new_name[strcspn(new_name, "\n")] = '\0';
+
+    strcpy(name, new_name);
 
     return 0;
 }
 
 int change_task_description(char description[])
 {
-    char updated_description[TASK_DESCRIPTION_SIZE];
+    char new_description[TASK_DESCRIPTION_SIZE];
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
 
     terminal_width = get_console_width();
@@ -443,9 +444,10 @@ int change_task_description(char description[])
     change_task_description_screen(x, y);
 
     move_cursor(x + PROJECT_INPUT_X, y + TASK_DESCRIPTION_Y);
-    fgets(updated_description, sizeof(updated_description), stdin);
-    updated_description[strcspn(updated_description, "\n")] = '\0';
-    strcpy(description, updated_description);
+    fgets(new_description, sizeof(new_description), stdin);
+    new_description[strcspn(new_description, "\n")] = '\0';
+
+    strcpy(description, new_description);
 
     return 0;
 }
@@ -482,7 +484,7 @@ int change_task_priority(char priority[])
 
 int change_task_start_date(char start_date[])
 {
-    char updated_start_date[TASK_START_DATE_SIZE];
+    char new_start_date[TASK_START_DATE_SIZE];
     int is_valid = INVALID, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
 
     terminal_width = get_console_width();
@@ -495,20 +497,21 @@ int change_task_start_date(char start_date[])
         change_task_start_date_screen(x, y);
 
         move_cursor(x + PROJECT_INPUT_X, y + TASK_START_DATE_Y);
-        fgets(updated_start_date, sizeof(updated_start_date), stdin);
-        updated_start_date[strcspn(updated_start_date, "\n")] = '\0';
-        is_valid = validate_date(updated_start_date);
+        fgets(new_start_date, sizeof(new_start_date), stdin);
+        new_start_date[strcspn(new_start_date, "\n")] = '\0';
+
+        is_valid = validate_date(new_start_date);
 
     } while (is_valid != VALID);
 
-    strcpy(start_date, updated_start_date);
+    strcpy(start_date, new_start_date);
 
     return 0;
 }
 
 int extend_task_deadline(char deadline[])
 {
-    char updated_deadline[TASK_END_DATE_SIZE];
+    char new_deadline[TASK_END_DATE_SIZE];
     int is_valid = INVALID, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
 
     terminal_width = get_console_width();
@@ -519,14 +522,16 @@ int extend_task_deadline(char deadline[])
     do
     {
         extend_task_deadline_screen(x, y);
+
         move_cursor(x + PROJECT_INPUT_X, y + TASK_END_DATE_Y);
-        fgets(updated_deadline, sizeof(updated_deadline), stdin);
-        updated_deadline[strcspn(updated_deadline, "\n")] = '\0';
-        is_valid = validate_date(updated_deadline);
+        fgets(new_deadline, sizeof(new_deadline), stdin);
+        new_deadline[strcspn(new_deadline, "\n")] = '\0';
+
+        is_valid = validate_date(new_deadline);
 
     } while (is_valid != VALID);
 
-    strcpy(deadline, updated_deadline);
+    strcpy(deadline, new_deadline);
 
     return 0;
 }
@@ -536,7 +541,7 @@ int delete_task()
     struct t_details task;
     struct p_details project;
     char project_id_or_name[PROJECT_SEARCH_SIZE], task_id_or_name[TASK_SEARCH_SIZE], projectDBS_path[TASK_PATH_BUFFER_SIZE], taskDBS_path[TASK_PATH_BUFFER_SIZE], tmp_task_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], tmp_project_task_path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
-    int  x = ZERO, y = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT;
+    int x = ZERO, y = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT;
     FILE *projectDBS_open, *taskDBS_open, *tmp_task, *project_task_open, *tmp_project_task;
 
     init_console();
@@ -760,32 +765,32 @@ int view_tasks()
 
         task_details_screen(x, y);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_TASK_ID_OFFSET_Y);
-        printf("%d", task.unique_id);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_UNIQUE_ID_OFFSET);
+        printf("%d ", task.unique_id);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_TASK_ID_OFFSET_Y);
-        printf("%s", task.task_id);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_TASK_ID_OFFSET);
+        printf("%s ", task.task_id);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_PROJECT_ID_OFFSET_Y);
-        printf("%s", task.project_id);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_PROJECT_ID_OFFSET);
+        printf("%s ", task.project_id);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_NAME_OFFSET_Y);
-        printf("%s", task.name);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_NAME_OFFSET);
+        printf("%s ", task.name);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_DESCRIPTION_OFFSET_Y);
-        printf("%s", task.description);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_DESCRIPTION_OFFSET);
+        printf("%s ", task.description);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_PRIORITY_OFFSET_Y);
-        printf("%s", task.priority);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_PRIORITY_OFFSET);
+        printf("%s ", task.priority);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_STATUS_OFFSET_Y);
-        printf("%s", task.status);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_STATUS_OFFSET);
+        printf("%s ", task.status);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_START_DATE_OFFSET_Y);
-        printf("%s", task.start_date);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_START_DATE_OFFSET);
+        printf("%s ", task.start_date);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_END_DATE_OFFSET_Y);
-        printf("%s", task.end_date);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_END_DATE_OFFSET);
+        printf("%s ", task.end_date);
 
         get_input;
     }
@@ -863,31 +868,31 @@ int search_by_task_id_or_name()
 
             task_details_screen(x, y);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_TASK_ID_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_UNIQUE_ID_OFFSET);
             printf("%d", task.unique_id);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_TASK_ID_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_TASK_ID_OFFSET);
             printf("%s", task.task_id);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_PROJECT_ID_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_PROJECT_ID_OFFSET);
             printf("%s", task.project_id);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_NAME_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_NAME_OFFSET);
             printf("%s", task.name);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_DESCRIPTION_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_DESCRIPTION_OFFSET);
             printf("%s", task.description);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_PRIORITY_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_PRIORITY_OFFSET);
             printf("%s", task.priority);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_STATUS_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_STATUS_OFFSET);
             printf("%s", task.status);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_START_DATE_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_START_DATE_OFFSET);
             printf("%s", task.start_date);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_END_DATE_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_END_DATE_OFFSET);
             printf("%s", task.end_date);
 
             get_input;
@@ -933,8 +938,8 @@ int view_tasks_by_project()
         row[strcspn(row, "\n")] = '\0';
 
         field = strtok(row, ",");
-        strcpy(project.id, field);
 
+        strcpy(project.id, field);
         field = strtok(NULL, ",");
         strcpy(project.name, field);
 
@@ -986,8 +991,8 @@ int view_tasks_by_project()
         row[strcspn(row, "\n")] = '\0';
 
         field = strtok(row, ",");
-        strcpy(task.task_id, field);
 
+        strcpy(task.task_id, field);
         field = strtok(NULL, ",");
         strcpy(task.project_id, field);
 
@@ -1017,28 +1022,28 @@ int view_tasks_by_project()
 
         task_details_screen_for_separate_project(x, y);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_TASK_ID_Y_OFFSET);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_Y_TASK_ID_OFFSET);
         printf("%s", task.task_id);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_PROJECT_ID_Y_OFFSET);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_Y_PROJECT_ID_OFFSET);
         printf("%s", task.project_id);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_NAME_Y_OFFSET);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_Y_NAME_OFFSET);
         printf("%s", task.name);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_DESCRIPTION_Y_OFFSET);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_Y_DESCRIPTION_OFFSET);
         printf("%s", task.description);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_PRIORITY_Y_OFFSET);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_Y_PRIORITY_OFFSET);
         printf("%s", task.priority);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_STATUS_Y_OFFSET);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_Y_STATUS_OFFSET);
         printf("%s", task.status);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_START_DATE_Y_OFFSET);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_Y_START_DATE_OFFSET);
         printf("%s", task.start_date);
 
-        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_END_DATE_Y_OFFSET);
+        move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_Y_END_DATE_OFFSET);
         printf("%s", task.end_date);
 
         get_input;
@@ -1115,31 +1120,31 @@ int search_task_by_status()
 
             task_details_screen(x, y);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_TASK_ID_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_UNIQUE_ID_OFFSET);
             printf("%d", task.unique_id);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_TASK_ID_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_TASK_ID_OFFSET);
             printf("%s", task.task_id);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_PROJECT_ID_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_PROJECT_ID_OFFSET);
             printf("%s", task.project_id);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_NAME_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_NAME_OFFSET);
             printf("%s", task.name);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_DESCRIPTION_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_DESCRIPTION_OFFSET);
             printf("%s", task.description);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_PRIORITY_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_PRIORITY_OFFSET);
             printf("%s", task.priority);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_STATUS_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_STATUS_OFFSET);
             printf("%s", task.status);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_START_DATE_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_START_DATE_OFFSET);
             printf("%s", task.start_date);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_END_DATE_OFFSET_Y);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_END_DATE_OFFSET);
             printf("%s", task.end_date);
 
             get_input;
@@ -1212,37 +1217,38 @@ int search_task_by_priority()
 
         if (strcmp(task.priority, priority) == ZERO)
         {
+
             clear_screen();
             header_screen();
 
             task_details_screen(x, y);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_UNIQUE_ID_OFFSET_Y);
-            printf("%d", task.unique_id);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_UNIQUE_ID_OFFSET);
+            printf("%d ", task.unique_id);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_TASK_ID_OFFSET_Y);
-            printf("%s", task.task_id);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_TASK_ID_OFFSET);
+            printf("%s ", task.task_id);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_PROJECT_ID_OFFSET_Y);
-            printf("%s", task.project_id);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_PROJECT_ID_OFFSET);
+            printf("%s ", task.project_id);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_NAME_OFFSET_Y);
-            printf("%s", task.name);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_NAME_OFFSET);
+            printf("%s ", task.name);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_DESCRIPTION_OFFSET_Y);
-            printf("%s", task.description);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_DESCRIPTION_OFFSET);
+            printf("%s ", task.description);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_PRIORITY_OFFSET_Y);
-            printf("%s", task.priority);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_PRIORITY_OFFSET);
+            printf("%s ", task.priority);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_STATUS_OFFSET_Y);
-            printf("%s", task.status);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_STATUS_OFFSET);
+            printf("%s ", task.status);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_START_DATE_OFFSET_Y);
-            printf("%s", task.start_date);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_START_DATE_OFFSET);
+            printf("%s ", task.start_date);
 
-            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_END_DATE_OFFSET_Y);
-            printf("%s", task.end_date);
+            move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_END_DATE_OFFSET);
+            printf("%s ", task.end_date);
 
             get_input;
         }
@@ -1311,7 +1317,7 @@ int sort_tasks()
 
     sort_task_open = fopen(sort_task_path, FILE_MODE_WRITE);
 
-    for (i = ZERO; i < task_count; i++)
+    for (i = 0; i < task_count; i++)
     {
         fprintf(sort_task_open, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task[i].unique_id, task[i].task_id, task[i].project_id, task[i].name, task[i].description, task[i].priority, task[i].status, task[i].start_date, task[i].end_date, task[i].created_by);
     }
