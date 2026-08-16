@@ -1,5 +1,17 @@
 #include "utility.h"
 
+int pause_screen(int sec)
+{
+    Sleep(sec);
+    return 0;
+}
+
+int clear_screen()
+{
+    system("cls");
+    return 0;
+}
+
 int validate_date(char date[])
 {
     int year, month, day, max_day;
@@ -27,16 +39,9 @@ int validate_date(char date[])
         }
     }
 
-    year = (date[0] - '0') * 1000 +
-           (date[1] - '0') * 100 +
-           (date[2] - '0') * 10 +
-           (date[3] - '0');
-
-    month = (date[5] - '0') * 10 +
-            (date[6] - '0');
-
-    day = (date[8] - '0') * 10 +
-          (date[9] - '0');
+    year = (date[0] - '0') * 1000 + (date[1] - '0') * 100 + (date[2] - '0') * 10 + (date[3] - '0');
+    month = (date[5] - '0') * 10 + (date[6] - '0');
+    day = (date[8] - '0') * 10 + (date[9] - '0');
 
     if (month < 1 || month > 12)
     {
@@ -71,37 +76,51 @@ int validate_date(char date[])
     return 1;
 }
 
-
-
-
-
-
-
-int pause_screen(int sec)
+int current_time()
 {
-    Sleep(sec);
+    time_t now;
+    struct tm *current;
+
+    time(&now);
+    current = localtime(&now);
+
+    printf("%2d:%2d:%2d\n", current->tm_hour, current->tm_min, current->tm_sec);
+
     return 0;
 }
 
-int clear_screen()
+int current_date(char date[])
 {
-    system("cls");
+    time_t now;
+    struct tm *current;
+
+    time(&now);
+    current = localtime(&now);
+
+    strftime(date, 15, "%Y-%m-%d", current);
+
     return 0;
 }
 
-// int current_date(char date[])
-// {
-//     return 0;
-// }
-
-
-
-int compare_date()
+int is_overdue(char date[])
 {
+    char today[15];
+
+    current_date(today);
+
+    if (strcmp(date, today) < 0)
+    {
+        return 1;
+    }
     return 0;
 }
-int is_overdue()
+
+int init_console()
 {
+#ifdef _WIN32
+    SetConsoleOutputCP(CP_UTF8);
+    SetConsoleCP(CP_UTF8);
+#endif
     return 0;
 }
 int move_cursor(int x, int y)
@@ -123,6 +142,15 @@ int get_console_width()
 
     return csbi.srWindow.Right - csbi.srWindow.Left + 1;
 }
+int get_console_height()
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+
+    return csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+}
+
 // int validate_input(char field[], int size)
 // {
 //     int i = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
@@ -174,69 +202,4 @@ int get_console_width()
 //     field[i] = '\0';
 
 //     return ENTER_KEY;
-// }
-//  void clock(void)
-// {
-//     while (!_kbhit())
-//     {
-//         time_t now = time(NULL);
-//         struct tm *local_time = localtime(&now);
-
-//         move_cursor(0, 0);
-
-//         printf("+------------------------------+\n");
-//         printf("|         DIGITAL CLOCK         |\n");
-//         printf("+------------------------------+\n");
-//         printf("|  Date : %02d/%02d/%04d          |\n",
-//                local_time->tm_mday,
-//                local_time->tm_mon + 1,
-//                local_time->tm_year + 1900);
-//         printf("|  Time : %02d:%02d:%02d              |\n",
-//                local_time->tm_hour,
-//                local_time->tm_min,
-//                local_time->tm_sec);
-//         printf("+------------------------------+\n");
-//         printf("(press any key to exit)         \n");
-
-//         Sleep(1000);
-//     }
-
-//     _getch();
-// }
-int get_console_height()
-{
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-
-    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-
-    return csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-}
-
-int init_console()
-{
-#ifdef _WIN32
-    SetConsoleOutputCP(CP_UTF8);
-    SetConsoleCP(CP_UTF8);
-#endif
-    return 0;
-}
-
-// void clock()
-// {
-//    time_t now;
-//     struct tm *current;
-
-//     time(&now);
-//     current = localtime(&now);
-
-//     printf("Date : %02d-%02d-%04d\n",
-//            current->tm_mday,
-//            current->tm_mon + 1,
-//            current->tm_year + 1900);
-
-//     printf("Time : %02d:%02d:%02d\n",
-//            current->tm_hour,
-//            current->tm_min,
-//            current->tm_sec);
-
 // }
