@@ -203,15 +203,18 @@ int logout()
 
 int change_password()
 {
+    // declare all variables
     struct r_account user;
     struct account change_password;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO, found = ZERO;
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     FILE *credentialDBS_open, *tmp_credentialDBS_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     box_width = CONTAINER_WIDTH;
@@ -219,27 +222,34 @@ int change_password()
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show change password form
     change_password_screen(x, y);
 
+    // take input user email
     move_cursor(x + INPUT_FIELD_OFFSET_X, y + CHANGE_PASSWORD_EMAIL_FIELD_Y);
     fgets(change_password.email, sizeof(change_password.email), stdin);
     change_password.email[strcspn(change_password.email, "\n")] = '\0';
 
+    // take input security answer
     move_cursor(x + INPUT_FIELD_OFFSET_X, y + CHANGE_PASSWORD_SECURITY_FIELD_Y);
     fgets(change_password.security_question, sizeof(change_password.security_question), stdin);
     change_password.security_question[strcspn(change_password.security_question, "\n")] = '\0';
 
+    // take input new password
     move_cursor(x + INPUT_FIELD_OFFSET_X, y + CHANGE_PASSWORD_NEW_PASSWORD_FIELD_Y);
     input_password(change_password.new_pass);
     change_password.new_pass[strcspn(change_password.new_pass, "\n")] = '\0';
 
+    // open databases
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
     tmp_credentialDBS_open = fopen(TEMP_CREDENTIAL_DATABASE_FILE, FILE_MODE_WRITE);
 
+    // read database
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(user.id, field);
 
@@ -258,27 +268,33 @@ int change_password()
         field = strtok(NULL, ",");
         strcpy(user.login_status, field);
 
+        // check email and security question if found update password
         if (strcmp(change_password.email, user.email) == 0 && strcmp(change_password.security_question, user.security_question) == 0)
         {
             found = 1;
             strcpy(user.pass, change_password.new_pass);
         }
 
+        // write data to databases
         fprintf(tmp_credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, user.login_status);
     }
 
+    // close databases
     fclose(credentialDBS_open);
     fclose(tmp_credentialDBS_open);
 
+    // remove original database and rename tmp database as original database
     remove(CREDENTIAL_DATABASE_FILE);
     rename(TEMP_CREDENTIAL_DATABASE_FILE, CREDENTIAL_DATABASE_FILE);
 
+    // if pass change successful show successful screen
     if (found == 0)
     {
         change_password_failed_screen(x, y);
         return 0;
     }
 
+    // if failed to change pass show error
     change_password_successful_screen(x, y);
 
     return 0;
