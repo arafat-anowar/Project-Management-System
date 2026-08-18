@@ -6,13 +6,16 @@
 
 int create_user()
 {
+    // Declare all variables
     struct r_account user;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO, user_name_found = VALID, is_email_valid = VALID, is_phone_valid = VALID;
     FILE *userDBS_open, *credentialDBS_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     box_width = CONTAINER_WIDTH;
@@ -20,17 +23,21 @@ int create_user()
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show user create form
     user_registration_screen(x, y);
 
+    // generate a user id for new user
     generate_user_id(user.id);
 
+    // take user full name
     move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_NAME_FIELD_Y);
     fgets(user.name, sizeof(user.name), stdin);
     user.name[strcspn(user.name, "\n")] = '\0';
 
+    // take user email and validate that
     do
     {
-        move_cursor(x + INPUT_FIELD_OFFSET_X, y +REGISTER_EMAIL_FIELD_Y);
+        move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_EMAIL_FIELD_Y);
         if (is_email_valid == INVALID)
         {
             printf("                                                                             ");
@@ -43,6 +50,7 @@ int create_user()
 
     } while (is_email_valid != VALID);
 
+    // take user phone number and validate that
     do
     {
         move_cursor(x + PHONE_FIELD_OFFSET_X, y + REGISTER_PHONE_FIELD_Y);
@@ -58,6 +66,7 @@ int create_user()
 
     } while (is_phone_valid != VALID);
 
+    // take user name and check is username already exist
     do
     {
         move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_USERNAME_FIELD_Y);
@@ -73,27 +82,35 @@ int create_user()
 
     } while (user_name_found != VALID);
 
+    // take user pass
     move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_PASSWORD_FIELD_Y);
     input_password(user.pass);
     user.pass[strcspn(user.pass, "\n")] = '\0';
 
+    // take input  security question's answer
     move_cursor(x + INPUT_FIELD_OFFSET_X, y + REGISTER_SECURITY_FIELD_Y);
     fgets(user.security_question, sizeof(user.security_question), stdin);
     user.security_question[strcspn(user.security_question, "\n")] = '\0';
 
+    // set a default role for user
     strcpy(user.role, DEFAULT_ROLE_NAME);
 
+    // open databases for write data
     userDBS_open = fopen(USER_DATABASE_FILE, FILE_MODE_APPEND);
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_APPEND);
 
+    // write data to files
     fprintf(userDBS_open, "%s,%s,%s,%s,%s\n", user.id, user.name, user.email, user.phone, user.role);
     fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, LOGOUT_STATUS_VALUE);
 
+    // close databases
     fclose(userDBS_open);
     fclose(credentialDBS_open);
 
+    // create necessary folder and files for user
     create_directories(user.user_name);
 
+    // show account create successful screen
     account_create_success_screen(x, y);
 
     return 0;

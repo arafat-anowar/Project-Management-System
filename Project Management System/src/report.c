@@ -6,17 +6,6 @@
 #include <stdlib.h>
 #include <time.h>
 
-int deadline_has_passed(char end_date[])
-{
-    time_t now = time(NULL);
-    struct tm *today_tm = localtime(&now);
-
-    char today[15];
-    sprintf(today, "%04d-%02d-%02d", today_tm->tm_year + 1900, today_tm->tm_mon + 1, today_tm->tm_mday);
-
-    return strcmp(end_date, today) < 0;
-}
-
 int completes_tasks()
 {
     struct t_details task;
