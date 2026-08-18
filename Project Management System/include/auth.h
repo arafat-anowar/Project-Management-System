@@ -84,6 +84,9 @@
 
 #define MAX_LENGTH_OF_DATA_IN_FILE 3000
 
+#define FILE_OPEN_ERROR "fop"
+#define FILE_CLOSE_ERROR "fcl"
+#define SOMETHING_FAILED "mem"
 // structure for login 
 struct l_account
 {

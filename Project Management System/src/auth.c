@@ -99,15 +99,31 @@ int create_user()
 
     // open databases for write data
     userDBS_open = fopen(USER_DATABASE_FILE, FILE_MODE_APPEND);
+    if (userDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_APPEND);
+    if (credentialDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
     // write data to files
     fprintf(userDBS_open, "%s,%s,%s,%s,%s\n", user.id, user.name, user.email, user.phone, user.role);
     fprintf(credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, LOGOUT_STATUS_VALUE);
 
     // close databases
-    fclose(userDBS_open);
-    fclose(credentialDBS_open);
+    if (fclose(userDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(credentialDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     // create necessary folder and files for user
     create_directories(user.user_name);
@@ -193,9 +209,16 @@ int logout()
 
     // clear log file
     log_open = fopen(LOG_FILE, FILE_MODE_WRITE);
+    if (log_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
     // close log file
-    fclose(log_open);
+    if (fclose(log_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     // show successful screen
     logout_successful_screen(x, y);
@@ -244,7 +267,16 @@ int change_password()
 
     // open databases
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
+    if (credentialDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
     tmp_credentialDBS_open = fopen(TEMP_CREDENTIAL_DATABASE_FILE, FILE_MODE_WRITE);
+    if (tmp_credentialDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
     // read database
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
@@ -282,8 +314,15 @@ int change_password()
     }
 
     // close databases
-    fclose(credentialDBS_open);
-    fclose(tmp_credentialDBS_open);
+    if (fclose(credentialDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(tmp_credentialDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     // remove original database and rename tmp database as original database
     remove(CREDENTIAL_DATABASE_FILE);
@@ -310,11 +349,15 @@ int generate_user_id(char id[])
     char *field, row[MAX_LENGTH_OF_DATA_IN_FILE];
     FILE *userDBS_open;
 
-    // initialize id 
+    // initialize id
     strcpy(id, FIRST_USER_ID_VALUE);
 
     // database open
     userDBS_open = fopen(USER_DATABASE_FILE, FILE_MODE_READ);
+    if (userDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
     // read database
     while (fgets(row, sizeof(row), userDBS_open) != NULL)
@@ -329,7 +372,10 @@ int generate_user_id(char id[])
     }
 
     // close database
-    fclose(userDBS_open);
+    if (fclose(userDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     // if no data found in file return default id
     if (data_found_in_file == 0)
@@ -390,13 +436,22 @@ int change_login_status(char status[])
 
     // open databases
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
+    if (credentialDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
     tmp_credentialDBS_open = fopen(TEMP_CREDENTIAL_DATABASE_FILE, FILE_MODE_WRITE);
+    if (tmp_credentialDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
     // read data from file
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
-        
+
         // tokenize them
         field = strtok(row, ",");
         strcpy(user.id, field);
@@ -430,10 +485,17 @@ int change_login_status(char status[])
     free(username);
 
     // close databases
-    fclose(credentialDBS_open);
-    fclose(tmp_credentialDBS_open);
+    if (fclose(credentialDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
-    // delete main database and rename tmp database 
+    if (fclose(tmp_credentialDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // delete main database and rename tmp database
     remove(CREDENTIAL_DATABASE_FILE);
     rename(TEMP_CREDENTIAL_DATABASE_FILE, CREDENTIAL_DATABASE_FILE);
 
@@ -450,7 +512,16 @@ int password_verify(char username_or_email[], char password[])
 
     // open databases
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
+    if (credentialDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
     log_open = fopen(LOG_FILE, FILE_MODE_WRITE);
+    if (log_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
     // read data from databases
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
@@ -480,8 +551,15 @@ int password_verify(char username_or_email[], char password[])
     }
 
     // close database
-    fclose(credentialDBS_open);
-    fclose(log_open);
+    if (fclose(credentialDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(log_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     // if details are correct return valid
     if (found == VALID)
@@ -511,7 +589,7 @@ int input_password(char password[])
                 printf("\b \b");
             }
         }
-        // otherwise store pass in string and print * 
+        // otherwise store pass in string and print *
         else
         {
             password[i] = each_character;
@@ -520,7 +598,7 @@ int input_password(char password[])
         }
     }
 
-    // add null char 
+    // add null char
     password[i] = '\0';
 
     return 0;
@@ -534,6 +612,10 @@ char *get_user_name()
 
     // open log file
     log_open = fopen(LOG_FILE, FILE_MODE_READ);
+    if (log_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
     // read data
     while (fgets(row, sizeof(row), log_open) != NULL)
@@ -549,7 +631,10 @@ char *get_user_name()
     }
 
     // close log file
-    fclose(log_open);
+    if (fclose(log_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     // return username
     return username;
@@ -564,6 +649,10 @@ int validate_user_name(char username[])
 
     // open database
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
+    if (credentialDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
     // read data
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
@@ -580,13 +669,20 @@ int validate_user_name(char username[])
         // if username already exist return invalid
         if (strcmp(user.user_name, username) == 0)
         {
-            fclose(credentialDBS_open);
+            if (fclose(credentialDBS_open) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+
             return INVALID;
         }
     }
 
     // close database
-    fclose(credentialDBS_open);
+    if (fclose(credentialDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     return VALID;
 }
@@ -611,6 +707,10 @@ int validate_email(char email[])
 
     // check is email address already exist
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
+    if (credentialDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
@@ -632,7 +732,10 @@ int validate_email(char email[])
         }
     }
 
-    fclose(credentialDBS_open);
+    if (fclose(credentialDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     // if all things are right return valid
     if (is_email_valid == VALID)
@@ -690,7 +793,15 @@ int create_directories(char username[])
     strcat(path, "\\");
     strcat(path, PROJECT_DATABASE_FILE);
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
-    fclose(necessary_file_create);
+    if (necessary_file_create == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    if (fclose(necessary_file_create) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     // create taskdbs file
     strcpy(path, DATABASE_DIR);
@@ -698,7 +809,15 @@ int create_directories(char username[])
     strcat(path, "\\");
     strcat(path, TASK_DATABASE_FILE);
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
-    fclose(necessary_file_create);
+    if (necessary_file_create == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    if (fclose(necessary_file_create) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     // create sorttask file
     strcpy(path, DATABASE_DIR);
@@ -706,7 +825,15 @@ int create_directories(char username[])
     strcat(path, "\\");
     strcat(path, SORTED_TASK_FILE);
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
-    fclose(necessary_file_create);
+    if (necessary_file_create == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    if (fclose(necessary_file_create) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     // create sortproject file
     strcpy(path, DATABASE_DIR);
@@ -714,7 +841,15 @@ int create_directories(char username[])
     strcat(path, "\\");
     strcat(path, SORTED_PROJECT_FILE);
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
-    fclose(necessary_file_create);
+    if (necessary_file_create == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    if (fclose(necessary_file_create) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     return 0;
 }
