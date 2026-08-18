@@ -1601,17 +1601,19 @@ int search_task_by_status()
 
 int search_task_by_priority()
 {
+    // declare all variables
     struct t_details task;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = TASK_PRIORITY_BOX_WIDTH, priority_box_height = TASK_PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO;
     char priority[TASK_PRIORITY_SIZE], path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     FILE *taskDBS_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
     priority_x = (terminal_width - priority_box_width) / TWO;
@@ -1619,15 +1621,24 @@ int search_task_by_priority()
 
     task_priority_dashboard(priority, priority_x, priority_y);
 
+    // get task database path
     get_path(path);
     strcat(path, TASK_DATABASE_FILE);
 
+    // database open
     taskDBS_open = fopen(path, FILE_MODE_READ);
+    if (taskDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
 
+    // read database
     while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize data
         field = strtok(row, ",");
         task.unique_id = atoi(field);
 
@@ -1660,12 +1671,12 @@ int search_task_by_priority()
 
         if (strcmp(task.priority, priority) == ZERO)
         {
-
             clear_screen();
             header_screen();
 
             task_details_screen(x, y);
 
+            // print task details
             move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_UNIQUE_ID_OFFSET);
             printf("%d ", task.unique_id);
 
@@ -1697,7 +1708,11 @@ int search_task_by_priority()
         }
     }
 
-    fclose(taskDBS_open);
+    // close database
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     return 0;
 }
