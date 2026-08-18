@@ -644,8 +644,10 @@ int validate_email(char email[])
 
 int validate_phone(char phone[])
 {
+    // declare all variables
     int phone_length = strlen(phone), count = 0;
 
+    // check phone number length
     for (int i = 0; phone[i] != '\0'; i++)
     {
         if (phone[i] >= '0' && phone[i] <= '9')
@@ -654,11 +656,13 @@ int validate_phone(char phone[])
         }
     }
 
+    // if all condition are true return valid
     if (count == MAX_PHONE_LENGTH && phone_length == MAX_PHONE_LENGTH)
     {
         return VALID;
     }
 
+    // if any condition is wrong return invalid
     return INVALID;
 }
 
