@@ -392,3 +392,101 @@ int overdue_projects_report()
 
     return 0;
 }
+
+int high_priority_projects_report()
+{
+    // declare all variables
+    struct p_details project;
+    char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 17,  x, y;
+    FILE *projectDBS_open;
+
+    // get project database path
+    get_path(path);
+    strcat(path, PROJECT_DATABASE_FILE);
+
+    // open database
+    projectDBS_open = fopen(path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
+
+    // read database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize data
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        if (strcmp(project.priority, "High") == ZERO &&  strcmp(project.status, CANCELLED_PROJECT_STATUS) != ZERO)
+        {
+            // set terminal utf8
+            init_console();
+            header_screen();
+
+            // measure terminal height and width also x and y coordinate
+            terminal_width = get_console_width();
+            terminal_height = get_console_height();
+            x = (terminal_width - box_width) / TWO;
+            y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+            high_priority_projects_report_screen(x, y);
+
+            // print task details
+            move_cursor(x + 24, y + 4);
+            printf("%s", project.id);
+
+            move_cursor(x + 24, y + 6);
+            printf("%s", project.name);
+
+            move_cursor(x + 24, y + 8);
+            printf("%s", project.priority);
+
+            move_cursor(x + 24, y + 10);
+            printf("%s", project.status);
+
+            move_cursor(x + 24, y + 12);
+            printf("%s", project.end_date);
+
+            move_cursor(x + 45, y + 13);
+            get_input;
+        }
+    }
+
+    // close database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+
+    }
+
+    return 0;
+}
