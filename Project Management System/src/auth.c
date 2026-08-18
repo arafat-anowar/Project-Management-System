@@ -215,9 +215,12 @@ int logout()
     }
 
     // close log file
-    if (fclose(log_open) == EOF)
+    if (log_open != NULL)
     {
-        something_went_wrong_screen(FILE_CLOSE_ERROR);
+        if (fclose(log_open) == EOF)
+        {
+            something_went_wrong_screen(FILE_CLOSE_ERROR);
+        }
     }
 
     // show successful screen
@@ -325,8 +328,15 @@ int change_password()
     }
 
     // remove original database and rename tmp database as original database
-    remove(CREDENTIAL_DATABASE_FILE);
-    rename(TEMP_CREDENTIAL_DATABASE_FILE, CREDENTIAL_DATABASE_FILE);
+    if (remove(CREDENTIAL_DATABASE_FILE) != 0)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(TEMP_CREDENTIAL_DATABASE_FILE, CREDENTIAL_DATABASE_FILE) != 0)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
 
     // if pass change successful show successful screen
     if (found == 0)
@@ -496,8 +506,15 @@ int change_login_status(char status[])
     }
 
     // delete main database and rename tmp database
-    remove(CREDENTIAL_DATABASE_FILE);
-    rename(TEMP_CREDENTIAL_DATABASE_FILE, CREDENTIAL_DATABASE_FILE);
+    if (remove(CREDENTIAL_DATABASE_FILE) != 0)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(TEMP_CREDENTIAL_DATABASE_FILE, CREDENTIAL_DATABASE_FILE) != 0)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
 
     return 0;
 }
@@ -589,7 +606,7 @@ int input_password(char password[])
                 printf("\b \b");
             }
         }
-        // otherwise store pass in string and print *
+        // otherwise store pass in string and print * 
         else
         {
             password[i] = each_character;
@@ -598,7 +615,7 @@ int input_password(char password[])
         }
     }
 
-    // add null char
+    // add null char 
     password[i] = '\0';
 
     return 0;
@@ -624,6 +641,10 @@ char *get_user_name()
 
         // define dynamic memory
         username = malloc(strlen(row) + 1);
+        if (username == NULL)
+        {
+            something_went_wrong_screen(SOMETHING_FAILED);
+        }
 
         // tokenize them
         field = strtok(row, ",");
@@ -780,12 +801,20 @@ int create_directories(char username[])
     // create a folder in database with username
     strcpy(path, DATABASE_DIR);
     strcat(path, username);
-    CreateDirectory(path, NULL);
+
+    if (CreateDirectory(path, NULL) == 0)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
 
     // create projects folder inside user's folder
     strcat(path, "\\");
     strcat(path, PROJECTS_FOLDER);
-    CreateDirectory(path, NULL);
+
+    if (CreateDirectory(path, NULL) == 0)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
 
     // create projectdbs file
     strcpy(path, DATABASE_DIR);
@@ -793,14 +822,17 @@ int create_directories(char username[])
     strcat(path, "\\");
     strcat(path, PROJECT_DATABASE_FILE);
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
+
     if (necessary_file_create == NULL)
     {
         something_went_wrong_screen(FILE_OPEN_ERROR);
     }
-
-    if (fclose(necessary_file_create) == EOF)
+    else
     {
-        something_went_wrong_screen(FILE_CLOSE_ERROR);
+        if (fclose(necessary_file_create) == EOF)
+        {
+            something_went_wrong_screen(FILE_CLOSE_ERROR);
+        }
     }
 
     // create taskdbs file
@@ -809,14 +841,17 @@ int create_directories(char username[])
     strcat(path, "\\");
     strcat(path, TASK_DATABASE_FILE);
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
+
     if (necessary_file_create == NULL)
     {
         something_went_wrong_screen(FILE_OPEN_ERROR);
     }
-
-    if (fclose(necessary_file_create) == EOF)
+    else
     {
-        something_went_wrong_screen(FILE_CLOSE_ERROR);
+        if (fclose(necessary_file_create) == EOF)
+        {
+            something_went_wrong_screen(FILE_CLOSE_ERROR);
+        }
     }
 
     // create sorttask file
@@ -825,14 +860,17 @@ int create_directories(char username[])
     strcat(path, "\\");
     strcat(path, SORTED_TASK_FILE);
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
+
     if (necessary_file_create == NULL)
     {
         something_went_wrong_screen(FILE_OPEN_ERROR);
     }
-
-    if (fclose(necessary_file_create) == EOF)
+    else
     {
-        something_went_wrong_screen(FILE_CLOSE_ERROR);
+        if (fclose(necessary_file_create) == EOF)
+        {
+            something_went_wrong_screen(FILE_CLOSE_ERROR);
+        }
     }
 
     // create sortproject file
@@ -841,14 +879,17 @@ int create_directories(char username[])
     strcat(path, "\\");
     strcat(path, SORTED_PROJECT_FILE);
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
+
     if (necessary_file_create == NULL)
     {
         something_went_wrong_screen(FILE_OPEN_ERROR);
     }
-
-    if (fclose(necessary_file_create) == EOF)
+    else
     {
-        something_went_wrong_screen(FILE_CLOSE_ERROR);
+        if (fclose(necessary_file_create) == EOF)
+        {
+            something_went_wrong_screen(FILE_CLOSE_ERROR);
+        }
     }
 
     return 0;
