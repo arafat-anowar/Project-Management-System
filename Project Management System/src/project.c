@@ -4,6 +4,8 @@
 
 #include "project.h"
 
+// project main source code start
+
 int create_project()
 {
     // declare all variables
@@ -862,7 +864,6 @@ int search_by_project_id_or_name()
     return 0;
 }
 
-
 int search_project_by_status()
 {
     // declare all variables
@@ -972,7 +973,7 @@ int search_project_by_status()
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
 
-    return ZERO;
+    return 0;
 }
 
 int search_project_by_priority()
@@ -1765,7 +1766,7 @@ int get_path(char path[])
     // free memory
     free(username);
 
-    return ZERO;
+    return 0;
 }
 
 int compare_project_priority(const void *a, const void *b)
@@ -1906,5 +1907,7 @@ int sort_projects()
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
 
-    return ZERO;
+    return 0;
 }
+
+// project main source code end
