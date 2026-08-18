@@ -526,23 +526,30 @@ int input_password(char password[])
 
 char *get_user_name()
 {
+    // declare variables
     char *username, row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     FILE *log_open;
 
+    // open log file
     log_open = fopen(LOG_FILE, FILE_MODE_READ);
 
+    // read data
     while (fgets(row, sizeof(row), log_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // define dynamic memory
         username = malloc(strlen(row) + 1);
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(username, field);
     }
 
+    // close log file
     fclose(log_open);
 
+    // return username
     return username;
 }
 
