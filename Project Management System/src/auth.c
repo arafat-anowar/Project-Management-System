@@ -4,6 +4,8 @@
 
 #include "auth.h"
 
+// auth main source code start
+
 int create_user()
 {
     // Declare all variables
@@ -716,3 +718,5 @@ int create_directories(char username[])
 
     return 0;
 }
+
+// auth main source code end

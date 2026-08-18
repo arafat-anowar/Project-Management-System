@@ -1,11 +1,17 @@
+// auth header file start
+
 #ifndef AUTH_H
 #define AUTH_H
 
+// global header files
 #include <stdio.h>
 #include <string.h>
 #include <conio.h>
 
+// local header files
 #include "ui.h"
+
+// macros
 
 #define DATABASE_DIR "..\\database\\"
 
@@ -76,12 +82,16 @@
 #define MAX_LOGIN_STATUS_LENGTH 20
 #define MAX_USERNAME_OR_EMAIL_LENGTH 30
 
+#define MAX_LENGTH_OF_DATA_IN_FILE 3000
+
+// structure for login 
 struct l_account
 {
     char user_name_or_email[MAX_USERNAME_OR_EMAIL_LENGTH];
     char user_pass[MAX_PASSWORD_LENGTH];
 };
 
+// structure for create account
 struct r_account
 {
     char id[MAX_ID_LENGTH];
@@ -95,6 +105,7 @@ struct r_account
     char login_status[MAX_LOGIN_STATUS_LENGTH];
 };
 
+// structure for change pass
 struct account
 {
     char email[MAX_EMAIL_LENGTH];
@@ -102,6 +113,8 @@ struct account
     char new_pass[MAX_PASSWORD_LENGTH];
 };
 
+
+// function prototypes
 int create_user();
 int login();
 int logout();
@@ -117,3 +130,5 @@ int validate_phone(char phone[]);
 int create_directories(char username[]);
 
 #endif
+
+// auth header file end
