@@ -128,40 +128,55 @@ int generate_task_id(char id[], char path[])
 
 int create_task()
 {
+    // declare all variables
     struct t_details task;
     struct p_details project;
-    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = TASK_PRIORITY_BOX_WIDTH, priority_box_height = TASK_PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO, is_start_date_valid = ZERO, is_end_date_valid = ZERO;
-    char project_id_or_name[PROJECT_SEARCH_SIZE], projectDBS_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], taskDBS_path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field, *username;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = TASK_PRIORITY_BOX_WIDTH, priority_box_height = TASK_PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO, is_start_date_valid = ZERO, is_end_date_valid = ZERO, project_found = ZERO;
+    char project_id_or_name[PROJECT_SEARCH_SIZE], projectDBS_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], taskDBS_path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], project_file_name[PROJECT_FILE_NAME_SIZE], *field, *username;
     FILE *projectDBS_open, *taskDBS_open, *project_task_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
-
     priority_x = (terminal_width - priority_box_width) / TWO;
     priority_y = (terminal_height - priority_box_height) / TWO;
 
+    // get username
     username = get_user_name();
 
+    // show project id enter screen
     search_project_by_id_or_name_screen(x, y);
 
+    // take project id or name
     move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_NAME_OFFSET);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
+    // get project database path
     get_path(projectDBS_path);
     strcat(projectDBS_path, PROJECT_DATABASE_FILE);
 
+    // projectdbs opne
     projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        free(username);
+        return 0;
+    }
 
+    // read database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
+
+        // tokenize data
 
         field = strtok(row, ",");
         strcpy(project.id, field);
@@ -169,22 +184,42 @@ int create_task()
         field = strtok(NULL, ",");
         strcpy(project.name, field);
 
-        if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
+        if (strcmp(project_id_or_name, project.id) == ZERO ||strcmp(project_id_or_name, project.name) == ZERO)
         {
+            project_found = 1;
             break;
         }
     }
 
-    fclose(projectDBS_open);
+    // close database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
+    if (project_found == ZERO)
+    {
+        free(username);
+        return 0;
+    }
+
+    // get project task database path
     get_path(project_task_path);
-    strcat(project_task_path, PROJECT_FOLDER_NAME);
+    strcat(project_task_path, PROJECTS_FOLDER);
     strcat(project_task_path, "\\");
-    strcat(project_task_path, strlwr(project.name));
+
+    strcpy(project_file_name, project.name);
+    strlwr(project_file_name);
+
+    strcat(project_task_path, project_file_name);
     strcat(project_task_path, TASK_FILE_EXTENSION);
 
+    // generate unique task id
     task.unique_id = unique_task_id_generator();
+
+    // generate task id
     generate_task_id(task.task_id, project_task_path);
+
     strcpy(task.project_id, project.id);
 
     clear_screen();
@@ -192,10 +227,12 @@ int create_task()
 
     create_task_screen(x, y);
 
+    // take task name
     move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_NAME_OFFSET);
     fgets(task.name, sizeof(task.name), stdin);
     task.name[strcspn(task.name, "\n")] = '\0';
 
+    // take task description
     move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_DESCRIPTION_OFFSET);
     fgets(task.description, sizeof(task.description), stdin);
     task.description[strcspn(task.description, "\n")] = '\0';
@@ -218,9 +255,11 @@ int create_task()
 
     strcpy(task.status, DEFAULT_TASK_STATUS);
 
+    // validate date
     do
     {
         move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_START_DATE_OFFSET);
+
         if (is_start_date_valid == ZERO)
         {
             printf("                                                                             ");
@@ -229,39 +268,63 @@ int create_task()
 
         fgets(task.start_date, sizeof(task.start_date), stdin);
         task.start_date[strcspn(task.start_date, "\n")] = '\0';
-        is_start_date_valid = validate_date(task.start_date);
 
+        is_start_date_valid = validate_date(task.start_date);
     } while (is_start_date_valid != VALID);
 
     do
     {
         move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_END_DATE_OFFSET);
+
         if (is_end_date_valid == ZERO)
         {
             printf("                                                                             ");
             move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_END_DATE_OFFSET);
         }
+
         fgets(task.end_date, sizeof(task.end_date), stdin);
         task.end_date[strcspn(task.end_date, "\n")] = '\0';
-        is_end_date_valid = validate_date(task.end_date);
 
+        is_end_date_valid = validate_date(task.end_date);
     } while (is_end_date_valid != VALID);
 
     strcpy(task.created_by, username);
 
+    // get task database path
     get_path(taskDBS_path);
     strcat(taskDBS_path, TASK_DATABASE_FILE);
 
     taskDBS_open = fopen(taskDBS_path, FILE_MODE_APPEND);
 
-    fprintf(taskDBS_open, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
-    fclose(taskDBS_open);
+    if (taskDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        free(username);
+        return 0;
+    }
+
+    // write data to database
+
+    fprintf(taskDBS_open,"%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",task.unique_id,task.task_id,task.project_id,task.name,task.description,task.priority,task.status,task.start_date,task.end_date,task.created_by);
+
+    // close database
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     project_task_open = fopen(project_task_path, FILE_MODE_APPEND);
+    if (project_task_open != NULL)
+    {
+        // write data to database
+        fprintf(project_task_open,"%s,%s,%s,%s,%s,%s,%s,%s,%s\n",task.task_id,task.project_id,task.name,task.description,task.priority,task.status,task.start_date,task.end_date,task.created_by);
 
-    fprintf(project_task_open, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
-
-    fclose(project_task_open);
+        // close database
+        if (fclose(project_task_open) == EOF)
+        {
+            something_went_wrong_screen(FILE_CLOSE_ERROR);
+        }
+    }
 
     free(username);
 
