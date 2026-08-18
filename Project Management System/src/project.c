@@ -367,6 +367,7 @@ int change_project_status(char status[], int x, int y)
 
 int change_project_priority(char priority[], int x, int y)
 {
+    // show project priority dashboard
     project_priority_dashboard(priority, x, y);
 
     return 0;
