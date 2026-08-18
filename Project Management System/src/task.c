@@ -5,28 +5,41 @@
 
 int unique_task_id_generator()
 {
+    // declare all variables
     struct t_details task;
     int found = ZERO, id = INITIAL_UNIQUE_TASK_ID_VALUE;
     char path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     FILE *taskDBS_open;
 
+    // get task database path
     get_path(path);
     strcat(path, TASK_DATABASE_FILE);
-
+    
+    // open taskdbs
     taskDBS_open = fopen(path, FILE_MODE_READ);
-
-    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+    if (taskDBS_open == NULL)
     {
-        found = 1;
-
-        row[strcspn(row, "\n")] = '\0';
-
-        field = strtok(row, ",");
-        task.unique_id = atoi(field);
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return id;
     }
 
-    fclose(taskDBS_open);
+    // read database
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
 
+        // tokenize data
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
+
+        found = 1;
+    }
+
+    // close database
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
     if (found == ZERO)
     {
         return id;
