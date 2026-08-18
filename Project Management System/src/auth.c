@@ -591,11 +591,13 @@ int validate_user_name(char username[])
 
 int validate_email(char email[])
 {
+    // declare all variables
     struct r_account user;
     int is_email_valid = INVALID;
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     FILE *credentialDBS_open;
 
+    // check @ char is available i users input
     for (int i = 0; email[i] != '\0'; i++)
     {
         if (email[i] == '@')
@@ -605,6 +607,7 @@ int validate_email(char email[])
         }
     }
 
+    // check is email address already exist
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
 
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
@@ -629,11 +632,13 @@ int validate_email(char email[])
 
     fclose(credentialDBS_open);
 
+    // if all things are right return valid
     if (is_email_valid == VALID)
     {
         return VALID;
     }
 
+    // if any condition wrong return invalid
     return INVALID;
 }
 
