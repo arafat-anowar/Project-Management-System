@@ -307,20 +307,25 @@ int change_project_name(char name[])
 
 int change_project_category(char category[])
 {
+    // declare all variables
     char updated_category[PROJECT_CATEGORY_SIZE];
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO;
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show change project category screen
     change_project_category_screen(x, y);
 
+    // take updated project category
     move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
     fgets(updated_category, sizeof(updated_category), stdin);
     updated_category[strcspn(updated_category, "\n")] = '\0';
 
+    // update project category
     strcpy(category, updated_category);
 
     return 0;
