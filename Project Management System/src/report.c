@@ -1,10 +1,9 @@
+/*
+    ID : 2026-2-60-082
+*/
 #include "report.h"
-#include "task.h"
-#include "project.h"
 
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
+// report main source code start
 
 int project_summary_report()
 {
@@ -925,3 +924,5 @@ int pending_active_tasks_report()
 
     return 0;
 }
+
+// report main source code end
