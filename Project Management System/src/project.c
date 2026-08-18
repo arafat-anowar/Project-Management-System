@@ -375,16 +375,20 @@ int change_project_priority(char priority[], int x, int y)
 
 int change_project_start_date(char start_date[])
 {
+    // declare all variables
     char updated_start_date[PROJECT_START_DATE_SIZE];
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO, is_start_date_valid = VALID;
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show change project start date screen
     change_project_start_date_screen(x, y);
 
+    // take project start date and validate that
     do
     {
         move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
@@ -401,6 +405,7 @@ int change_project_start_date(char start_date[])
 
     } while (is_start_date_valid != VALID);
 
+    // update project start date
     strcpy(start_date, updated_start_date);
 
     return 0;
