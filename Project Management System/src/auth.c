@@ -378,19 +378,24 @@ int generate_user_id(char id[])
 
 int change_login_status(char status[])
 {
+    // declare all variables
     struct r_account user;
     FILE *credentialDBS_open, *tmp_credentialDBS_open;
     char *username, row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
 
+    // get user name
     username = get_user_name();
 
+    // open databases
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
     tmp_credentialDBS_open = fopen(TEMP_CREDENTIAL_DATABASE_FILE, FILE_MODE_WRITE);
 
+    // read data from file
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
-
+        
+        // tokenize them
         field = strtok(row, ",");
         strcpy(user.id, field);
 
@@ -409,19 +414,24 @@ int change_login_status(char status[])
         field = strtok(NULL, ",");
         strcpy(user.login_status, field);
 
+        // if username found change status
         if (strcmp(user.user_name, username) == 0)
         {
             strcpy(user.login_status, status);
         }
 
+        // write data to database
         fprintf(tmp_credentialDBS_open, "%s,%s,%s,%s,%s,%s\n", user.id, user.user_name, user.email, user.pass, user.security_question, user.login_status);
     }
 
+    // free memory
     free(username);
 
+    // close databases
     fclose(credentialDBS_open);
     fclose(tmp_credentialDBS_open);
 
+    // delete main database and rename tmp database 
     remove(CREDENTIAL_DATABASE_FILE);
     rename(TEMP_CREDENTIAL_DATABASE_FILE, CREDENTIAL_DATABASE_FILE);
 
