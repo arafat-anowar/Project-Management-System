@@ -823,3 +823,105 @@ int high_priority_tasks_report()
 
     return 0;
 }
+
+int pending_active_tasks_report()
+{
+    // declare all variables
+    struct t_details task;
+    char path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE],*field;
+    int terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 16, x,y;
+    FILE *taskDBS_open;
+
+    // get task database path
+    get_path(path);
+    strcat(path, TASK_DATABASE_FILE);
+
+    // open database
+    taskDBS_open = fopen(path, FILE_MODE_READ);
+    if (taskDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
+
+    // read database
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize data
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.task_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        if (strcmp(task.status, COMPLETED_TASK_STATUS) != ZERO &&strcmp(task.status, CANCELLED_TASK_STATUS) != ZERO)
+        {
+            // set terminal to utf8
+            init_console();
+            header_screen();
+
+            // measure terminal height and width also x and y coordinate
+            terminal_width = get_console_width();
+            terminal_height = get_console_height();
+            x = (terminal_width - box_width) / TWO;
+            y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+            pending_active_tasks_screen(x, y);
+
+            // print task details
+            move_cursor(x + 24, y + 4);
+            printf("%s", task.task_id);
+
+            move_cursor(x + 24, y + 6);
+            printf("%s", task.name);
+
+            move_cursor(x + 24, y + 8);
+            printf("%s", task.project_id);
+
+            move_cursor(x + 24, y + 10);
+            printf("%s", task.priority);
+
+            move_cursor(x + 24, y + 12);
+            printf("%s", task.status);
+
+            move_cursor(x + 24, y + 14);
+            printf("%s", task.end_date);
+
+            get_input;
+        }
+    }
+
+    // close database
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    return 0;
+}
