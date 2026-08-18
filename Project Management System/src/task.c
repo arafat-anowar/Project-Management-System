@@ -1719,23 +1719,39 @@ int search_task_by_priority()
 
 int sort_tasks()
 {
+    // declare all variables
     struct t_details task[TASK_ARRAY_SIZE];
     char taskDBS_path[TASK_PATH_BUFFER_SIZE], sort_task_path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     int task_count = ZERO, i;
     FILE *taskDBS_open, *sort_task_open;
 
+    // get task database path
     get_path(taskDBS_path);
     strcat(taskDBS_path, TASK_DATABASE_FILE);
 
+    // get sorted task database path
     get_path(sort_task_path);
     strcat(sort_task_path, SORTED_TASK_FILE);
 
+    // open database
     taskDBS_open = fopen(taskDBS_path, FILE_MODE_READ);
+    if (taskDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
 
+    // read database
     while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
+        if (task_count >= TASK_ARRAY_SIZE)
+        {
+            break;
+        }
+
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize data
         field = strtok(row, ",");
         task[task_count].unique_id = atoi(field);
 
@@ -1757,6 +1773,11 @@ int sort_tasks()
         field = strtok(NULL, ",");
         strcpy(task[task_count].status, field);
 
+        if (strcmp(task[task_count].status, CANCELLED_TASK_STATUS) == ZERO || strcmp(task[task_count].status, COMPLETED_TASK_STATUS) == ZERO)
+        {
+            continue;
+        }
+
         field = strtok(NULL, ",");
         strcpy(task[task_count].start_date, field);
 
@@ -1769,18 +1790,35 @@ int sort_tasks()
         task_count++;
     }
 
-    fclose(taskDBS_open);
+    // close database
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
+    // sort tasks
     qsort(task, task_count, sizeof(struct t_details), sort_by_priority);
 
+    // open database
     sort_task_open = fopen(sort_task_path, FILE_MODE_WRITE);
+
+    if (sort_task_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
 
     for (i = 0; i < task_count; i++)
     {
+        // write data to database
         fprintf(sort_task_open, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task[i].unique_id, task[i].task_id, task[i].project_id, task[i].name, task[i].description, task[i].priority, task[i].status, task[i].start_date, task[i].end_date, task[i].created_by);
     }
 
-    fclose(sort_task_open);
+    // close database
+    if (fclose(sort_task_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     return 0;
 }
