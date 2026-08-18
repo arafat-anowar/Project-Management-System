@@ -708,26 +708,28 @@ int change_task_priority(char priority[])
 
 int change_task_start_date(char start_date[])
 {
+    // declare all variables
     char new_start_date[TASK_START_DATE_SIZE];
     int is_valid = INVALID, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // validate date 
     do
     {
         change_task_start_date_screen(x, y);
 
+        // take date
         move_cursor(x + PROJECT_INPUT_X, y + TASK_START_DATE_Y);
         fgets(new_start_date, sizeof(new_start_date), stdin);
         new_start_date[strcspn(new_start_date, "\n")] = '\0';
 
         is_valid = validate_date(new_start_date);
-
     } while (is_valid != VALID);
-
     strcpy(start_date, new_start_date);
 
     return 0;
