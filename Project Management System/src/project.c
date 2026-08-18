@@ -451,39 +451,55 @@ int extend_project_deadline(char deadline[])
 
 int delete_project()
 {
+    // declare all variables
     struct p_details project;
-    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], projectDBS_path[MAX_PATH_LENGTH], tmp_projectDBS_path[MAX_PATH_LENGTH], project_file_path[MAX_PATH_LENGTH], project_file_name[PROJECT_FILE_NAME_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], projectDBS_path[MAX_PATH_LENGTH], tmp_projectDBS_path[MAX_PATH_LENGTH], taskDBS_path[MAX_PATH_LENGTH], tmp_taskDBS_path[MAX_PATH_LENGTH], project_file_path[MAX_PATH_LENGTH], project_file_name[PROJECT_FILE_NAME_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_DELETE_BOX_HEIGHT, x = ZERO, y = ZERO;
-    FILE *file_for_delete_project, *write_to_new_file;
+    FILE *file_for_delete_project, *write_to_new_project_file, *file_for_delete_task, *write_to_new_task_file;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show search project screen
     search_project_by_id_or_name_screen(x, y);
 
+    // take project id or name
     move_cursor(x + PROJECT_INPUT_X, y + 5);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
+    // get project database paths
     get_path(projectDBS_path);
     get_path(tmp_projectDBS_path);
-
     strcat(projectDBS_path, PROJECT_DATABASE_FILE);
     strcat(tmp_projectDBS_path, TEMP_PROJECT_DATABASE_FILE);
 
+    // open project databases
     file_for_delete_project = fopen(projectDBS_path, FILE_MODE_READ);
+    if (file_for_delete_project == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
-    write_to_new_file = fopen(tmp_projectDBS_path, FILE_MODE_WRITE);
+    write_to_new_project_file = fopen(tmp_projectDBS_path, FILE_MODE_WRITE);
+    if (write_to_new_project_file == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
+    // read project database
     while (fgets(row, sizeof(row), file_for_delete_project) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(project.id, field);
 
@@ -511,12 +527,13 @@ int delete_project()
         field = strtok(NULL, ",");
         strcpy(project.created_by, field);
 
-        if (strcmp(project.id, project_id_or_name) == 0 || strcmp(project.name, project_id_or_name) == 0)
+        // check project id or name if found delete project
+        if (strcmp(project.id, project_id_or_name) == ZERO ||strcmp(project.name, project_id_or_name) == ZERO)
         {
-            strcpy(project.status, DELETED_PROJECT_STATUS);
-
+            // get project file path
             get_path(project_file_path);
             strcat(project_file_path, PROJECTS_FOLDER);
+            strcat(project_file_path, "\\");
 
             strcpy(project_file_name, project.name);
             strlwr(project_file_name);
@@ -524,17 +541,102 @@ int delete_project()
             strcat(project_file_path, project_file_name);
             strcat(project_file_path, PROJECT_FILE_EXTENSION);
 
-            remove(project_file_path);
+            // delete project file
+            if (remove(project_file_path) != ZERO)
+            {
+                something_went_wrong_screen(SOMETHING_FAILED);
+            }
+
+            continue;
         }
 
-        fprintf(write_to_new_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
+        // write remaining project data to temporary database
+        fprintf(write_to_new_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",project.id,project.name, project.category, project.description, project.priority,project.status,project.start_date,project.end_date,project.created_by);
     }
 
-    fclose(file_for_delete_project);
-    fclose(write_to_new_file);
+    // close project databases
+    if (fclose(file_for_delete_project) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
-    remove(projectDBS_path);
-    rename(tmp_projectDBS_path, projectDBS_path);
+    if (fclose(write_to_new_project_file) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // remove original project database and rename temporary database
+    if (remove(projectDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(tmp_projectDBS_path, projectDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    // get task database paths
+    get_path(taskDBS_path);
+    get_path(tmp_taskDBS_path);
+
+    strcat(taskDBS_path, TASK_DATABASE_FILE);
+    strcat(tmp_taskDBS_path, TEMP_TASK_DATABASE_FILE);
+
+    // open task databases
+    file_for_delete_task = fopen(taskDBS_path, FILE_MODE_READ);
+    if (file_for_delete_task == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    write_to_new_task_file = fopen(tmp_taskDBS_path, FILE_MODE_WRITE);
+    if (write_to_new_task_file == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read task database
+    while (fgets(row, sizeof(row), file_for_delete_task) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        field = strtok(NULL, ",");
+        field = strtok(NULL, ",");
+
+        // check project id if task belongs to deleted project
+        if (strcmp(field, project.id) == ZERO)
+        {
+            continue;
+        }
+
+        // write remaining task data to temporary database
+        fprintf(write_to_new_task_file, "%s\n", row);
+    }
+
+    // close task databases
+    if (fclose(file_for_delete_task) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(write_to_new_task_file) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // remove original task database and rename temporary database
+    if (remove(taskDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(tmp_taskDBS_path, taskDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
 
     return 0;
 }
