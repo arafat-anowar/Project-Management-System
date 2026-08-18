@@ -737,24 +737,27 @@ int change_task_start_date(char start_date[])
 
 int extend_task_deadline(char deadline[])
 {
+    // declare all variables
     char new_deadline[TASK_END_DATE_SIZE];
     int is_valid = INVALID, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // validate date
     do
     {
         extend_task_deadline_screen(x, y);
 
+        // take date
         move_cursor(x + PROJECT_INPUT_X, y + TASK_END_DATE_Y);
         fgets(new_deadline, sizeof(new_deadline), stdin);
         new_deadline[strcspn(new_deadline, "\n")] = '\0';
 
         is_valid = validate_date(new_deadline);
-
     } while (is_valid != VALID);
 
     strcpy(deadline, new_deadline);
