@@ -302,41 +302,51 @@ int change_password()
 
 int generate_user_id(char id[])
 {
+    // declare all variables
     struct r_account user;
     int data_found_in_file = ZERO, user_id_in_integer = ZERO, id_length = ZERO, i = ZERO, j = ZERO, tmp_user_id = ZERO, num_id[20] = {ZERO}, digit = ZERO;
     char *field, row[MAX_LENGTH_OF_DATA_IN_FILE];
     FILE *userDBS_open;
 
+    // initialize id 
     strcpy(id, FIRST_USER_ID_VALUE);
 
+    // database open
     userDBS_open = fopen(USER_DATABASE_FILE, FILE_MODE_READ);
 
+    // read database
     while (fgets(row, sizeof(row), userDBS_open) != NULL)
     {
         data_found_in_file = 1;
 
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(user.id, field);
     }
 
+    // close database
     fclose(userDBS_open);
 
-    if (data_found_in_file == INVALID)
+    // if no data found in file return default id
+    if (data_found_in_file == 0)
     {
         return 0;
     }
 
     strcpy(id, user.id);
 
+    // copy id's char array to integer array
     for (i = 0, j = 1; id[j] != '\0'; i++, j++)
     {
         num_id[i] = (id[j] - '0');
     }
 
+    // get length of id
     id_length = strlen(id);
 
+    // convert id's array to a number
     for (i = 0; i < id_length - 1; i++)
     {
         digit = num_id[i];
@@ -349,11 +359,13 @@ int generate_user_id(char id[])
         user_id_in_integer += digit;
     }
 
+    // increment id by 1
     user_id_in_integer++;
 
     tmp_user_id = user_id_in_integer;
     j = strlen(id) - 1;
 
+    // convert number to char array
     while (tmp_user_id != 0)
     {
         id[j] = (tmp_user_id % 10) + '0';
