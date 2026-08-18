@@ -169,12 +169,15 @@ int login()
 
 int logout()
 {
+    // declare all variables
     int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
     FILE *log_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     box_width = CONTAINER_WIDTH;
@@ -182,14 +185,17 @@ int logout()
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // change user login status to logout
     char login_status[] = LOGOUT_STATUS_VALUE;
-
     change_login_status(login_status);
 
+    // clear log file
     log_open = fopen(LOG_FILE, FILE_MODE_WRITE);
 
+    // close log file
     fclose(log_open);
 
+    // show successful screen
     logout_successful_screen(x, y);
 
     return 0;
