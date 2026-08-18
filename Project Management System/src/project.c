@@ -977,14 +977,17 @@ int search_project_by_status()
 
 int search_project_by_priority()
 {
+    // declare all variables
     struct p_details project;
     char priority[PROJECT_PRIORITY_SIZE], projectDBS_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO;
     FILE *projectDBS_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
@@ -992,17 +995,26 @@ int search_project_by_priority()
     priority_x = (terminal_width - priority_box_width) / TWO;
     priority_y = (terminal_height - priority_box_height) / TWO;
 
+    // show project priority dashboard
     project_priority_dashboard(priority, priority_x, priority_y);
 
+    // get project database path
     get_path(projectDBS_path);
     strcat(projectDBS_path, PROJECT_DATABASE_FILE);
 
+    // open project database
     projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
+    // read project database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(project.id, field);
 
@@ -1030,6 +1042,7 @@ int search_project_by_priority()
         field = strtok(NULL, ",");
         strcpy(project.created_by, field);
 
+        // check project priority if found show project
         if (strcmp(priority, project.priority) == ZERO)
         {
             clear_screen();
@@ -1065,7 +1078,11 @@ int search_project_by_priority()
         }
     }
 
-    fclose(projectDBS_open);
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     return 0;
 }
