@@ -1810,23 +1810,38 @@ int compare_project_priority(const void *a, const void *b)
 
 int sort_projects()
 {
+    // update project and task statuses
+    update_cancelled_project_tasks();
+    update_created_project_status();
+    update_project_status_by_tasks();
+
+    // declare variables
     struct p_details projects[PROJECT_ARRAY_SIZE];
     char path[MAX_PATH_LENGTH], sort_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     int project_count = ZERO;
     FILE *projectDBS_open, *sort_project_open;
 
+    // get project database path
     get_path(path);
     strcat(path, PROJECT_DATABASE_FILE);
 
+    // get sorted project path
     get_path(sort_path);
     strcat(sort_path, SORTED_PROJECT_FILE);
 
+    // open project database
     projectDBS_open = fopen(path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
+    // read project database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(projects[project_count].id, field);
 
@@ -1845,6 +1860,12 @@ int sort_projects()
         field = strtok(NULL, ",");
         strcpy(projects[project_count].status, field);
 
+        // skip cancelled and completed projects
+        if (strcmp(projects[project_count].status, CANCELLED_PROJECT_STATUS) == ZERO ||strcmp(projects[project_count].status, COMPLETED_PROJECT_STATUS) == ZERO)
+        {
+            continue;
+        }
+
         field = strtok(NULL, ",");
         strcpy(projects[project_count].start_date, field);
 
@@ -1857,18 +1878,33 @@ int sort_projects()
         project_count++;
     }
 
-    fclose(projectDBS_open);
-
-    qsort(projects, project_count, sizeof(struct p_details), compare_project_priority);
-
-    sort_project_open = fopen(sort_path, FILE_MODE_WRITE);
-
-    for (int i = 0; i < project_count; i++)
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
     {
-        fprintf(sort_project_open, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", projects[i].id, projects[i].name, projects[i].category, projects[i].description, projects[i].priority, projects[i].status, projects[i].start_date, projects[i].end_date, projects[i].created_by);
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
 
-    fclose(sort_project_open);
+    // sort projects by priority
+    qsort(projects,project_count,sizeof(struct p_details),compare_project_priority);
 
-    return 0;
+    // open sorted project file
+    sort_project_open = fopen(sort_path, FILE_MODE_WRITE);
+    if (sort_project_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // write sorted projects to file
+    for (int i = ZERO; i < project_count; i++)
+    {
+        fprintf(sort_project_open, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", projects[i].id,projects[i].name,projects[i].category,projects[i].description,projects[i].priority,projects[i].status,projects[i].start_date,projects[i].end_date,projects[i].created_by);
+    }
+
+    // close sorted project file
+    if (fclose(sort_project_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    return ZERO;
 }
