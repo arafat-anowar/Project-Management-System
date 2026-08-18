@@ -1087,6 +1087,249 @@ int search_project_by_priority()
     return 0;
 }
 
+int update_cancelled_project_tasks()
+{
+    // declare all variables
+    struct p_details project;
+    struct t_details task;
+    char projectDBS_path[TASK_PATH_BUFFER_SIZE], taskDBS_path[TASK_PATH_BUFFER_SIZE], tmp_task_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], tmp_project_task_path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
+    FILE *projectDBS_open, *taskDBS_open, *tmp_task, *project_task_open, *tmp_project_task;
+
+    // get project database path
+    get_path(projectDBS_path);
+    strcat(projectDBS_path, PROJECT_DATABASE_FILE);
+
+    // open project database
+    projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        // check project status if project is cancelled update its tasks
+        if (strcmp(project.status, CANCELLED_PROJECT_STATUS) == ZERO)
+        {
+            // get project task file path
+            get_path(project_task_path);
+            strcat(project_task_path, PROJECT_FOLDER_NAME);
+            strcat(project_task_path, "\\");
+            strcat(project_task_path, strlwr(project.name));
+            strcat(project_task_path, TASK_FILE_EXTENSION);
+
+            // get temporary project task file path
+            get_path(tmp_project_task_path);
+            strcat(tmp_project_task_path, PROJECT_FOLDER_NAME);
+            strcat(tmp_project_task_path, "\\");
+            strcat(tmp_project_task_path, TEMP_TASK_DATABASE_FILE);
+
+            // open project task files
+            project_task_open = fopen(project_task_path, FILE_MODE_READ);
+            if (project_task_open == NULL)
+            {
+                something_went_wrong_screen(FILE_OPEN_ERROR);
+            }
+
+            tmp_project_task = fopen(tmp_project_task_path, FILE_MODE_WRITE);
+            if (tmp_project_task == NULL)
+            {
+                something_went_wrong_screen(FILE_OPEN_ERROR);
+            }
+
+            // read project task file
+            while (fgets(row, sizeof(row), project_task_open) != NULL)
+            {
+                row[strcspn(row, "\n")] = '\0';
+
+                // tokenize them
+                field = strtok(row, ",");
+                strcpy(task.task_id, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.project_id, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.name, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.description, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.priority, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.status, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.start_date, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.end_date, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.created_by, field);
+
+                // change task status to cancelled
+                strcpy(task.status, CANCELLED_TASK_STATUS);
+
+                // write task data to temporary file
+                fprintf(tmp_project_task, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id,task.project_id,task.name,task.description,task.priority,task.status,task.start_date,task.end_date,task.created_by);
+            }
+
+            // close project task files
+            if (fclose(project_task_open) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+
+            if (fclose(tmp_project_task) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+
+            // remove original project task file and rename temporary file
+            if (remove(project_task_path) != ZERO)
+            {
+                something_went_wrong_screen(SOMETHING_FAILED);
+            }
+
+            if (rename(tmp_project_task_path, project_task_path) != ZERO)
+            {
+                something_went_wrong_screen(SOMETHING_FAILED);
+            }
+
+            // get task database path
+            get_path(taskDBS_path);
+            strcat(taskDBS_path, TASK_DATABASE_FILE);
+
+            // get temporary task database path
+            get_path(tmp_task_path);
+            strcat(tmp_task_path, TEMP_TASK_DATABASE_FILE);
+
+            // open task databases
+            taskDBS_open = fopen(taskDBS_path, FILE_MODE_READ);
+            if (taskDBS_open == NULL)
+            {
+                something_went_wrong_screen(FILE_OPEN_ERROR);
+            }
+
+            tmp_task = fopen(tmp_task_path, FILE_MODE_WRITE);
+            if (tmp_task == NULL)
+            {
+                something_went_wrong_screen(FILE_OPEN_ERROR);
+            }
+
+            // read task database
+            while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+            {
+                row[strcspn(row, "\n")] = '\0';
+
+                // tokenize them
+                field = strtok(row, ",");
+                task.unique_id = atoi(field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.task_id, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.project_id, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.name, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.description, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.priority, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.status, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.start_date, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.end_date, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.created_by, field);
+
+                // check project id if task belongs to cancelled project
+                if (strcmp(task.project_id, project.id) == ZERO)
+                {
+                    strcpy(task.status, CANCELLED_TASK_STATUS);
+                }
+
+                // write task data to temporary database
+                fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",task.unique_id,task.task_id,task.project_id,task.name,task.description, task.priority, task.status,  task.start_date,  task.end_date, task.created_by);
+            }
+
+            // close task databases
+            if (fclose(taskDBS_open) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+
+            if (fclose(tmp_task) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+
+            // remove original task database and rename temporary database
+            if (remove(taskDBS_path) != ZERO)
+            {
+                something_went_wrong_screen(SOMETHING_FAILED);
+            }
+
+            if (rename(tmp_task_path, taskDBS_path) != ZERO)
+            {
+                something_went_wrong_screen(SOMETHING_FAILED);
+            }
+        }
+    }
+
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    return 0;
+}
+
 int generate_project_id(char id[])
 {
     struct p_details project;
