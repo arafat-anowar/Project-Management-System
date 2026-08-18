@@ -493,11 +493,14 @@ int password_verify(char username_or_email[], char password[])
 
 int input_password(char password[])
 {
+    // declare variables
     int i = 0;
     char each_character;
 
+    // run a loop until user enter enter char
     while ((each_character = getch()) != ENTER)
     {
+        // if user enter backspace key clear last char
         if (each_character == BACKSPACE)
         {
             if (i > 0)
@@ -506,6 +509,7 @@ int input_password(char password[])
                 printf("\b \b");
             }
         }
+        // otherwise store pass in string and print * 
         else
         {
             password[i] = each_character;
@@ -514,6 +518,7 @@ int input_password(char password[])
         }
     }
 
+    // add null char 
     password[i] = '\0';
 
     return 0;
