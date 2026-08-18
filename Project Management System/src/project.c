@@ -413,16 +413,20 @@ int change_project_start_date(char start_date[])
 
 int extend_project_deadline(char deadline[])
 {
+    // declare all variables
     char updated_deadline[PROJECT_END_DATE_SIZE];
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO, is_end_date_valid = VALID;
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show extend project deadline screen
     extend_project_deadline_screen(x, y);
 
+    // take project end date and validate that
     do
     {
         move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
@@ -439,6 +443,7 @@ int extend_project_deadline(char deadline[])
 
     } while (is_end_date_valid != VALID);
 
+    // update project end date
     strcpy(deadline, updated_deadline);
 
     return 0;
