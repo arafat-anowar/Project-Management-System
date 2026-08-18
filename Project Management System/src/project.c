@@ -747,37 +747,47 @@ int view_projects()
 
 int search_by_project_id_or_name()
 {
+    // declare all variables
     struct p_details project;
     char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], projectDBS_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO;
     FILE *projectDBS_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show search project screen
     search_project_by_id_or_name_screen(x, y);
 
+    // take project id or name
     move_cursor(x + PROJECT_INPUT_X, y + 5);
-
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
-
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
+    // get project database path
     get_path(projectDBS_path);
     strcat(projectDBS_path, PROJECT_DATABASE_FILE);
 
+    // open project database
     projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
+    // read project database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(project.id, field);
 
@@ -805,7 +815,8 @@ int search_by_project_id_or_name()
         field = strtok(NULL, ",");
         strcpy(project.created_by, field);
 
-        if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
+        // check project id or name if found show project
+        if (strcmp(project_id_or_name, project.id) == ZERO ||strcmp(project_id_or_name, project.name) == ZERO)
         {
             clear_screen();
             header_screen();
@@ -842,10 +853,15 @@ int search_by_project_id_or_name()
         }
     }
 
-    fclose(projectDBS_open);
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
-    return 0;
+    return ZERO;
 }
+
 
 int search_project_by_status()
 {
