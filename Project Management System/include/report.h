@@ -18,7 +18,6 @@ int project_summary_report();
 int project_progress_report();
 int overdue_projects_report();
 int high_priority_projects_report();
-
 int task_summary_report();
 int overdue_tasks_report();
 int high_priority_tasks_report();
