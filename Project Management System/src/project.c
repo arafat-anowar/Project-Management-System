@@ -163,14 +163,17 @@ int create_project()
 
 int update_project()
 {
+    // declare all variables
     struct p_details project;
     char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], path[MAX_PATH_LENGTH], tmp_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = UPDATE_PROJECT_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO;
     FILE *projectDBS_open, *tmp_project;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
@@ -178,26 +181,42 @@ int update_project()
     priority_x = (terminal_width - priority_box_width) / TWO;
     priority_y = (terminal_height - priority_box_height) / TWO;
 
+    // show search project screen
     search_project_by_id_or_name_screen(x, y);
 
+    // take project id or name
     move_cursor(x + PROJECT_INPUT_X, y + 5);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
+    // get project database path
     get_path(path);
     strcat(path, PROJECT_DATABASE_FILE);
 
+    // get temporary project database path
     get_path(tmp_path);
     strcat(tmp_path, TEMP_PROJECT_DATABASE_FILE);
 
+    // open project database
     projectDBS_open = fopen(path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
+    // open temporary project database
     tmp_project = fopen(tmp_path, FILE_MODE_WRITE);
+    if (tmp_project == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
+    // read project database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(project.id, field);
 
@@ -225,19 +244,37 @@ int update_project()
         field = strtok(NULL, ",");
         strcpy(project.created_by, field);
 
+        // check project id or name if found update project
         if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
             update_project_dashboard(&project, x, y, priority_x, priority_y);
         }
 
-        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
+        // write data to temporary database
+        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority,project.status, project.start_date, project.end_date,project.created_by);
     }
 
-    fclose(projectDBS_open);
-    fclose(tmp_project);
+    // close databases
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
-    remove(path);
-    rename(tmp_path, path);
+    if (fclose(tmp_project) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // remove original database and rename temporary database as original database
+    if (remove(path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(tmp_path, path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
 
     return 0;
 }
