@@ -1751,16 +1751,21 @@ int generate_project_id(char id[])
 
 int get_path(char path[])
 {
+    // declare variables
     char *username;
+
+    // get username
     username = get_user_name();
 
+    // create user database path
     strcpy(path, DATABASE_DIR);
     strcat(path, username);
     strcat(path, "\\");
 
+    // free memory
     free(username);
 
-    return 0;
+    return ZERO;
 }
 
 int compare_project_priority(const void *a, const void *b)
