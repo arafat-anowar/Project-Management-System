@@ -6,14 +6,17 @@
 
 int create_project()
 {
+    // declare all variables
     struct p_details project;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO, is_start_date_valid = ZERO, is_end_date_valid = ZERO;
     char filepath[MAX_PATH_LENGTH], *username;
     FILE *open_projectDBS, *project_file_create;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
@@ -21,46 +24,61 @@ int create_project()
     priority_x = (terminal_width - priority_box_width) / TWO;
     priority_y = (terminal_height - priority_box_height) / TWO;
 
+    // show create project screen
     create_project_screen(x, y);
 
+    // generate project id for new project
     generate_project_id(project.id);
 
+    // take project name
     move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
     fgets(project.name, sizeof(project.name), stdin);
     project.name[strcspn(project.name, "\n")] = '\0';
 
+    // take project category
     move_cursor(x + PROJECT_INPUT_X, y + 11);
     fgets(project.category, sizeof(project.category), stdin);
     project.category[strcspn(project.category, "\n")] = '\0';
 
+    // take project description
     move_cursor(x + PROJECT_INPUT_X, y + 16);
     fgets(project.description, sizeof(project.description), stdin);
     project.description[strcspn(project.description, "\n")] = '\0';
 
+    // take project priority
     project_priority_dashboard(project.priority, priority_x, priority_y);
 
+    // clear screen and show create project screen
     clear_screen();
     header_screen();
 
+    // show create project form
     create_project_screen(x, y);
 
+    // show entered project name
     move_cursor(x + PROJECT_INPUT_X, y + 6);
     printf("%s", project.name);
 
+    // show entered project category
     move_cursor(x + PROJECT_INPUT_X, y + 11);
     printf("%s", project.category);
 
+    // show entered project description
     move_cursor(x + PROJECT_INPUT_X, y + 16);
     printf("%s", project.description);
 
+    // show selected project priority
     move_cursor(x + PROJECT_INPUT_X, y + 23);
     printf("%s", project.priority);
 
+    // set default project status
     strcpy(project.status, DEFAULT_PROJECT_STATUS);
 
+    // take project start date and validate that
     do
     {
         move_cursor(x + PROJECT_INPUT_X, y + 28);
+
         if (is_start_date_valid == ZERO)
         {
             printf("                                                                             ");
@@ -73,6 +91,7 @@ int create_project()
 
     } while (is_start_date_valid != VALID);
 
+    // take project end date and validate that
     do
     {
         move_cursor(x + PROJECT_INPUT_X, y + 33);
@@ -85,31 +104,59 @@ int create_project()
 
         fgets(project.end_date, sizeof(project.end_date), stdin);
         project.end_date[strcspn(project.end_date, "\n")] = '\0';
+
         is_end_date_valid = validate_date(project.end_date);
 
     } while (is_end_date_valid != VALID);
 
+    // get username
     username = get_user_name();
+
+    // set project creator
     strcpy(project.created_by, username);
+
+    // free memory
     free(username);
 
+    // get project database path
     get_path(filepath);
     strcat(filepath, PROJECT_DATABASE_FILE);
 
+    // open project database
     open_projectDBS = fopen(filepath, FILE_MODE_APPEND);
+    if (open_projectDBS == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
-    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
+    // write project data to database
+    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name,project.category,project.description,project.priority,project.status,project.start_date,project.end_date,project.created_by);
 
-    fclose(open_projectDBS);
+    // close project database
+    if (fclose(open_projectDBS) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
+    // get project file path
     get_path(filepath);
     strcat(filepath, PROJECTS_FOLDER);
+    strcat(filepath, "\\");
     strcat(filepath, strlwr(project.name));
     strcat(filepath, PROJECT_FILE_EXTENSION);
 
+    // create project file
     project_file_create = fopen(filepath, FILE_MODE_WRITE);
+    if (project_file_create == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
-    fclose(project_file_create);
+    // close project file
+    if (fclose(project_file_create) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     return 0;
 }
