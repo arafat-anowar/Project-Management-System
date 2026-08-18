@@ -1482,33 +1482,45 @@ int view_tasks_by_project()
 
 int search_task_by_status()
 {
+    // declare all variables
     struct t_details task;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, status_box_width = TASK_STATUS_BOX_WIDTH, status_box_height = TASK_STATUS_BOX_HEIGHT, status_x = ZERO, status_y = ZERO;
     char status[TASK_STATUS_SIZE], path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     FILE *taskDBS_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
     status_x = (terminal_width - status_box_width) / TWO;
     status_y = (terminal_height - status_box_height) / TWO;
 
+    // show status list
     task_status_dashboard(status, status_x, status_y);
 
+    // get task database path
     get_path(path);
     strcat(path, TASK_DATABASE_FILE);
 
+    // open database
     taskDBS_open = fopen(path, FILE_MODE_READ);
+    if (taskDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
 
+    // read database
     while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize data
         field = strtok(row, ",");
         task.unique_id = atoi(field);
 
@@ -1546,6 +1558,7 @@ int search_task_by_status()
 
             task_details_screen(x, y);
 
+            // print task details
             move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_UNIQUE_ID_OFFSET);
             printf("%d", task.unique_id);
 
@@ -1577,7 +1590,11 @@ int search_task_by_status()
         }
     }
 
-    fclose(taskDBS_open);
+    // close database
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     return 0;
 }
