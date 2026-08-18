@@ -643,28 +643,39 @@ int delete_project()
 
 int view_projects()
 {
+    // declare all variables
     struct p_details project;
     char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO;
     FILE *projectDBS_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // get project database path
     get_path(path);
     strcat(path, PROJECT_DATABASE_FILE);
 
+    // open project database
     projectDBS_open = fopen(path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
+    // read project database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(project.id, field);
 
@@ -692,6 +703,7 @@ int view_projects()
         field = strtok(NULL, ",");
         strcpy(project.created_by, field);
 
+        // clear screen and show project
         clear_screen();
         header_screen();
 
@@ -724,7 +736,11 @@ int view_projects()
         get_input;
     }
 
-    fclose(projectDBS_open);
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     return 0;
 }
