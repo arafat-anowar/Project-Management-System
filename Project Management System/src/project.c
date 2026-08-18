@@ -359,6 +359,7 @@ int change_project_description(char description[])
 
 int change_project_status(char status[], int x, int y)
 {
+    // show project status dashboard
     project_status_dashboard(status, x, y);
 
     return 0;
