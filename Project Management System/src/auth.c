@@ -440,18 +440,22 @@ int change_login_status(char status[])
 
 int password_verify(char username_or_email[], char password[])
 {
+    // declare all variables
     struct r_account user;
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     int found = INVALID;
     FILE *credentialDBS_open, *log_open;
 
+    // open databases
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
     log_open = fopen(LOG_FILE, FILE_MODE_WRITE);
 
+    // read data from databases
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(user.id, field);
 
@@ -464,6 +468,7 @@ int password_verify(char username_or_email[], char password[])
         field = strtok(NULL, ",");
         strcpy(user.pass, field);
 
+        // verify details if details are correct write username to log file
         if ((strcmp(username_or_email, user.email) == 0 && strcmp(password, user.pass) == 0) || (strcmp(username_or_email, user.user_name) == 0 && strcmp(password, user.pass) == 0))
         {
             found = VALID;
@@ -472,14 +477,17 @@ int password_verify(char username_or_email[], char password[])
         }
     }
 
+    // close database
     fclose(credentialDBS_open);
     fclose(log_open);
 
+    // if details are correct return valid
     if (found == VALID)
     {
         return VALID;
     }
 
+    // if details are wrong return invalid
     return INVALID;
 }
 
