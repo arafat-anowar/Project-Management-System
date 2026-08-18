@@ -626,20 +626,23 @@ int update_task()
 
 int change_task_name(char name[])
 {
+    // declare all variables
     char new_name[TASK_NAME_SIZE];
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show task name enter screen
     change_task_name_screen(x, y);
 
+    // take new task name
     move_cursor(x + PROJECT_INPUT_X, y + TASK_NAME_Y);
     fgets(new_name, sizeof(new_name), stdin);
     new_name[strcspn(new_name, "\n")] = '\0';
-
     strcpy(name, new_name);
 
     return 0;
