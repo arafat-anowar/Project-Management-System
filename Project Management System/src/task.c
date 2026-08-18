@@ -3,6 +3,8 @@
 */
 #include "task.h"
 
+// task main source code start
+
 int unique_task_id_generator()
 {
     // declare all variables
@@ -1860,3 +1862,5 @@ int sort_by_priority(const void *a, const void *b)
     // compare project priority
     return priority_b - priority_a;
 }
+
+// task main source code end

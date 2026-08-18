@@ -1,13 +1,19 @@
+// task header file start
+
 #ifndef TASK_H
 #define TASK_H
 
+// global header files
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <windows.h>
 
+// local header files
 #include "ui.h"
 #include "project.h"
+
+// macros
 
 #define TASK_PATH_BUFFER_SIZE 200
 #define TASK_FILE_DATA_SIZE 3000
@@ -87,7 +93,10 @@
 
 #define DEFAULT_TASK_STATUS "Created"
 #define DELETED_TASK_STATUS "Deleted"
+#define CANCELLED_TASK_STATUS "Cancelled"
+#define COMPLETED_TASK_STATUS "Completed"
 
+// structure for create tasks
 struct t_details
 {
     int unique_id;
@@ -101,6 +110,8 @@ struct t_details
     char end_date[TASK_END_DATE_SIZE];
     char created_by[20];
 };
+
+// function prototypes
 
 int unique_task_id_generator();
 int generate_task_id(char id[], char path[]);
@@ -121,5 +132,6 @@ int search_task_by_priority();
 int sort_tasks();
 int sort_by_priority(const void *a, const void *b);
 
-
 #endif
+
+// task header file end
