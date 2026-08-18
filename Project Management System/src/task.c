@@ -691,14 +691,16 @@ int change_task_status(char status[])
 
 int change_task_priority(char priority[])
 {
+    // declare all variables
     int terminal_width, terminal_height, x, y;
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     x = (terminal_width - TASK_PRIORITY_BOX_WIDTH) / TWO;
     y = (terminal_height - TASK_PRIORITY_BOX_HEIGHT) / TWO;
 
+    // show change task priority screen
     task_priority_dashboard(priority, x, y);
 
     return 0;
