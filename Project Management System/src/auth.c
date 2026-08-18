@@ -668,53 +668,50 @@ int validate_phone(char phone[])
 
 int create_directories(char username[])
 {
+    // declare variables
     char path[MAX_PATH_LENGTH];
     FILE *necessary_file_create;
 
+    // create a folder in database with username
     strcpy(path, DATABASE_DIR);
     strcat(path, username);
-
     CreateDirectory(path, NULL);
 
+    // create projects folder inside user's folder
     strcat(path, "\\");
     strcat(path, PROJECTS_FOLDER);
-
     CreateDirectory(path, NULL);
 
+    // create projectdbs file
     strcpy(path, DATABASE_DIR);
     strcat(path, username);
     strcat(path, "\\");
     strcat(path, PROJECT_DATABASE_FILE);
-
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
-
     fclose(necessary_file_create);
 
+    // create taskdbs file
     strcpy(path, DATABASE_DIR);
     strcat(path, username);
     strcat(path, "\\");
     strcat(path, TASK_DATABASE_FILE);
-
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
-
     fclose(necessary_file_create);
 
+    // create sorttask file
     strcpy(path, DATABASE_DIR);
     strcat(path, username);
     strcat(path, "\\");
     strcat(path, SORTED_TASK_FILE);
-
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
-
     fclose(necessary_file_create);
 
+    // create sortproject file
     strcpy(path, DATABASE_DIR);
     strcat(path, username);
     strcat(path, "\\");
     strcat(path, SORTED_PROJECT_FILE);
-
     necessary_file_create = fopen(path, FILE_MODE_WRITE);
-
     fclose(necessary_file_create);
 
     return 0;
