@@ -555,22 +555,27 @@ char *get_user_name()
 
 int validate_user_name(char username[])
 {
+    // declare all variables
     struct r_account user;
     char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     FILE *credentialDBS_open;
 
+    // open database
     credentialDBS_open = fopen(CREDENTIAL_DATABASE_FILE, FILE_MODE_READ);
 
+    // read data
     while (fgets(row, sizeof(row), credentialDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
         strcpy(user.id, field);
 
         field = strtok(NULL, ",");
         strcpy(user.user_name, field);
 
+        // if username already exist return invalid
         if (strcmp(user.user_name, username) == 0)
         {
             fclose(credentialDBS_open);
@@ -578,6 +583,7 @@ int validate_user_name(char username[])
         }
     }
 
+    // close database
     fclose(credentialDBS_open);
 
     return VALID;
