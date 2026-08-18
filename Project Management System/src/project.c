@@ -1663,31 +1663,45 @@ int update_created_project_status()
 
 int generate_project_id(char id[])
 {
+    // declare all variables
     struct p_details project;
     int found = ZERO, num_id[PROJECT_ID_SIZE] = {ZERO}, project_id = ZERO, id_len = ZERO, tmp = ZERO, i = ZERO, j = ZERO, digit = ZERO;
     char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     FILE *projectDBS_open;
 
+    // initialize project id
     strcpy(id, "P1001");
 
+    // get project database path
     get_path(path);
     strcat(path, PROJECT_DATABASE_FILE);
 
+    // open project database
     projectDBS_open = fopen(path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
 
+    // read project database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         found = 1;
 
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize them
         field = strtok(row, ",");
-
         strcpy(project.id, field);
     }
 
-    fclose(projectDBS_open);
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
+    // if no data found in file return default id
     if (found == ZERO)
     {
         return 0;
@@ -1695,14 +1709,17 @@ int generate_project_id(char id[])
 
     strcpy(id, project.id);
 
+    // get id length
     id_len = strlen(id);
 
-    for (i = 0, j = 1; j < id_len; i++, j++)
+    // copy id's char array to integer array
+    for (i = ZERO, j = 1; j < id_len; i++, j++)
     {
         num_id[i] = id[j] - '0';
     }
 
-    for (i = 0; i < id_len - 1; i++)
+    // convert id's array to a number
+    for (i = ZERO; i < id_len - 1; i++)
     {
         digit = num_id[i];
 
@@ -1714,12 +1731,14 @@ int generate_project_id(char id[])
         project_id += digit;
     }
 
+    // increment id by 1
     project_id++;
 
     tmp = project_id;
     j = id_len - 1;
 
-    while (tmp != 0 && j > 0)
+    // convert number to char array
+    while (tmp != ZERO && j > ZERO)
     {
         id[j] = (tmp % 10) + '0';
 
