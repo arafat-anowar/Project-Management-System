@@ -14,7 +14,7 @@ int unique_task_id_generator()
     // get task database path
     get_path(path);
     strcat(path, TASK_DATABASE_FILE);
-    
+
     // open taskdbs
     taskDBS_open = fopen(path, FILE_MODE_READ);
     if (taskDBS_open == NULL)
@@ -184,7 +184,7 @@ int create_task()
         field = strtok(NULL, ",");
         strcpy(project.name, field);
 
-        if (strcmp(project_id_or_name, project.id) == ZERO ||strcmp(project_id_or_name, project.name) == ZERO)
+        if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
             project_found = 1;
             break;
@@ -305,7 +305,7 @@ int create_task()
 
     // write data to database
 
-    fprintf(taskDBS_open,"%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",task.unique_id,task.task_id,task.project_id,task.name,task.description,task.priority,task.status,task.start_date,task.end_date,task.created_by);
+    fprintf(taskDBS_open, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
 
     // close database
     if (fclose(taskDBS_open) == EOF)
@@ -317,7 +317,7 @@ int create_task()
     if (project_task_open != NULL)
     {
         // write data to database
-        fprintf(project_task_open,"%s,%s,%s,%s,%s,%s,%s,%s,%s\n",task.task_id,task.project_id,task.name,task.description,task.priority,task.status,task.start_date,task.end_date,task.created_by);
+        fprintf(project_task_open, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
 
         // close database
         if (fclose(project_task_open) == EOF)
@@ -650,20 +650,23 @@ int change_task_name(char name[])
 
 int change_task_description(char description[])
 {
+    // declare all variables
     char new_description[TASK_DESCRIPTION_SIZE];
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show task description enter screen
     change_task_description_screen(x, y);
 
+    // take task description
     move_cursor(x + PROJECT_INPUT_X, y + TASK_DESCRIPTION_Y);
     fgets(new_description, sizeof(new_description), stdin);
     new_description[strcspn(new_description, "\n")] = '\0';
-
     strcpy(description, new_description);
 
     return 0;
