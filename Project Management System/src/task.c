@@ -674,14 +674,16 @@ int change_task_description(char description[])
 
 int change_task_status(char status[])
 {
+    // declare all variables
     int terminal_width, terminal_height, x, y;
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     x = (terminal_width - TASK_STATUS_BOX_WIDTH) / TWO;
     y = (terminal_height - TASK_STATUS_BOX_HEIGHT) / TWO;
 
+    // show task status change screen
     task_status_dashboard(status, x, y);
 
     return 0;
