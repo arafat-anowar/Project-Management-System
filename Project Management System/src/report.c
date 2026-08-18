@@ -490,3 +490,127 @@ int high_priority_projects_report()
 
     return 0;
 }
+
+int task_summary_report()
+{
+    // declare all variables
+    struct t_details task;
+    char path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE],*field;
+    int total_tasks = ZERO, pending_tasks = ZERO, planning_tasks = ZERO, in_progress_tasks = ZERO,  completed_tasks = ZERO,cancelled_tasks = ZERO, terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 17,  x,  y;
+    FILE *taskDBS_open;
+
+    // get task database path
+    get_path(path);
+    strcat(path, TASK_DATABASE_FILE);
+
+    // open database
+    taskDBS_open = fopen(path, FILE_MODE_READ);
+    if (taskDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
+
+    // read database
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize data
+        field = strtok(row, ",");
+        task.unique_id = atoi(field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.task_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.project_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(task.created_by, field);
+
+        total_tasks++;
+
+        if (strcmp(task.status, DEFAULT_TASK_STATUS) == ZERO)
+        {
+            pending_tasks++;
+        }
+        else if (strcmp(task.status, "Planning") == ZERO)
+        {
+            planning_tasks++;
+        }
+        else if (strcmp(task.status, "In_Progress") == ZERO)
+        {
+            in_progress_tasks++;
+        }
+        else if (strcmp(task.status, COMPLETED_TASK_STATUS) == ZERO)
+        {
+            completed_tasks++;
+        }
+        else if (strcmp(task.status, CANCELLED_TASK_STATUS) == ZERO)
+        {
+            cancelled_tasks++;
+        }
+    }
+
+    // close database
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+
+    }
+
+    // set terminal UTF8
+    init_console();
+    header_screen();
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+    task_summary_report_screen(x, y);
+
+    // print task details
+    move_cursor(x + 30, y + 4);
+    printf("%d", total_tasks);
+
+    move_cursor(x + 30, y + 5);
+    printf("%d", pending_tasks);
+
+    move_cursor(x + 30, y + 6);
+    printf("%d", planning_tasks);
+
+    move_cursor(x + 30, y + 7);
+    printf("%d", in_progress_tasks);
+
+    move_cursor(x + 30, y + 8);
+    printf("%d", completed_tasks);
+
+    move_cursor(x + 30, y + 9);
+    printf("%d", cancelled_tasks);
+
+    move_cursor(x + 45, y + 14);
+    get_input;
+
+    return 0;
+}
