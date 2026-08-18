@@ -1825,9 +1825,11 @@ int sort_tasks()
 
 int sort_by_priority(const void *a, const void *b)
 {
+    // declare all variables
     struct t_details *task_a = (struct t_details *)a, *task_b = (struct t_details *)b;
     int priority_a = ZERO, priority_b = ZERO;
 
+    // check first project priority
     if (strcmp(task_a->priority, "High") == ZERO)
     {
         priority_a = 3;
@@ -1841,6 +1843,7 @@ int sort_by_priority(const void *a, const void *b)
         priority_a = 1;
     }
 
+    // check second project priority
     if (strcmp(task_b->priority, "High") == ZERO)
     {
         priority_b = 3;
@@ -1854,5 +1857,6 @@ int sort_by_priority(const void *a, const void *b)
         priority_b = 1;
     }
 
+    // compare project priority
     return priority_b - priority_a;
 }

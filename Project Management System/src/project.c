@@ -1772,9 +1772,7 @@ int get_path(char path[])
 int compare_project_priority(const void *a, const void *b)
 {
     // declare variables
-    struct p_details *project_a = (struct p_details *)a;
-    struct p_details *project_b = (struct p_details *)b;
-
+    struct p_details *project_a = (struct p_details *)a, *project_b = (struct p_details *)b;
     int priority_a = ZERO, priority_b = ZERO;
 
     // check first project priority
