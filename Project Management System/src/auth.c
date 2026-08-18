@@ -118,12 +118,15 @@ int create_user()
 
 int login()
 {
+    // Declare all variables
     struct l_account user;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = ZERO, box_height = ZERO, x = ZERO, y = ZERO;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     box_width = CONTAINER_WIDTH;
@@ -131,18 +134,23 @@ int login()
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show user login form
     user_login_screen(x, y);
 
-    move_cursor(x + INPUT_FIELD_OFFSET_X, y +LOGIN_USERNAME_FIELD_Y);
+    // take user email or username
+    move_cursor(x + INPUT_FIELD_OFFSET_X, y + LOGIN_USERNAME_FIELD_Y);
     fgets(user.user_name_or_email, sizeof(user.user_name_or_email), stdin);
     user.user_name_or_email[strcspn(user.user_name_or_email, "\n")] = '\0';
 
-    move_cursor(x + INPUT_FIELD_OFFSET_X, y +LOGIN_PASSWORD_FIELD_Y);
+    // take input user pass
+    move_cursor(x + INPUT_FIELD_OFFSET_X, y + LOGIN_PASSWORD_FIELD_Y);
     input_password(user.user_pass);
     user.user_pass[strcspn(user.user_pass, "\n")] = '\0';
 
+    // check userdetails
     int is_verified = password_verify(user.user_name_or_email, user.user_pass);
 
+    // if user details correct redirect to dashboard
     if (is_verified == VALID)
     {
         char login_status[] = LOGIN_STATUS_VALUE;
@@ -153,6 +161,7 @@ int login()
         return 0;
     }
 
+    // if user details wrong show error
     invalid_login_screen(x, y);
 
     return 0;
