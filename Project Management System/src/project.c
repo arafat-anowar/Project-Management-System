@@ -281,19 +281,25 @@ int update_project()
 
 int change_project_name(char name[])
 {
+    // declare all variables
     char updated_name[MAX_USERNAME_LENGTH];
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO;
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show change project name screen
     change_project_name_screen(x, y);
 
+    // take updated project name
     move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
     fgets(updated_name, sizeof(updated_name), stdin);
     updated_name[strcspn(updated_name, "\n")] = '\0';
+
+    // update project name
     strcpy(name, updated_name);
 
     return 0;
