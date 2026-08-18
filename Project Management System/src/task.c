@@ -1174,35 +1174,48 @@ int view_tasks()
 
 int search_by_task_id_or_name()
 {
+    // declare all variables
     struct t_details task;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
     char task_id_or_name[TASK_SEARCH_SIZE], path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     FILE *taskDBS_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show task id or name enter screen
     search_task_by_id_or_name_screen(x, y);
 
+    // take task id or name
     move_cursor(x + PROJECT_INPUT_X, y + TASK_SEARCH_INPUT_Y);
     fgets(task_id_or_name, sizeof(task_id_or_name), stdin);
     task_id_or_name[strcspn(task_id_or_name, "\n")] = '\0';
 
+    // get task database path
     get_path(path);
     strcat(path, TASK_DATABASE_FILE);
 
+    // open database
     taskDBS_open = fopen(path, FILE_MODE_READ);
+    if (taskDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
 
+    // read database
     while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize data
         field = strtok(row, ",");
         task.unique_id = atoi(field);
 
@@ -1240,6 +1253,7 @@ int search_by_task_id_or_name()
 
             task_details_screen(x, y);
 
+            // print task details
             move_cursor(x + PROJECT_INPUT_X, y + TASK_DETAILS_Y_UNIQUE_ID_OFFSET);
             printf("%d", task.unique_id);
 
@@ -1268,50 +1282,68 @@ int search_by_task_id_or_name()
             printf("%s", task.end_date);
 
             get_input;
+
             break;
         }
     }
 
-    fclose(taskDBS_open);
+    // close database
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     return 0;
 }
 
 int view_tasks_by_project()
 {
+    // declare all variables
     struct p_details project;
     struct t_details task;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO;
-    char project_id_or_name[PROJECT_SEARCH_SIZE], projectDBS_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
+    char project_id_or_name[PROJECT_SEARCH_SIZE], projectDBS_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], project_file_name[PROJECT_FILE_NAME_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     FILE *projectDBS_open, *project_task_open;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show project id or name enter screen
     search_project_by_id_or_name_screen(x, y);
 
+    // take project id or name
     move_cursor(x + PROJECT_INPUT_X, y + TASK_SEARCH_INPUT_Y);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
+    // get project database path
     get_path(projectDBS_path);
     strcat(projectDBS_path, PROJECT_DATABASE_FILE);
 
+    // open database
     projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
 
+    // read database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize data
         field = strtok(row, ",");
-
         strcpy(project.id, field);
+
         field = strtok(NULL, ",");
         strcpy(project.name, field);
 
@@ -1343,28 +1375,45 @@ int view_tasks_by_project()
         }
     }
 
-    fclose(projectDBS_open);
+    // close database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     if (project_found == ZERO)
     {
         return 0;
     }
 
+    // get project task database path
     get_path(project_task_path);
-    strcat(project_task_path, PROJECT_FOLDER_NAME);
+    strcat(project_task_path, PROJECTS_FOLDER);
     strcat(project_task_path, "\\");
-    strcat(project_task_path, strlwr(project.name));
+
+    strcpy(project_file_name, project.name);
+    strlwr(project_file_name);
+
+    strcat(project_task_path, project_file_name);
     strcat(project_task_path, TASK_FILE_EXTENSION);
 
+    // open database
     project_task_open = fopen(project_task_path, FILE_MODE_READ);
+    if (project_task_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
 
+    // read database
     while (fgets(row, sizeof(row), project_task_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize data
         field = strtok(row, ",");
-
         strcpy(task.task_id, field);
+
         field = strtok(NULL, ",");
         strcpy(task.project_id, field);
 
@@ -1394,6 +1443,7 @@ int view_tasks_by_project()
 
         task_details_screen_for_separate_project(x, y);
 
+        // print task details
         move_cursor(x + PROJECT_INPUT_X, y + TASK_VIEW_PROJECT_Y_TASK_ID_OFFSET);
         printf("%s", task.task_id);
 
@@ -1421,7 +1471,11 @@ int view_tasks_by_project()
         get_input;
     }
 
-    fclose(project_task_open);
+    // close database
+    if (fclose(project_task_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     return 0;
 }
