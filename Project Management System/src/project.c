@@ -1498,6 +1498,169 @@ int update_project_status_by_tasks()
     return 0;
 }
 
+int update_created_project_status()
+{
+    // declare all variables
+    struct p_details project;
+    struct t_details task;
+    char projectDBS_path[MAX_PATH_LENGTH], tmp_projectDBS_path[MAX_PATH_LENGTH], taskDBS_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int task_found = ZERO;
+    FILE *projectDBS_open, *tmp_project, *taskDBS_open;
+
+    // get project database path
+    get_path(projectDBS_path);
+    strcat(projectDBS_path, PROJECT_DATABASE_FILE);
+
+    // get temporary project database path
+    get_path(tmp_projectDBS_path);
+    strcat(tmp_projectDBS_path, TEMP_PROJECT_DATABASE_FILE);
+
+    // get task database path
+    get_path(taskDBS_path);
+    strcat(taskDBS_path, TASK_DATABASE_FILE);
+
+    // open databases
+    projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    tmp_project = fopen(tmp_projectDBS_path, FILE_MODE_WRITE);
+    if (tmp_project == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    taskDBS_open = fopen(taskDBS_path, FILE_MODE_READ);
+    if (taskDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        task_found = ZERO;
+
+        // read task database
+        while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+        {
+            row[strcspn(row, "\n")] = '\0';
+
+            // tokenize them
+            field = strtok(row, ",");
+            task.unique_id = atoi(field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.task_id, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.project_id, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.name, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.description, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.priority, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.status, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.start_date, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.end_date, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.created_by, field);
+
+            // check task belongs to current project
+            if (strcmp(task.project_id, project.id) == ZERO)
+            {
+                task_found = 1;
+                break;
+            }
+        }
+
+        // reset task database position
+        rewind(taskDBS_open);
+
+        // update project status if task found
+        if (strcmp(project.status, DEFAULT_PROJECT_STATUS) == ZERO &&
+            task_found == 1)
+        {
+            strcpy(project.status, IN_PROGRESS_PROJECT_STATUS);
+        }
+
+        // write project data to temporary database
+        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",  project.id,project.name, project.category, project.description,  project.priority, project.status, project.start_date,project.end_date,project.created_by);
+    }
+
+    // close databases
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(tmp_project) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // remove original project database and rename temporary database
+    if (remove(projectDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(tmp_projectDBS_path, projectDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    return 0;
+}
+
 int generate_project_id(char id[])
 {
     struct p_details project;
