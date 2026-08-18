@@ -1,12 +1,19 @@
+// project header file start
+
 #ifndef PROJECT_H
 #define PROJECT_H
 
+// global header files
 #include <stdio.h>
 #include <string.h>
 
+// local header files
 #include "auth.h"
+#include "task.h"
 #include "utility.h"
 #include "ui.h"
+
+// macros
 
 #define PROJECT_FILE_MODE_READ "r"
 #define PROJECT_FILE_MODE_WRITE "w"
@@ -39,6 +46,7 @@
 #define PROJECT_INPUT_Y 6
 
 #define PROJECT_FILE_PATH_SIZE 200
+#define MAX_LENGTH_OF_DATA_IN_FILE 800
 #define PROJECT_ID_OR_NAME_SIZE 50
 #define PROJECT_FILE_NAME_SIZE 100
 #define PROJECT_ARRAY_SIZE 1000
@@ -58,7 +66,11 @@
 
 #define DEFAULT_PROJECT_STATUS "Created"
 #define DELETED_PROJECT_STATUS "Deleted"
+#define CANCELLED_PROJECT_STATUS "Cancelled"
+#define COMPLETED_PROJECT_STATUS "Completed"
+#define IN_PROGRESS_PROJECT_STATUS "In Progress"
 
+// structure for create project
 struct p_details
 {
     char id[20];
@@ -71,6 +83,8 @@ struct p_details
     char end_date[15];
     char created_by[20];
 };
+
+// function prototypes
 
 int create_project();
 int view_projects();
@@ -91,5 +105,10 @@ int search_project_by_priority();
 int get_path(char path[]);
 int create_project_screen(int x, int y);
 int compare_project_priority(const void *a, const void *b);
+int update_cancelled_project_tasks();
+int update_created_project_status();
+int update_project_status_by_tasks();
 
 #endif
+
+// project header file end
