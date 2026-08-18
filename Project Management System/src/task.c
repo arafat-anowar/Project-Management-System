@@ -50,26 +50,40 @@ int unique_task_id_generator()
 
 int generate_task_id(char id[], char path[])
 {
+    // declare all variables
     struct t_details task;
     int found = ZERO, num_id[15] = {ZERO}, task_id = ZERO, id_len = ZERO, i = ZERO, j = ZERO, digit = ZERO, tmp = ZERO;
     char row[TASK_FILE_DATA_SIZE], *field;
     FILE *taskDBS_open;
 
+    // initialize task id
     strcpy(id, INITIAL_TASK_ID_VALUE);
 
+    // taskdbs open
     taskDBS_open = fopen(path, FILE_MODE_READ);
-
-    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+    if (taskDBS_open == NULL)
     {
-        found = 1;
-
-        row[strcspn(row, "\n")] = '\0';
-
-        field = strtok(row, ",");
-        strcpy(task.task_id, field);
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
     }
 
-    fclose(taskDBS_open);
+    // read database
+    while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize data
+        field = strtok(row, ",");
+        strcpy(task.task_id, field);
+
+        found = 1;
+    }
+
+    // close database
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
     if (found == ZERO)
     {
@@ -77,32 +91,32 @@ int generate_task_id(char id[], char path[])
     }
 
     strcpy(id, task.task_id);
-
     id_len = strlen(id);
 
+    // convert char array to integer array
     for (i = 0, j = 1; j < id_len; i++, j++)
     {
         num_id[i] = id[j] - '0';
     }
 
+    // convert to number
     for (i = 0; i < id_len - 1; i++)
     {
         digit = num_id[i];
-
         for (j = i; j < id_len - 2; j++)
         {
             digit *= 10;
         }
-
         task_id += digit;
     }
 
+    // increment by one
     task_id++;
-
     tmp = task_id;
     j = id_len - 1;
 
-    while (tmp != 0)
+    // convert to char array
+    while (tmp != 0 && j > 0)
     {
         id[j] = (tmp % 10) + '0';
         tmp /= 10;
