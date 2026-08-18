@@ -718,7 +718,7 @@ int change_task_start_date(char start_date[])
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
-    // validate date 
+    // validate date
     do
     {
         change_task_start_date_screen(x, y);
@@ -767,34 +767,49 @@ int extend_task_deadline(char deadline[])
 
 int delete_task()
 {
+    // declare all variables
     struct t_details task;
     struct p_details project;
-    char project_id_or_name[PROJECT_SEARCH_SIZE], task_id_or_name[TASK_SEARCH_SIZE], projectDBS_path[TASK_PATH_BUFFER_SIZE], taskDBS_path[TASK_PATH_BUFFER_SIZE], tmp_task_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], tmp_project_task_path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
-    int x = ZERO, y = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT;
+    char project_id_or_name[PROJECT_SEARCH_SIZE], task_id_or_name[TASK_SEARCH_SIZE], projectDBS_path[TASK_PATH_BUFFER_SIZE], taskDBS_path[TASK_PATH_BUFFER_SIZE], tmp_task_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], tmp_project_task_path[TASK_PATH_BUFFER_SIZE], project_file_name[PROJECT_FILE_NAME_SIZE], row[TASK_FILE_DATA_SIZE], *field;
+    int x = ZERO, y = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, project_found = ZERO;
     FILE *projectDBS_open, *taskDBS_open, *tmp_task, *project_task_open, *tmp_project_task;
 
+    // set terminal for UTF8 and show header screen
     init_console();
     header_screen();
 
+    // measure terminal height and width also x and y coordinate
     terminal_width = get_console_width();
     terminal_height = get_console_height();
-
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // show project id or name enter screen
     search_project_by_id_or_name_screen(x, y);
+
+    // take project id or name
+    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_NAME_OFFSET);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
+    // get project database path
     get_path(projectDBS_path);
     strcat(projectDBS_path, PROJECT_DATABASE_FILE);
 
+    // open project dbs
     projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
 
+    // read database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize data
         field = strtok(row, ",");
         strcpy(project.id, field);
 
@@ -803,36 +818,82 @@ int delete_task()
 
         if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
+            project_found = 1;
             break;
         }
     }
 
-    fclose(projectDBS_open);
+    // close database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
+    if (project_found == ZERO)
+    {
+        return 0;
+    }
+
+    // get project task database path
     get_path(project_task_path);
-    strcat(project_task_path, PROJECT_FOLDER_NAME);
+    strcat(project_task_path, PROJECTS_FOLDER);
     strcat(project_task_path, "\\");
-    strcat(project_task_path, strlwr(project.name));
+
+    strcpy(project_file_name, project.name);
+    strlwr(project_file_name);
+
+    strcat(project_task_path, project_file_name);
     strcat(project_task_path, TASK_FILE_EXTENSION);
 
+    // show task id or name enter screen
     search_task_by_id_or_name_screen(x, y);
 
+    // take task id or name
     move_cursor(x + PROJECT_INPUT_X, y + TASK_SEARCH_INPUT_Y);
     fgets(task_id_or_name, sizeof(task_id_or_name), stdin);
     task_id_or_name[strcspn(task_id_or_name, "\n")] = '\0';
 
+    // get temporary project task database path
     get_path(tmp_project_task_path);
-    strcat(tmp_project_task_path, PROJECT_FOLDER_NAME);
+    strcat(tmp_project_task_path, PROJECTS_FOLDER);
     strcat(tmp_project_task_path, "\\");
     strcat(tmp_project_task_path, TEMP_TASK_DATABASE_FILE);
 
+    // open database
     project_task_open = fopen(project_task_path, FILE_MODE_READ);
     tmp_project_task = fopen(tmp_project_task_path, FILE_MODE_WRITE);
 
+    if (project_task_open == NULL || tmp_project_task == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+
+        if (project_task_open != NULL)
+        {
+            // close database
+            if (fclose(project_task_open) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+        }
+
+        if (tmp_project_task != NULL)
+        {
+            // close database
+            if (fclose(tmp_project_task) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+        }
+
+        return 0;
+    }
+
+    // read database
     while (fgets(row, sizeof(row), project_task_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize data
         field = strtok(row, ",");
         strcpy(task.task_id, field);
 
@@ -860,33 +921,80 @@ int delete_task()
         field = strtok(NULL, ",");
         strcpy(task.created_by, field);
 
-        if (strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO)
+        if ((strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO) && strcmp(task.project_id, project.id) == ZERO)
         {
-            strcpy(task.status, DELETED_TASK_STATUS);
+            continue;
         }
 
+        // write data to database
         fprintf(tmp_project_task, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
 
-    fclose(project_task_open);
-    fclose(tmp_project_task);
+    // close database
+    if (fclose(project_task_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+    // close database
+    if (fclose(tmp_project_task) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
-    remove(project_task_path);
-    rename(tmp_project_task_path, project_task_path);
+    // remove original database
+    if (remove(project_task_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+    // rename temporary database as original database
+    if (rename(tmp_project_task_path, project_task_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
 
+    // get task database path
     get_path(taskDBS_path);
     strcat(taskDBS_path, TASK_DATABASE_FILE);
 
+    // get temporary task database path
     get_path(tmp_task_path);
     strcat(tmp_task_path, TEMP_TASK_DATABASE_FILE);
 
+    // open database
     taskDBS_open = fopen(taskDBS_path, FILE_MODE_READ);
     tmp_task = fopen(tmp_task_path, FILE_MODE_WRITE);
 
+    if (taskDBS_open == NULL || tmp_task == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+
+        if (taskDBS_open != NULL)
+        {
+            // close database
+            if (fclose(taskDBS_open) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+        }
+
+        if (tmp_task != NULL)
+        {
+            // close database
+            if (fclose(tmp_task) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+        }
+
+        return 0;
+    }
+
+    // read database
     while (fgets(row, sizeof(row), taskDBS_open) != NULL)
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // tokenize data
         field = strtok(row, ",");
         task.unique_id = atoi(field);
 
@@ -917,19 +1025,37 @@ int delete_task()
         field = strtok(NULL, ",");
         strcpy(task.created_by, field);
 
-        if (strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO)
+        if ((strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO) && strcmp(task.project_id, project.id) == ZERO)
         {
-            strcpy(task.status, DELETED_TASK_STATUS);
+            continue;
         }
 
+        // write data to database
         fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
     }
 
-    fclose(taskDBS_open);
-    fclose(tmp_task);
+    // close database
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+    // close database
+    if (fclose(tmp_task) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
 
-    remove(taskDBS_path);
-    rename(tmp_task_path, taskDBS_path);
+    // remove original database
+
+    if (remove(taskDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+    // rename temporary database as original database
+    if (rename(tmp_task_path, taskDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
 
     return 0;
 }
