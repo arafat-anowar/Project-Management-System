@@ -297,6 +297,7 @@ int update_project()
         something_went_wrong_screen(SOMETHING_FAILED);
     }
 
+    project_update_successful(x,y);
     return 0;
 }
 
