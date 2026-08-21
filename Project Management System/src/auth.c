@@ -1,4 +1,5 @@
 /*
+    Name : KAMRUL HASAN RIFAT
     ID : 2026-2-60-022
 */
 
@@ -174,14 +175,13 @@ int login()
         char login_status[] = LOGIN_STATUS_VALUE;
         change_login_status(login_status);
         login_success_screen(x, y);
-        redirecting_screen(x, y);
         dashboard();
         return 0;
     }
 
     // if user details wrong show error
     invalid_login_screen(x, y);
-
+    
     return 0;
 }
 
@@ -342,6 +342,7 @@ int change_password()
     if (found == 0)
     {
         change_password_failed_screen(x, y);
+        main_menu();
         return 0;
     }
 
@@ -561,7 +562,7 @@ int password_verify(char username_or_email[], char password[])
         // verify details if details are correct write username to log file
         if ((strcmp(username_or_email, user.email) == 0 && strcmp(password, user.pass) == 0) || (strcmp(username_or_email, user.user_name) == 0 && strcmp(password, user.pass) == 0))
         {
-            found = VALID;
+            found = 1;
             fprintf(log_open, "%s\n", user.user_name);
             break;
         }
@@ -579,7 +580,7 @@ int password_verify(char username_or_email[], char password[])
     }
 
     // if details are correct return valid
-    if (found == VALID)
+    if (found == 1)
     {
         return VALID;
     }

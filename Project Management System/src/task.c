@@ -1,4 +1,5 @@
 /*
+    NAME : MD ARAFAT ANOWAR (TEAM LEADER)
     ID : 2026-2-60-020
 */
 #include "task.h"
@@ -156,7 +157,7 @@ int create_task()
     search_project_by_id_or_name_screen(x, y);
 
     // take project id or name
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_NAME_OFFSET);
+    move_cursor(x + PROJECT_INPUT_X, y + PROJECT_ID_Y);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
@@ -202,6 +203,7 @@ int create_task()
     if (project_found == ZERO)
     {
         free(username);
+        project_not_found(x, y);
         return 0;
     }
 
@@ -328,6 +330,7 @@ int create_task()
         }
     }
 
+    task_created_successfully(x, y);
     free(username);
 
     return 0;
@@ -338,7 +341,7 @@ int update_task()
     // declare all variables
     struct t_details task;
     struct p_details project;
-    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO, task_found = ZERO;
     char project_id_or_name[PROJECT_SEARCH_SIZE], task_id_or_name[TASK_SEARCH_SIZE], projectDBS_path[TASK_PATH_BUFFER_SIZE], taskDBS_path[TASK_PATH_BUFFER_SIZE], tmp_task_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], tmp_project_task_path[TASK_PATH_BUFFER_SIZE], project_file_name[PROJECT_FILE_NAME_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     FILE *projectDBS_open, *taskDBS_open, *tmp_task, *tmp_project_task;
 
@@ -356,7 +359,7 @@ int update_task()
     search_project_by_id_or_name_screen(x, y);
 
     // take project id or name
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_NAME_OFFSET);
+    move_cursor(x + PROJECT_INPUT_X, y + PROJECT_ID_Y);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
@@ -398,6 +401,7 @@ int update_task()
 
     if (project_found == ZERO)
     {
+        project_not_found(x, y);
         return 0;
     }
 
@@ -418,30 +422,17 @@ int update_task()
 
     // task dbs open
     taskDBS_open = fopen(taskDBS_path, FILE_MODE_READ);
-    tmp_task = fopen(tmp_task_path, FILE_MODE_WRITE);
-
-    if (taskDBS_open == NULL || tmp_task == NULL)
+    if (taskDBS_open == NULL)
     {
         something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
 
-        if (taskDBS_open != NULL)
-        {
-            // close database
-            if (fclose(taskDBS_open) == EOF)
-            {
-                something_went_wrong_screen(FILE_CLOSE_ERROR);
-            }
-        }
-
-        if (tmp_task != NULL)
-        {
-            // close database
-            if (fclose(tmp_task) == EOF)
-            {
-                something_went_wrong_screen(FILE_CLOSE_ERROR);
-            }
-        }
-
+    tmp_task = fopen(tmp_task_path, FILE_MODE_WRITE);
+    if (tmp_task == NULL)
+    {
+        fclose(taskDBS_open);
+        something_went_wrong_screen(FILE_OPEN_ERROR);
         return 0;
     }
 
@@ -483,6 +474,7 @@ int update_task()
 
         if ((strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO) && strcmp(task.project_id, project.id) == ZERO)
         {
+            task_found = 1;
             task_update_dashboard(&task, x, y);
         }
 
@@ -495,21 +487,35 @@ int update_task()
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
-    // close database
     if (fclose(tmp_task) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // if task not found delete temporary database and show error
+    if (task_found == ZERO)
+    {
+        if (remove(tmp_task_path) != ZERO)
+        {
+            something_went_wrong_screen(SOMETHING_FAILED);
+        }
+
+        task_not_found(x, y);
+        return 0;
     }
 
     // remove original database
     if (remove(taskDBS_path) != ZERO)
     {
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
+
     // rename temporary database as original database
     if (rename(tmp_task_path, taskDBS_path) != ZERO)
     {
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
 
     // get project task database path
@@ -530,30 +536,17 @@ int update_task()
     strcat(tmp_project_task_path, TEMP_TASK_DATABASE_FILE);
 
     taskDBS_open = fopen(taskDBS_path, FILE_MODE_READ);
-    tmp_project_task = fopen(tmp_project_task_path, FILE_MODE_WRITE);
-
-    if (taskDBS_open == NULL || tmp_project_task == NULL)
+    if (taskDBS_open == NULL)
     {
         something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
 
-        if (taskDBS_open != NULL)
-        {
-            // close database
-            if (fclose(taskDBS_open) == EOF)
-            {
-                something_went_wrong_screen(FILE_CLOSE_ERROR);
-            }
-        }
-
-        if (tmp_project_task != NULL)
-        {
-            // close database
-            if (fclose(tmp_project_task) == EOF)
-            {
-                something_went_wrong_screen(FILE_CLOSE_ERROR);
-            }
-        }
-
+    tmp_project_task = fopen(tmp_project_task_path, FILE_MODE_WRITE);
+    if (tmp_project_task == NULL)
+    {
+        fclose(taskDBS_open);
+        something_went_wrong_screen(FILE_OPEN_ERROR);
         return 0;
     }
 
@@ -605,27 +598,28 @@ int update_task()
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
-    // close database
     if (fclose(tmp_project_task) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
 
     // remove original database
-
     if (remove(project_task_path) != ZERO)
     {
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
+
     // rename temporary database as original database
     if (rename(tmp_project_task_path, project_task_path) != ZERO)
     {
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
 
+    task_update_successful(x, y);
     return 0;
 }
-
 int change_task_name(char name[])
 {
     // declare all variables
@@ -773,7 +767,7 @@ int delete_task()
     struct t_details task;
     struct p_details project;
     char project_id_or_name[PROJECT_SEARCH_SIZE], task_id_or_name[TASK_SEARCH_SIZE], projectDBS_path[TASK_PATH_BUFFER_SIZE], taskDBS_path[TASK_PATH_BUFFER_SIZE], tmp_task_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], tmp_project_task_path[TASK_PATH_BUFFER_SIZE], project_file_name[PROJECT_FILE_NAME_SIZE], row[TASK_FILE_DATA_SIZE], *field;
-    int x = ZERO, y = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, project_found = ZERO;
+    int x = ZERO, y = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, project_found = ZERO, task_found = ZERO;
     FILE *projectDBS_open, *taskDBS_open, *tmp_task, *project_task_open, *tmp_project_task;
 
     // set terminal for UTF8 and show header screen
@@ -790,7 +784,7 @@ int delete_task()
     search_project_by_id_or_name_screen(x, y);
 
     // take project id or name
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_CREATE_Y_NAME_OFFSET);
+    move_cursor(x + PROJECT_INPUT_X, y + PROJECT_ID_Y);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
@@ -833,6 +827,7 @@ int delete_task()
 
     if (project_found == ZERO)
     {
+        project_not_found(x, y);
         return 0;
     }
 
@@ -925,6 +920,7 @@ int delete_task()
 
         if ((strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO) && strcmp(task.project_id, project.id) == ZERO)
         {
+            task_found = 1;
             continue;
         }
 
@@ -941,6 +937,18 @@ int delete_task()
     if (fclose(tmp_project_task) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // if task not found delete temporary database and show error
+    if (task_found == ZERO)
+    {
+        if (remove(tmp_project_task_path) != ZERO)
+        {
+            something_went_wrong_screen(SOMETHING_FAILED);
+        }
+
+        task_not_found(x, y);
+        return 0;
     }
 
     // remove original database
@@ -1029,6 +1037,7 @@ int delete_task()
 
         if ((strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO) && strcmp(task.project_id, project.id) == ZERO)
         {
+            task_found = 1;
             continue;
         }
 
@@ -1058,6 +1067,8 @@ int delete_task()
     {
         something_went_wrong_screen(SOMETHING_FAILED);
     }
+
+    task_deleted_successful(x, y);
 
     return 0;
 }
@@ -1178,7 +1189,7 @@ int search_by_task_id_or_name()
 {
     // declare all variables
     struct t_details task;
-    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, task_found = ZERO;
     char task_id_or_name[TASK_SEARCH_SIZE], path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     FILE *taskDBS_open;
 
@@ -1250,6 +1261,7 @@ int search_by_task_id_or_name()
 
         if (strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO)
         {
+            task_found = 1;
             clear_screen();
             header_screen();
 
@@ -1295,6 +1307,13 @@ int search_by_task_id_or_name()
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
 
+    // if task not found show error
+    if (task_found == ZERO)
+    {
+        task_not_found(x, y);
+        return 0;
+    }
+
     return 0;
 }
 
@@ -1303,7 +1322,7 @@ int view_tasks_by_project()
     // declare all variables
     struct p_details project;
     struct t_details task;
-    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO, task_found = ZERO;
     char project_id_or_name[PROJECT_SEARCH_SIZE], projectDBS_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], project_file_name[PROJECT_FILE_NAME_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     FILE *projectDBS_open, *project_task_open;
 
@@ -1321,7 +1340,7 @@ int view_tasks_by_project()
     search_project_by_id_or_name_screen(x, y);
 
     // take project id or name
-    move_cursor(x + PROJECT_INPUT_X, y + TASK_SEARCH_INPUT_Y);
+    move_cursor(x + PROJECT_INPUT_X, y + PROJECT_ID_Y);
     fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
     project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
 
@@ -1385,6 +1404,7 @@ int view_tasks_by_project()
 
     if (project_found == ZERO)
     {
+        project_not_found(x, y);
         return 0;
     }
 
@@ -1440,6 +1460,8 @@ int view_tasks_by_project()
         field = strtok(NULL, ",");
         strcpy(task.created_by, field);
 
+        task_found = 1;
+
         clear_screen();
         header_screen();
 
@@ -1479,6 +1501,13 @@ int view_tasks_by_project()
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
 
+    // if task not found show error
+    if (task_found == ZERO)
+    {
+        task_not_found(x, y);
+        return 0;
+    }
+
     return 0;
 }
 
@@ -1486,7 +1515,7 @@ int search_task_by_status()
 {
     // declare all variables
     struct t_details task;
-    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, status_box_width = TASK_STATUS_BOX_WIDTH, status_box_height = TASK_STATUS_BOX_HEIGHT, status_x = ZERO, status_y = ZERO;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, task_found = ZERO, status_box_width = TASK_STATUS_BOX_WIDTH, status_box_height = TASK_STATUS_BOX_HEIGHT, status_x = ZERO, status_y = ZERO;
     char status[TASK_STATUS_SIZE], path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     FILE *taskDBS_open;
 
@@ -1555,6 +1584,7 @@ int search_task_by_status()
 
         if (strcmp(task.status, status) == ZERO)
         {
+            task_found = 1;
             clear_screen();
             header_screen();
 
@@ -1598,6 +1628,13 @@ int search_task_by_status()
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
 
+    // if task not found show error
+    if (task_found == ZERO)
+    {
+        task_not_found(x, y);
+        return 0;
+    }
+
     return 0;
 }
 
@@ -1605,7 +1642,7 @@ int search_task_by_priority()
 {
     // declare all variables
     struct t_details task;
-    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = TASK_PRIORITY_BOX_WIDTH, priority_box_height = TASK_PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO, task_found = ZERO, priority_box_width = TASK_PRIORITY_BOX_WIDTH, priority_box_height = TASK_PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO;
     char priority[TASK_PRIORITY_SIZE], path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     FILE *taskDBS_open;
 
@@ -1673,6 +1710,7 @@ int search_task_by_priority()
 
         if (strcmp(task.priority, priority) == ZERO)
         {
+            task_found = 1;
             clear_screen();
             header_screen();
 
@@ -1714,6 +1752,13 @@ int search_task_by_priority()
     if (fclose(taskDBS_open) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // if task not found show error
+    if (task_found == ZERO)
+    {
+        task_not_found(x, y);
+        return 0;
     }
 
     return 0;

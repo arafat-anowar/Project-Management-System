@@ -1,3 +1,7 @@
+/*
+    NAME : PROTTOY ROY PRINCE
+    ID : 2026-2-60-082
+*/
 #include "utility.h"
 
 // utility source code start
@@ -218,8 +222,8 @@ void live_clock(void *arg)
 
         // set time position
         COORD position;
-        position.X = x + 82;
-        position.Y = y + 14;
+        position.X = x + 89;
+        position.Y = y + 1;
 
         // declare number of written characters
         DWORD written;
@@ -236,8 +240,8 @@ int view_profile()
 {
     // declare all variables
     struct r_account account;
-    FILE *userDBS_open, *log_open;
-    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *userDBS_open, *credential_open, *log_open;
+    char row[MAX_LENGTH_OF_DATA_IN_FILE], *field, user_id[MAX_USERNAME_LENGTH],username[MAX_USERNAME_LENGTH];
     int found = 0, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = TASK_DETAILS_BOX_HEIGHT, x = ZERO, y = ZERO;
 
     // set terminal for UTF8 and show header screen
@@ -250,6 +254,38 @@ int view_profile()
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
 
+    // open log
+    log_open = fopen("..\\database\\log.csv", "r");
+
+    while (fgets(row, sizeof(row), log_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // get logged in username
+        strcpy(account.user_name, row);
+    }
+
+    fclose(log_open);
+    credential_open = fopen("..\\database\\credentialDBS.csv", "r");
+
+    // read log
+    while (fgets(row, sizeof(row), credential_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        field = strtok(row, ",");
+        strcpy(user_id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(username, field);
+
+        if (strcmp(username,account.user_name)==0)
+        {
+            break;
+        }
+    }
+    // close database
+    fclose(credential_open);
     // open  database
     userDBS_open = fopen("..\\database\\userDBS.csv", "r");
 
@@ -273,25 +309,14 @@ int view_profile()
 
         field = strtok(NULL, ",");
         strcpy(account.role, field);
+        if (strcmp(user_id, account.id) == 0)
+        {
+            break;
+        }
     }
 
     // close database
     fclose(userDBS_open);
-
-    // open log
-    log_open = fopen("..\\database\\log.csv", "r");
-
-    // read log
-    while (fgets(row, sizeof(row), log_open) != NULL)
-    {
-        row[strcspn(row, "\n")] = '\0';
-
-        // get logged in username
-        strcpy(account.user_name, row);
-    }
-
-    // close databse
-    fclose(log_open);
 
     // show profile screen
     profile_screen(x, y);
@@ -301,7 +326,7 @@ int view_profile()
     printf("%s", account.id);
 
     move_cursor(x + 10, y + 11);
-    printf("%s", account.user_name);
+    printf("%s", username);
 
     move_cursor(x + 10, y + 16);
     printf("%s", account.name);
@@ -317,8 +342,10 @@ int view_profile()
 
     get_input;
 
+    dashboard();
     return 0;
 }
+
 
 // utility source code end
 

@@ -5,7 +5,7 @@
 
 // global header files
 #include <stdio.h>
-#include<string.h>
+#include <string.h>
 
 // local header files
 #include "project.h"

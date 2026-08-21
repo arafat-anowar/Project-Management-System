@@ -1,4 +1,5 @@
 /*
+    Name : MD. LATHFAN IBNA EUSUF (TEAM LEADER)
     ID : 2026-2-60-084
 */
 
@@ -132,7 +133,7 @@ int create_project()
     }
 
     // write project data to database
-    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name,project.category,project.description,project.priority,project.status,project.start_date,project.end_date,project.created_by);
+    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
 
     // close project database
     if (fclose(open_projectDBS) == EOF)
@@ -160,6 +161,8 @@ int create_project()
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
 
+    project_created_successful(x, y);
+
     return 0;
 }
 
@@ -168,7 +171,7 @@ int update_project()
     // declare all variables
     struct p_details project;
     char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], path[MAX_PATH_LENGTH], tmp_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = UPDATE_PROJECT_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = UPDATE_PROJECT_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO, project_found = ZERO;
     FILE *projectDBS_open, *tmp_project;
 
     // set terminal for UTF8 and show header screen
@@ -181,7 +184,7 @@ int update_project()
     x = (terminal_width - box_width) / TWO;
     y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
     priority_x = (terminal_width - priority_box_width) / TWO;
-    priority_y = (terminal_height - priority_box_height) / TWO;
+    priority_y = ((terminal_height - priority_box_height) / TWO);
 
     // show search project screen
     search_project_by_id_or_name_screen(x, y);
@@ -204,13 +207,16 @@ int update_project()
     if (projectDBS_open == NULL)
     {
         something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
     }
 
     // open temporary project database
     tmp_project = fopen(tmp_path, FILE_MODE_WRITE);
     if (tmp_project == NULL)
     {
+        fclose(projectDBS_open);
         something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
     }
 
     // read project database
@@ -249,11 +255,12 @@ int update_project()
         // check project id or name if found update project
         if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
+            project_found = VALID;
             update_project_dashboard(&project, x, y, priority_x, priority_y);
         }
 
         // write data to temporary database
-        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority,project.status, project.start_date, project.end_date,project.created_by);
+        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
     }
 
     // close databases
@@ -265,6 +272,18 @@ int update_project()
     if (fclose(tmp_project) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // if project not found delete temporary database and return dashboard
+    if (project_found == ZERO)
+    {
+        if (remove(tmp_path) != ZERO)
+        {
+            something_went_wrong_screen(SOMETHING_FAILED);
+        }
+
+        project_not_found(x, y);
+        return 0;
     }
 
     // remove original database and rename temporary database as original database
@@ -456,7 +475,7 @@ int delete_project()
     // declare all variables
     struct p_details project;
     char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], projectDBS_path[MAX_PATH_LENGTH], tmp_projectDBS_path[MAX_PATH_LENGTH], taskDBS_path[MAX_PATH_LENGTH], tmp_taskDBS_path[MAX_PATH_LENGTH], project_file_path[MAX_PATH_LENGTH], project_file_name[PROJECT_FILE_NAME_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_DELETE_BOX_HEIGHT, x = ZERO, y = ZERO;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_DELETE_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO;
     FILE *file_for_delete_project, *write_to_new_project_file, *file_for_delete_task, *write_to_new_task_file;
 
     // set terminal for UTF8 and show header screen
@@ -488,12 +507,15 @@ int delete_project()
     if (file_for_delete_project == NULL)
     {
         something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
     }
 
     write_to_new_project_file = fopen(tmp_projectDBS_path, FILE_MODE_WRITE);
     if (write_to_new_project_file == NULL)
     {
+        fclose(file_for_delete_project);
         something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
     }
 
     // read project database
@@ -530,8 +552,10 @@ int delete_project()
         strcpy(project.created_by, field);
 
         // check project id or name if found delete project
-        if (strcmp(project.id, project_id_or_name) == ZERO ||strcmp(project.name, project_id_or_name) == ZERO)
+        if (strcmp(project.id, project_id_or_name) == ZERO || strcmp(project.name, project_id_or_name) == ZERO)
         {
+            project_found = VALID;
+
             // get project file path
             get_path(project_file_path);
             strcat(project_file_path, PROJECTS_FOLDER);
@@ -546,14 +570,18 @@ int delete_project()
             // delete project file
             if (remove(project_file_path) != ZERO)
             {
+                fclose(file_for_delete_project);
+                fclose(write_to_new_project_file);
+                remove(tmp_projectDBS_path);
                 something_went_wrong_screen(SOMETHING_FAILED);
+                return 0;
             }
 
             continue;
         }
 
         // write remaining project data to temporary database
-        fprintf(write_to_new_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",project.id,project.name, project.category, project.description, project.priority,project.status,project.start_date,project.end_date,project.created_by);
+        fprintf(write_to_new_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
     }
 
     // close project databases
@@ -565,6 +593,19 @@ int delete_project()
     if (fclose(write_to_new_project_file) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // if project not found delete temporary database and return dashboard
+    if (project_found == ZERO)
+    {
+        if (remove(tmp_projectDBS_path) != ZERO)
+        {
+            something_went_wrong_screen(SOMETHING_FAILED);
+        }
+
+        project_not_found(x, y);
+        project_management_dashboard();
+        return 0;
     }
 
     // remove original project database and rename temporary database
@@ -590,12 +631,15 @@ int delete_project()
     if (file_for_delete_task == NULL)
     {
         something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
     }
 
     write_to_new_task_file = fopen(tmp_taskDBS_path, FILE_MODE_WRITE);
     if (write_to_new_task_file == NULL)
     {
+        fclose(file_for_delete_task);
         something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
     }
 
     // read task database
@@ -640,6 +684,8 @@ int delete_project()
         something_went_wrong_screen(SOMETHING_FAILED);
     }
 
+    project_deleted_successful(x, y);
+
     return 0;
 }
 
@@ -648,7 +694,7 @@ int view_projects()
     // declare all variables
     struct p_details project;
     char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO,project_found=ZERO;
     FILE *projectDBS_open;
 
     // set terminal for UTF8 and show header screen
@@ -675,6 +721,7 @@ int view_projects()
     // read project database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
+        project_found=1;
         row[strcspn(row, "\n")] = '\0';
 
         // tokenize them
@@ -744,6 +791,11 @@ int view_projects()
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
 
+    if (project_found!=1)
+    {
+       project_not_found(x,y);
+    }
+    
     return 0;
 }
 
@@ -818,7 +870,7 @@ int search_by_project_id_or_name()
         strcpy(project.created_by, field);
 
         // check project id or name if found show project
-        if (strcmp(project_id_or_name, project.id) == ZERO ||strcmp(project_id_or_name, project.name) == ZERO)
+        if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
             clear_screen();
             header_screen();
@@ -1206,7 +1258,7 @@ int update_cancelled_project_tasks()
                 strcpy(task.status, CANCELLED_TASK_STATUS);
 
                 // write task data to temporary file
-                fprintf(tmp_project_task, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id,task.project_id,task.name,task.description,task.priority,task.status,task.start_date,task.end_date,task.created_by);
+                fprintf(tmp_project_task, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
             }
 
             // close project task files
@@ -1295,7 +1347,7 @@ int update_cancelled_project_tasks()
                 }
 
                 // write task data to temporary database
-                fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",task.unique_id,task.task_id,task.project_id,task.name,task.description, task.priority, task.status,  task.start_date,  task.end_date, task.created_by);
+                fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
             }
 
             // close task databases
@@ -1466,7 +1518,7 @@ int update_project_status_by_tasks()
         }
 
         // write project data to temporary database
-        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id,project.name,project.category,project.description, project.priority, project.status,  project.start_date,  project.end_date, project.created_by);
+        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
     }
 
     // close databases
@@ -1629,7 +1681,7 @@ int update_created_project_status()
         }
 
         // write project data to temporary database
-        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n",  project.id,project.name, project.category, project.description,  project.priority, project.status, project.start_date,project.end_date,project.created_by);
+        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
     }
 
     // close databases
@@ -1860,7 +1912,7 @@ int sort_projects()
         strcpy(projects[project_count].status, field);
 
         // skip cancelled and completed projects
-        if (strcmp(projects[project_count].status, CANCELLED_PROJECT_STATUS) == ZERO ||strcmp(projects[project_count].status, COMPLETED_PROJECT_STATUS) == ZERO)
+        if (strcmp(projects[project_count].status, CANCELLED_PROJECT_STATUS) == ZERO || strcmp(projects[project_count].status, COMPLETED_PROJECT_STATUS) == ZERO)
         {
             continue;
         }
@@ -1884,7 +1936,7 @@ int sort_projects()
     }
 
     // sort projects by priority
-    qsort(projects,project_count,sizeof(struct p_details),compare_project_priority);
+    qsort(projects, project_count, sizeof(struct p_details), compare_project_priority);
 
     // open sorted project file
     sort_project_open = fopen(sort_path, FILE_MODE_WRITE);
@@ -1896,7 +1948,7 @@ int sort_projects()
     // write sorted projects to file
     for (int i = ZERO; i < project_count; i++)
     {
-        fprintf(sort_project_open, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", projects[i].id,projects[i].name,projects[i].category,projects[i].description,projects[i].priority,projects[i].status,projects[i].start_date,projects[i].end_date,projects[i].created_by);
+        fprintf(sort_project_open, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", projects[i].id, projects[i].name, projects[i].category, projects[i].description, projects[i].priority, projects[i].status, projects[i].start_date, projects[i].end_date, projects[i].created_by);
     }
 
     // close sorted project file

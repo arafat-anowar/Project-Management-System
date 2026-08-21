@@ -36,7 +36,7 @@
 #define LOGIN_FORM_HEIGHT 19
 #define CHANGE_PASSWORD_FORM_HEIGHT 19
 
-#define SCREEN_START_Y 13
+#define SCREEN_START_Y 17
 #define ERROR_MESSAGE_OFFSET_X 10
 #define INPUT_FIELD_OFFSET_X 10
 #define PHONE_FIELD_OFFSET_X 14
@@ -82,11 +82,7 @@
 #define MAX_LOGIN_STATUS_LENGTH 20
 #define MAX_USERNAME_OR_EMAIL_LENGTH 30
 
-#define MAX_LENGTH_OF_DATA_IN_FILE 3000
 
-#define FILE_OPEN_ERROR "fop"
-#define FILE_CLOSE_ERROR "fcl"
-#define SOMETHING_FAILED "mem"
 // structure for login 
 struct l_account
 {

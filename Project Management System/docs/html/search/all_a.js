@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['password_5fverify_0',['password_verify',['../auth_8c.html#ad7bcbfabd2ffb097a7cdb2d80149db99',1,'auth.c']]],
+  ['pause_5fscreen_1',['pause_screen',['../utility_8c.html#ad33fc0d1da30ac8325638d52ab97f16d',1,'utility.c']]],
+  ['pending_5factive_5ftasks_5freport_2',['pending_active_tasks_report',['../report_8c.html#a4e5dd38ac596ad51467f375f058283b4',1,'report.c']]],
+  ['pending_5factive_5ftasks_5fscreen_3',['pending_active_tasks_screen',['../ui_8c.html#a2c5f49634f528bee2ecd6d1b4f17f518',1,'ui.c']]],
+  ['profile_5fscreen_4',['profile_screen',['../ui_8c.html#a46e72ba92ded14eda7ab77dacb3ce75d',1,'ui.c']]],
+  ['project_2ec_5',['project.c',['../project_8c.html',1,'']]],
+  ['project_5fcreated_5fsuccessful_6',['project_created_successful',['../ui_8c.html#a5a463c624babf92ce6bce4ed52422b4d',1,'ui.c']]],
+  ['project_5fdeleted_5fsuccessful_7',['project_deleted_successful',['../ui_8c.html#a1ff54969c0883d9143a96ba4657925e8',1,'ui.c']]],
+  ['project_5fmanagement_5fdashboard_8',['project_management_dashboard',['../ui_8c.html#aa299900a798b46f7f8a4c6ae4ed267df',1,'ui.c']]],
+  ['project_5fnot_5ffound_9',['project_not_found',['../ui_8c.html#afd4026dd8344044d1c3e0a74d9defa3d',1,'ui.c']]],
+  ['project_5fpriority_5fdashboard_10',['project_priority_dashboard',['../ui_8c.html#aa07fe26baf3a70eee199bcc917489ab4',1,'ui.c']]],
+  ['project_5fprogress_5freport_11',['project_progress_report',['../report_8c.html#acf137625eeacaa9e5fa031c0961a0583',1,'report.c']]],
+  ['project_5fprogress_5freport_5fscreen_12',['project_progress_report_screen',['../ui_8c.html#a2bb79163fb0c3442c1510cd2b590c7d8',1,'ui.c']]],
+  ['project_5fshow_5fscreen_13',['project_show_screen',['../ui_8c.html#a9a50c9ba0b9665329d6676d961c088d4',1,'ui.c']]],
+  ['project_5fstatus_5fdashboard_14',['project_status_dashboard',['../ui_8c.html#a3aff70464a2026ce3c065afc1cc7cfa7',1,'ui.c']]],
+  ['project_5fsummary_5freport_15',['project_summary_report',['../report_8c.html#a0ea85e5679dd8bad1be4df8d4638ddb6',1,'report.c']]],
+  ['project_5fsummary_5freport_5fscreen_16',['project_summary_report_screen',['../ui_8c.html#aa5dd2a56f0725c7089fc21c25dd3f950',1,'ui.c']]],
+  ['project_5fupdate_5fsuccessful_17',['project_update_successful',['../ui_8c.html#ae264fbe9ba9b9798bb879beff2d70fd5',1,'ui.c']]]
+];

@@ -1,5 +1,6 @@
 /*
-    ID : 2026-2-60-082
+    NAME : FAIZA LABIBA
+    ID : 2026-2-60-013
 */
 #include "report.h"
 
@@ -10,7 +11,7 @@ int project_summary_report()
     // declare all variables
     struct p_details project;
     char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-    int total_projects = ZERO, created_projects = ZERO, in_progress_projects = ZERO, completed_projects = ZERO,cancelled_projects = ZERO, terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 19,x,y;
+    int total_projects = ZERO, created_projects = ZERO, in_progress_projects = ZERO, completed_projects = ZERO, cancelled_projects = ZERO, terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 19, x, y;
     FILE *projectDBS_open;
 
     // get project database path
@@ -35,10 +36,10 @@ int project_summary_report()
         strcpy(project.id, field);
 
         field = strtok(NULL, ",");
-        strcpy(project.name, field);
+        strcpy(project.category, field);
 
         field = strtok(NULL, ",");
-        strcpy(project.category, field);
+        strcpy(project.name, field);
 
         field = strtok(NULL, ",");
         strcpy(project.description, field);
@@ -82,7 +83,6 @@ int project_summary_report()
     if (fclose(projectDBS_open) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
-
     }
 
     // set terminal to UTF8
@@ -97,7 +97,7 @@ int project_summary_report()
 
     project_summary_report_screen(x, y);
 
-    // print task details
+    // print project details
     move_cursor(x + 30, y + 4);
     printf("%d", total_projects);
 
@@ -124,26 +124,36 @@ int project_progress_report()
     // declare all variables
     struct p_details project;
     struct t_details task;
-    char project_path[MAX_PATH_LENGTH],task_path[TASK_PATH_BUFFER_SIZE],project_row[MAX_LENGTH_OF_DATA_IN_FILE],task_row[TASK_FILE_DATA_SIZE],*field;
-    int project_found = ZERO,total_tasks = ZERO, completed_tasks = ZERO, progress = ZERO, terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 16, x, y;
-    FILE *projectDBS_open,*taskDBS_open;
+    char project_path[MAX_PATH_LENGTH], task_path[TASK_PATH_BUFFER_SIZE], project_row[MAX_LENGTH_OF_DATA_IN_FILE], task_row[TASK_FILE_DATA_SIZE], project_file_name[PROJECT_FILE_NAME_SIZE], category_file_name[PROJECT_FILE_NAME_SIZE], *field;
+    int total_tasks = ZERO, completed_tasks = ZERO, project_found = ZERO, terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = 16, x = ZERO, y = ZERO;
+    float progress = 0.0f;
+    FILE *projectDBS_open, *taskDBS_open;
 
     // get project database path
     get_path(project_path);
     strcat(project_path, PROJECT_DATABASE_FILE);
 
-    // open database
+    // open project database
     projectDBS_open = fopen(project_path, FILE_MODE_READ);
+
     if (projectDBS_open == NULL)
     {
         something_went_wrong_screen(FILE_OPEN_ERROR);
         return 0;
     }
 
-    // read database
+    // read all projects
     while (fgets(project_row, sizeof(project_row), projectDBS_open) != NULL)
     {
+        // remove newline
         project_row[strcspn(project_row, "\n")] = '\0';
+        project_row[strcspn(project_row, "\r")] = '\0';
+
+        // reset
+        total_tasks = ZERO;
+        completed_tasks = ZERO;
+        progress = 0.0f;
+        project_found = ZERO;
 
         // tokenize data
         field = strtok(project_row, ",");
@@ -174,119 +184,148 @@ int project_progress_report()
         strcpy(project.created_by, field);
 
         project_found = 1;
-        break;
+
+        // get project task database path
+        get_path(task_path);
+        strcat(task_path, PROJECTS_FOLDER);
+        strcat(task_path, "\\");
+
+        // get project file name from project name
+        strcpy(project_file_name, project.name);
+        strlwr(project_file_name);
+        strcat(task_path, project_file_name);
+        strcat(task_path, TASK_FILE_EXTENSION);
+
+        // open project task database
+        taskDBS_open = fopen(task_path, FILE_MODE_READ);
+        // if project name file does not exist
+        if (taskDBS_open == NULL)
+        {
+            // create alternative file name from category
+            strcpy(category_file_name, project.category);
+
+            // convert category to lowercase
+            strlwr(category_file_name);
+
+            // get project task database path again
+            get_path(task_path);
+            strcat(task_path, PROJECTS_FOLDER);
+            strcat(task_path, "\\");
+            strcat(task_path, category_file_name);
+            strcat(task_path, TASK_FILE_EXTENSION);
+
+            // open category based project task database
+            taskDBS_open = fopen(task_path, FILE_MODE_READ);
+        }
+
+        // read project task database
+        if (taskDBS_open != NULL)
+        {
+            while (fgets(task_row, sizeof(task_row), taskDBS_open) != NULL)
+            {
+                // remove newline
+                task_row[strcspn(task_row, "\n")] = '\0';
+                task_row[strcspn(task_row, "\r")] = '\0';
+
+                // tokenize data
+                field = strtok(task_row, ",");
+                strcpy(task.task_id, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.project_id, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.name, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.description, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.priority, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.status, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.start_date, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.end_date, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.created_by, field);
+
+                if (strcmp(task.project_id, project.id) == ZERO)
+                {
+                    // count total task
+                    total_tasks++;
+                    // count completed task
+                    if (strcmp(task.status, COMPLETED_TASK_STATUS) == ZERO)
+                    {
+                        completed_tasks++;
+                    }
+                }
+            }
+            // close project task database
+            if (fclose(taskDBS_open) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+        }
+
+        // calculate project progress
+        if (total_tasks > ZERO)
+        {
+            progress = ((float)completed_tasks * 100.0f) / (float)total_tasks;
+        }
+        else
+        {
+            progress = 0.0f;
+        }
+
+        // set terminal to UTF8
+        init_console();
+        header_screen();
+
+        // measure terminal height and width also x and y coordinate
+        terminal_width = get_console_width();
+        terminal_height = get_console_height();
+
+        x = (terminal_width - box_width) / TWO;
+        y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+        // show project progress report screen
+        project_progress_report_screen(x, y);
+
+        // print project id
+        move_cursor(x + 27, y + 4);
+        printf("%s", project.id);
+
+        // print project name
+        move_cursor(x + 27, y + 6);
+        printf("%s", project.name);
+
+        // print total tasks
+        move_cursor(x + 27, y + 8);
+        printf("%d", total_tasks);
+
+        // print completed tasks
+        move_cursor(x + 27, y + 10);
+        printf("%d", completed_tasks);
+
+        // print progress
+        move_cursor(x + 27, y + 12);
+        printf("%.2f%%", progress);
+
+        move_cursor(x + 45, y + 13);
+        get_input;
     }
 
-    // close database
+    // close project database
     if (fclose(projectDBS_open) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
-
-    if (project_found == ZERO)
-    {
-        return 0;
-    }
-
-    // get task database path
-    get_path(task_path);
-    strcat(task_path, PROJECT_FOLDER_NAME);
-    strcat(task_path, "\\");
-    strcat(task_path, strlwr(project.name));
-    strcat(task_path, TASK_FILE_EXTENSION);
-
-    // open database
-    taskDBS_open = fopen(task_path, FILE_MODE_READ);
-    if (taskDBS_open == NULL)
-    {
-        something_went_wrong_screen(FILE_OPEN_ERROR);
-        return 0;
-    }
-
-    // read database
-    while (fgets(task_row, sizeof(task_row), taskDBS_open) != NULL)
-    {
-        task_row[strcspn(task_row, "\n")] = '\0';
-
-        // tokenize data
-        field = strtok(task_row, ",");
-        strcpy(task.task_id, field);
-
-        field = strtok(NULL, ",");
-        strcpy(task.project_id, field);
-
-        field = strtok(NULL, ",");
-        strcpy(task.name, field);
-
-        field = strtok(NULL, ",");
-        strcpy(task.description, field);
-
-        field = strtok(NULL, ",");
-        strcpy(task.priority, field);
-
-        field = strtok(NULL, ",");
-        strcpy(task.status, field);
-
-        field = strtok(NULL, ",");
-        strcpy(task.start_date, field);
-
-        field = strtok(NULL, ",");
-        strcpy(task.end_date, field);
-
-        field = strtok(NULL, ",");
-        strcpy(task.created_by, field);
-
-        if (strcmp(task.project_id, project.id) == ZERO)
-        {
-            total_tasks++;
-
-            if (strcmp(task.status, COMPLETED_TASK_STATUS) == ZERO)
-            {
-                completed_tasks++;
-            }
-        }
-    }
-
-    // close database
-    if (fclose(taskDBS_open) == EOF)
-    {
-        something_went_wrong_screen(FILE_CLOSE_ERROR);
-    }
-
-    if (total_tasks != ZERO)
-    {
-        progress = (completed_tasks * 100) / total_tasks;
-    }
-
-    init_console();
-    header_screen();
-
-    // measure terminal height and width also x and y coordinate
-    terminal_width = get_console_width();
-    terminal_height = get_console_height();
-    x = (terminal_width - box_width) / TWO;
-    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
-
-    project_progress_report_screen(x, y);
-
-    // print task details
-    move_cursor(x + 24, y + 4);
-    printf("%s", project.id);
-
-    move_cursor(x + 24, y + 6);
-    printf("%s", project.name);
-
-    move_cursor(x + 24, y + 8);
-    printf("%d", total_tasks);
-
-    move_cursor(x + 24, y + 10);
-    printf("%d", completed_tasks);
-
-    move_cursor(x + 24, y + 12);
-    printf("%d%%", progress);
-
-    move_cursor(x + 45, y + 13);
-    get_input;
 
     return 0;
 }
@@ -295,8 +334,8 @@ int overdue_projects_report()
 {
     // declare all variables
     struct p_details project;
-    char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field,today[PROJECT_END_DATE_SIZE];
-    int terminal_width,terminal_height,box_width = CONTAINER_WIDTH,box_height = 17,x,y;
+    char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field, today[PROJECT_END_DATE_SIZE];
+    int terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 17, x, y;
     FILE *projectDBS_open;
 
     // get current date
@@ -324,10 +363,10 @@ int overdue_projects_report()
         strcpy(project.id, field);
 
         field = strtok(NULL, ",");
-        strcpy(project.name, field);
+        strcpy(project.category, field);
 
         field = strtok(NULL, ",");
-        strcpy(project.category, field);
+        strcpy(project.name, field);
 
         field = strtok(NULL, ",");
         strcpy(project.description, field);
@@ -347,9 +386,9 @@ int overdue_projects_report()
         field = strtok(NULL, ",");
         strcpy(project.created_by, field);
 
-        if (strcmp(project.end_date, today) < ZERO &&strcmp(project.status, COMPLETED_PROJECT_STATUS) != ZERO &&strcmp(project.status, CANCELLED_PROJECT_STATUS) != ZERO)
+        if (strcmp(project.end_date, today) < ZERO && strcmp(project.status, COMPLETED_PROJECT_STATUS) != ZERO && strcmp(project.status, CANCELLED_PROJECT_STATUS) != ZERO)
         {
-            // set terminal utf8
+            // set terminal UTF8
             init_console();
             header_screen();
 
@@ -361,7 +400,7 @@ int overdue_projects_report()
 
             overdue_projects_report_screen(x, y);
 
-            // print task details
+            // print project details
             move_cursor(x + 24, y + 4);
             printf("%s", project.id);
 
@@ -386,7 +425,6 @@ int overdue_projects_report()
     if (fclose(projectDBS_open) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
-
     }
 
     return 0;
@@ -397,7 +435,7 @@ int high_priority_projects_report()
     // declare all variables
     struct p_details project;
     char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-    int terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 17,  x, y;
+    int terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 17, x, y;
     FILE *projectDBS_open;
 
     // get project database path
@@ -422,10 +460,10 @@ int high_priority_projects_report()
         strcpy(project.id, field);
 
         field = strtok(NULL, ",");
-        strcpy(project.name, field);
+        strcpy(project.category, field);
 
         field = strtok(NULL, ",");
-        strcpy(project.category, field);
+        strcpy(project.name, field);
 
         field = strtok(NULL, ",");
         strcpy(project.description, field);
@@ -445,9 +483,9 @@ int high_priority_projects_report()
         field = strtok(NULL, ",");
         strcpy(project.created_by, field);
 
-        if (strcmp(project.priority, "High") == ZERO &&  strcmp(project.status, CANCELLED_PROJECT_STATUS) != ZERO)
+        if (strcmp(project.priority, "High") == ZERO && strcmp(project.status, COMPLETED_PROJECT_STATUS) != ZERO && strcmp(project.status, CANCELLED_PROJECT_STATUS) != ZERO)
         {
-            // set terminal utf8
+            // set terminal UTF8
             init_console();
             header_screen();
 
@@ -459,7 +497,7 @@ int high_priority_projects_report()
 
             high_priority_projects_report_screen(x, y);
 
-            // print task details
+            // print project details
             move_cursor(x + 24, y + 4);
             printf("%s", project.id);
 
@@ -484,7 +522,6 @@ int high_priority_projects_report()
     if (fclose(projectDBS_open) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
-
     }
 
     return 0;
@@ -494,8 +531,8 @@ int task_summary_report()
 {
     // declare all variables
     struct t_details task;
-    char path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE],*field;
-    int total_tasks = ZERO, pending_tasks = ZERO, planning_tasks = ZERO, in_progress_tasks = ZERO,  completed_tasks = ZERO,cancelled_tasks = ZERO, terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 17,  x,  y;
+    char path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
+    int total_tasks = ZERO, pending_tasks = ZERO, planning_tasks = ZERO, in_progress_tasks = ZERO, completed_tasks = ZERO, cancelled_tasks = ZERO, terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 17, x, y;
     FILE *taskDBS_open;
 
     // get task database path
@@ -574,7 +611,6 @@ int task_summary_report()
     if (fclose(taskDBS_open) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
-
     }
 
     // set terminal UTF8
@@ -593,22 +629,22 @@ int task_summary_report()
     move_cursor(x + 30, y + 4);
     printf("%d", total_tasks);
 
-    move_cursor(x + 30, y + 5);
+    move_cursor(x + 30, y + 6);
     printf("%d", pending_tasks);
 
-    move_cursor(x + 30, y + 6);
+    move_cursor(x + 30, y + 8);
     printf("%d", planning_tasks);
 
-    move_cursor(x + 30, y + 7);
+    move_cursor(x + 30, y + 10);
     printf("%d", in_progress_tasks);
 
-    move_cursor(x + 30, y + 8);
+    move_cursor(x + 30, y + 12);
     printf("%d", completed_tasks);
 
-    move_cursor(x + 30, y + 9);
+    move_cursor(x + 30, y + 14);
     printf("%d", cancelled_tasks);
 
-    move_cursor(x + 45, y + 14);
+    move_cursor(x + 45, y + 16);
     get_input;
 
     return 0;
@@ -618,11 +654,11 @@ int overdue_tasks_report()
 {
     // declare all variables
     struct t_details task;
-    char path[TASK_PATH_BUFFER_SIZE],row[TASK_FILE_DATA_SIZE],*field,today[TASK_END_DATE_SIZE];
+    char path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field, today[TASK_END_DATE_SIZE];
     int terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 16, x, y;
     FILE *taskDBS_open;
 
-    // GET TODAYS DATE
+    // get current date
     current_date(today);
 
     // get task database path
@@ -673,9 +709,9 @@ int overdue_tasks_report()
         field = strtok(NULL, ",");
         strcpy(task.created_by, field);
 
-        if (strcmp(task.end_date, today) < ZERO &&strcmp(task.status, COMPLETED_TASK_STATUS) != ZERO &&strcmp(task.status, CANCELLED_TASK_STATUS) != ZERO)
+        if (strcmp(task.end_date, today) < ZERO && strcmp(task.status, COMPLETED_TASK_STATUS) != ZERO && strcmp(task.status, CANCELLED_TASK_STATUS) != ZERO)
         {
-            // set utf8
+            // set terminal to UTF8
             init_console();
             header_screen();
 
@@ -714,7 +750,6 @@ int overdue_tasks_report()
     if (fclose(taskDBS_open) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
-
     }
 
     return 0;
@@ -724,7 +759,7 @@ int high_priority_tasks_report()
 {
     // declare all variables
     struct t_details task;
-    char path[TASK_PATH_BUFFER_SIZE],  row[TASK_FILE_DATA_SIZE], *field;
+    char path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
     int terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 16, x, y;
     FILE *taskDBS_open;
 
@@ -776,9 +811,9 @@ int high_priority_tasks_report()
         field = strtok(NULL, ",");
         strcpy(task.created_by, field);
 
-        if (strcmp(task.priority, "High") == ZERO && strcmp(task.status, COMPLETED_TASK_STATUS) != ZERO &&  strcmp(task.status, CANCELLED_TASK_STATUS) != ZERO)
+        if (strcmp(task.priority, "High") == ZERO && strcmp(task.status, COMPLETED_TASK_STATUS) != ZERO && strcmp(task.status, CANCELLED_TASK_STATUS) != ZERO)
         {
-            // set utf8
+            // set terminal to UTF8
             init_console();
             header_screen();
 
@@ -817,7 +852,6 @@ int high_priority_tasks_report()
     if (fclose(taskDBS_open) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
-
     }
 
     return 0;
@@ -827,8 +861,8 @@ int pending_active_tasks_report()
 {
     // declare all variables
     struct t_details task;
-    char path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE],*field;
-    int terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 16, x,y;
+    char path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
+    int terminal_width, terminal_height, box_width = CONTAINER_WIDTH, box_height = 16, x, y;
     FILE *taskDBS_open;
 
     // get task database path
@@ -879,9 +913,9 @@ int pending_active_tasks_report()
         field = strtok(NULL, ",");
         strcpy(task.created_by, field);
 
-        if (strcmp(task.status, COMPLETED_TASK_STATUS) != ZERO &&strcmp(task.status, CANCELLED_TASK_STATUS) != ZERO)
+        if (strcmp(task.status, COMPLETED_TASK_STATUS) != ZERO && strcmp(task.status, CANCELLED_TASK_STATUS) != ZERO)
         {
-            // set terminal to utf8
+            // set terminal to UTF8
             init_console();
             header_screen();
 
