@@ -1,9 +1,0 @@
-<map id="change_password_successful_screen" name="change_password_successful_screen">
-<area shape="rect" id="Node000001" title=" " alt="" coords="316,21,512,64"/>
-<area shape="rect" id="Node000002" href="$auth_8c.html#ad7f8bbf949cf053e95322840f6f342c7" title=" " alt="" coords="142,29,268,56"/>
-<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="298,43,268,45,268,40,303,43"/>
-<area shape="poly" id="edge2_Node000002_Node000002" title=" " alt="" coords="230,14,222,10,205,8,189,10,180,15,178,20,183,30,178,28,173,21,176,11,187,5,205,3,224,5,235,14"/>
-<area shape="rect" id="Node000003" href="$ui_8c.html#a7fe3adb8b69baff33af24e4a3a9c5048" title=" " alt="" coords="5,29,94,56"/>
-<area shape="poly" id="edge3_Node000002_Node000003" title=" " alt="" coords="124,52,94,54,94,48,129,51"/>
-<area shape="poly" id="edge4_Node000003_Node000002" title=" " alt="" coords="109,31,144,33,139,34,109,37"/>
-</map>
