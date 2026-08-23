@@ -73,14 +73,14 @@
 // structure for create project
 struct p_details
 {
-    char id[20];
-    char name[50];
-    char category[20];
-    char description[200];
-    char priority[20];
-    char status[20];
-    char start_date[15];
-    char end_date[15];
+    char id[PROJECT_ID_SIZE];
+    char name[PROJECT_ID_OR_NAME_SIZE];
+    char category[PROJECT_CATEGORY_SIZE];
+    char description[PROJECT_DESCRIPTION_SIZE];
+    char priority[PROJECT_PRIORITY_SIZE];
+    char status[PROJECT_STATUS_SIZE];
+    char start_date[PROJECT_START_DATE_SIZE];
+    char end_date[PROJECT_END_DATE_SIZE];
     char created_by[20];
 };
 
