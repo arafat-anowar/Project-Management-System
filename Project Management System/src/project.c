@@ -255,8 +255,22 @@ int update_project()
         // check project id or name if found update project
         if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
-            project_found = VALID;
+            char path2[200];
+            get_path(path2);
+            strcat(path2, PROJECT_FOLDER_NAME);
+            strcat(path2, strlwr(project.name));
+            strcat(path2, PROJECT_FILE_EXTENSION);
+
+            project_found = 1;
             update_project_dashboard(&project, x, y, priority_x, priority_y);
+
+            char path3[200];
+            get_path(path3);
+            strcat(path3, PROJECT_FOLDER_NAME);
+            strcat(path3, strlwr(project.name));
+            strcat(path3, PROJECT_FILE_EXTENSION);
+
+            rename(path2, path3);
         }
 
         // write data to temporary database
@@ -297,7 +311,7 @@ int update_project()
         something_went_wrong_screen(SOMETHING_FAILED);
     }
 
-    project_update_successful(x,y);
+    project_update_successful(x, y);
     return 0;
 }
 
@@ -695,7 +709,7 @@ int view_projects()
     // declare all variables
     struct p_details project;
     char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
-    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO,project_found=ZERO;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO;
     FILE *projectDBS_open;
 
     // set terminal for UTF8 and show header screen
@@ -722,7 +736,7 @@ int view_projects()
     // read project database
     while (fgets(row, sizeof(row), projectDBS_open) != NULL)
     {
-        project_found=1;
+        project_found = 1;
         row[strcspn(row, "\n")] = '\0';
 
         // tokenize them
@@ -792,11 +806,11 @@ int view_projects()
         something_went_wrong_screen(FILE_CLOSE_ERROR);
     }
 
-    if (project_found!=1)
+    if (project_found != 1)
     {
-       project_not_found(x,y);
+        project_not_found(x, y);
     }
-    
+
     return 0;
 }
 
