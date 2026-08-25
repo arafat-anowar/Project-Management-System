@@ -100,9 +100,9 @@ Relative to the working directory the executable is launched from:
 ```text
 MAIN MENU
 │
-├── [1] Register           → create_user()
-├── [2] Login               → login()
-├── [3] Forgot Password     → change_password()
+├── [1] Register             → create_user()
+├── [2] Login                → login()
+├── [3] Forgot Password      → change_password()
 └── [ESC] Exit               → exit(1)
 ```
 
@@ -193,14 +193,14 @@ Note: `struct r_account` has 9 fields, but `userDBS.csv` only ever stores 5 of t
 ```c
 struct p_details
 {
-    char id[20];
-    char name[50];
-    char category[20];
-    char description[200];
-    char priority[20];
-    char status[20];
-    char start_date[15];
-    char end_date[15];
+    char id[PROJECT_ID_SIZE];
+    char name[PROJECT_ID_OR_NAME_SIZE];
+    char category[PROJECT_CATEGORY_SIZE];
+    char description[PROJECT_DESCRIPTION_SIZE];
+    char priority[PROJECT_PRIORITY_SIZE];
+    char status[PROJECT_STATUS_SIZE];
+    char start_date[PROJECT_START_DATE_SIZE];
+    char end_date[PROJECT_END_DATE_SIZE];
     char created_by[20];
 };
 ```
@@ -426,13 +426,13 @@ Prompts for a project ID or name. Rewrites `projectsDBS.csv` row by row into a t
 `update_project_dashboard()` (UI function, `ui.c`) presents:
 
 ```text
-[1] Project Name    → change_project_name()
-[2] Category         → change_project_category()
-[3] Description      → change_project_description()
-[4] Priority         → project_priority_dashboard() (selection)
-[5] Status           → project_status_dashboard() (selection)
-[6] Start Date        → change_project_start_date() (validated)
-[7] End Date           → extend_project_deadline() (validated)
+[1] Project Name        → change_project_name()
+[2] Category            → change_project_category()
+[3] Description         → change_project_description()
+[4] Priority            → project_priority_dashboard() (selection)
+[5] Status              → project_status_dashboard() (selection)
+[6] Start Date          → change_project_start_date() (validated)
+[7] End Date            → extend_project_deadline() (validated)
 [ESC] Back              → project_management_dashboard()
 ```
 
@@ -493,13 +493,13 @@ Prompts for a project ID or name, then a task ID or name. First rewrites the **m
 `task_update_dashboard()` (UI function) presents:
 
 ```text
-[1] Task Name      → change_task_name()
-[2] Description     → change_task_description()
-[3] Priority         → change_task_priority() → task_priority_dashboard() (selection)
-[4] Status            → change_task_status() → task_status_dashboard() (selection)
-[5] Start Date         → change_task_start_date() (validated)
-[6] End Date             → extend_task_deadline() (validated)
-[7] Back                  → no case in the switch — see Sec. 19.4
+[1] Task Name              → change_task_name()
+[2] Description            → change_task_description()
+[3] Priority               → change_task_priority() → task_priority_dashboard() (selection)
+[4] Status                 → change_task_status() → task_status_dashboard() (selection)
+[5] Start Date             → change_task_start_date() (validated)
+[6] End Date               → extend_task_deadline() (validated)
+[7] Back                   → no case in the switch — see Sec. 19.4
 [ESC] Back                 → task_management_dashboard()
 ```
 
@@ -1057,5 +1057,3 @@ This document describes the supplied implementation exactly as written. When use
 - Project/task synchronization behavior (including its timing/triggering, Section 11.4)
 - Report behavior, including the field-order inconsistency in Section 19.1
 - User directory/file creation behavior
-
-New behavior should not be assumed to exist unless it is present in the supplied implementation. The inconsistencies listed in Section 19 are part of the current, real behavior of the system — not defects to silently work around — and should be treated as known facts about the codebase rather than assumptions to correct without an explicit decision to do so.
