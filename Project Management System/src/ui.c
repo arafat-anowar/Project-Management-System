@@ -1656,7 +1656,7 @@ int task_update_dashboard(struct t_details *task, int x, int y)
     move_cursor(x, y + 19);
     printf("║                                                                                                  ║");
     move_cursor(x, y + 20);
-    printf("║       [ 7 ]  Back                                                                                ║");
+    printf("║      [ ESC ] Back                                                                                ║");
     move_cursor(x, y + 21);
     printf("║                                                                                                  ║\n");
     move_cursor(x, y + 22);
