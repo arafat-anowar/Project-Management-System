@@ -1,0 +1,1978 @@
+/*
+    Name : MD. LATHFAN IBNA EUSUF (TEAM LEADER)
+    ID : 2026-2-60-084
+*/
+
+#include "project.h"
+
+// project main source code start
+
+int create_project()
+{
+    // declare all variables
+    struct p_details project;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO, is_start_date_valid = ZERO, is_end_date_valid = ZERO;
+    char filepath[MAX_PATH_LENGTH], *username;
+    FILE *open_projectDBS, *project_file_create;
+
+    // set terminal for UTF8 and show header screen
+    init_console();
+    header_screen();
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+    priority_x = (terminal_width - priority_box_width) / TWO;
+    priority_y = (terminal_height - priority_box_height) / TWO;
+
+    // show create project screen
+    create_project_screen(x, y);
+
+    // generate project id for new project
+    generate_project_id(project.id);
+
+    // take project name
+    move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
+    fgets(project.name, sizeof(project.name), stdin);
+    project.name[strcspn(project.name, "\n")] = '\0';
+
+    // take project category
+    move_cursor(x + PROJECT_INPUT_X, y + 11);
+    fgets(project.category, sizeof(project.category), stdin);
+    project.category[strcspn(project.category, "\n")] = '\0';
+
+    // take project description
+    move_cursor(x + PROJECT_INPUT_X, y + 16);
+    fgets(project.description, sizeof(project.description), stdin);
+    project.description[strcspn(project.description, "\n")] = '\0';
+
+    // take project priority
+    project_priority_dashboard(project.priority, priority_x, priority_y);
+
+    // clear screen and show create project screen
+    clear_screen();
+    header_screen();
+
+    // show create project form
+    create_project_screen(x, y);
+
+    // show entered project name
+    move_cursor(x + PROJECT_INPUT_X, y + 6);
+    printf("%s", project.name);
+
+    // show entered project category
+    move_cursor(x + PROJECT_INPUT_X, y + 11);
+    printf("%s", project.category);
+
+    // show entered project description
+    move_cursor(x + PROJECT_INPUT_X, y + 16);
+    printf("%s", project.description);
+
+    // show selected project priority
+    move_cursor(x + PROJECT_INPUT_X, y + 23);
+    printf("%s", project.priority);
+
+    // set default project status
+    strcpy(project.status, DEFAULT_PROJECT_STATUS);
+
+    // take project start date and validate that
+    do
+    {
+        move_cursor(x + PROJECT_INPUT_X, y + 28);
+
+        if (is_start_date_valid == ZERO)
+        {
+            printf("                                                                             ");
+            move_cursor(x + PROJECT_INPUT_X, y + 28);
+        }
+
+        fgets(project.start_date, sizeof(project.start_date), stdin);
+        project.start_date[strcspn(project.start_date, "\n")] = '\0';
+        is_start_date_valid = validate_date(project.start_date);
+
+    } while (is_start_date_valid != VALID);
+
+    // take project end date and validate that
+    do
+    {
+        move_cursor(x + PROJECT_INPUT_X, y + 33);
+
+        if (is_end_date_valid == ZERO)
+        {
+            printf("                                                                             ");
+            move_cursor(x + PROJECT_INPUT_X, y + 33);
+        }
+
+        fgets(project.end_date, sizeof(project.end_date), stdin);
+        project.end_date[strcspn(project.end_date, "\n")] = '\0';
+
+        is_end_date_valid = validate_date(project.end_date);
+
+    } while (is_end_date_valid != VALID);
+
+    // get username
+    username = get_user_name();
+
+    // set project creator
+    strcpy(project.created_by, username);
+
+    // free memory
+    free(username);
+
+    // get project database path
+    get_path(filepath);
+    strcat(filepath, PROJECT_DATABASE_FILE);
+
+    // open project database
+    open_projectDBS = fopen(filepath, FILE_MODE_APPEND);
+    if (open_projectDBS == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // write project data to database
+    fprintf(open_projectDBS, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
+
+    // close project database
+    if (fclose(open_projectDBS) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // get project file path
+    get_path(filepath);
+    strcat(filepath, PROJECTS_FOLDER);
+    strcat(filepath, "\\");
+    strcat(filepath, strlwr(project.name));
+    strcat(filepath, PROJECT_FILE_EXTENSION);
+
+    // create project file
+    project_file_create = fopen(filepath, FILE_MODE_WRITE);
+    if (project_file_create == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // close project file
+    if (fclose(project_file_create) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    project_created_successful(x, y);
+
+    return 0;
+}
+
+int update_project()
+{
+    // declare all variables
+    struct p_details project;
+    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], path[MAX_PATH_LENGTH], tmp_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = UPDATE_PROJECT_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO, project_found = ZERO;
+    FILE *projectDBS_open, *tmp_project;
+
+    // set terminal for UTF8 and show header screen
+    init_console();
+    header_screen();
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+    priority_x = (terminal_width - priority_box_width) / TWO;
+    priority_y = ((terminal_height - priority_box_height) / TWO);
+
+    // show search project screen
+    search_project_by_id_or_name_screen(x, y);
+
+    // take project id or name
+    move_cursor(x + PROJECT_INPUT_X, y + 5);
+    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
+    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
+
+    // get project database path
+    get_path(path);
+    strcat(path, PROJECT_DATABASE_FILE);
+
+    // get temporary project database path
+    get_path(tmp_path);
+    strcat(tmp_path, TEMP_PROJECT_DATABASE_FILE);
+
+    // open project database
+    projectDBS_open = fopen(path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
+
+    // open temporary project database
+    tmp_project = fopen(tmp_path, FILE_MODE_WRITE);
+    if (tmp_project == NULL)
+    {
+        fclose(projectDBS_open);
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        // check project id or name if found update project
+        if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
+        {
+            char path2[200];
+            get_path(path2);
+            strcat(path2, PROJECT_FOLDER_NAME);
+            strcat(path2, strlwr(project.name));
+            strcat(path2, PROJECT_FILE_EXTENSION);
+
+            project_found = 1;
+            update_project_dashboard(&project, x, y, priority_x, priority_y);
+
+            char path3[200];
+            get_path(path3);
+            strcat(path3, PROJECT_FOLDER_NAME);
+            strcat(path3, strlwr(project.name));
+            strcat(path3, PROJECT_FILE_EXTENSION);
+
+            rename(path2, path3);
+        }
+
+        // write data to temporary database
+        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
+    }
+
+    // close databases
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(tmp_project) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // if project not found delete temporary database and return dashboard
+    if (project_found == ZERO)
+    {
+        if (remove(tmp_path) != ZERO)
+        {
+            something_went_wrong_screen(SOMETHING_FAILED);
+        }
+
+        project_not_found(x, y);
+        return 0;
+    }
+
+    // remove original database and rename temporary database as original database
+    if (remove(path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(tmp_path, path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    project_update_successful(x, y);
+    return 0;
+}
+
+int change_project_name(char name[])
+{
+    // declare all variables
+    char updated_name[MAX_USERNAME_LENGTH];
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO;
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+    // show change project name screen
+    change_project_name_screen(x, y);
+
+    // take updated project name
+    move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
+    fgets(updated_name, sizeof(updated_name), stdin);
+    updated_name[strcspn(updated_name, "\n")] = '\0';
+
+    // update project name
+    strcpy(name, updated_name);
+
+    return 0;
+}
+
+int change_project_category(char category[])
+{
+    // declare all variables
+    char updated_category[PROJECT_CATEGORY_SIZE];
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO;
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+    // show change project category screen
+    change_project_category_screen(x, y);
+
+    // take updated project category
+    move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
+    fgets(updated_category, sizeof(updated_category), stdin);
+    updated_category[strcspn(updated_category, "\n")] = '\0';
+
+    // update project category
+    strcpy(category, updated_category);
+
+    return 0;
+}
+
+int change_project_description(char description[])
+{
+    // declare all variables
+    char updated_description[PROJECT_DESCRIPTION_SIZE];
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO;
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+    // show change project description screen
+    change_project_description_screen(x, y);
+
+    // take updated project description
+    move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
+    fgets(updated_description, sizeof(updated_description), stdin);
+    updated_description[strcspn(updated_description, "\n")] = '\0';
+
+    // update project description
+    strcpy(description, updated_description);
+
+    return 0;
+}
+
+int change_project_status(char status[], int x, int y)
+{
+    // show project status dashboard
+    project_status_dashboard(status, x, y);
+
+    return 0;
+}
+
+int change_project_priority(char priority[], int x, int y)
+{
+    // show project priority dashboard
+    project_priority_dashboard(priority, x, y);
+
+    return 0;
+}
+
+int change_project_start_date(char start_date[])
+{
+    // declare all variables
+    char updated_start_date[PROJECT_START_DATE_SIZE];
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO, is_start_date_valid = VALID;
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+    // show change project start date screen
+    change_project_start_date_screen(x, y);
+
+    // take project start date and validate that
+    do
+    {
+        move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
+
+        if (is_start_date_valid == INVALID)
+        {
+            printf("                                                                             ");
+            move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
+        }
+
+        fgets(updated_start_date, sizeof(updated_start_date), stdin);
+        updated_start_date[strcspn(updated_start_date, "\n")] = '\0';
+        is_start_date_valid = validate_date(updated_start_date);
+
+    } while (is_start_date_valid != VALID);
+
+    // update project start date
+    strcpy(start_date, updated_start_date);
+
+    return 0;
+}
+
+int extend_project_deadline(char deadline[])
+{
+    // declare all variables
+    char updated_deadline[PROJECT_END_DATE_SIZE];
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_INPUT_BOX_HEIGHT, x = ZERO, y = ZERO, is_end_date_valid = VALID;
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+    // show extend project deadline screen
+    extend_project_deadline_screen(x, y);
+
+    // take project end date and validate that
+    do
+    {
+        move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
+
+        if (is_end_date_valid == INVALID)
+        {
+            printf("                                                                             ");
+            move_cursor(x + PROJECT_INPUT_X, y + PROJECT_INPUT_Y);
+        }
+
+        fgets(updated_deadline, sizeof(updated_deadline), stdin);
+        updated_deadline[strcspn(updated_deadline, "\n")] = '\0';
+        is_end_date_valid = validate_date(updated_deadline);
+
+    } while (is_end_date_valid != VALID);
+
+    // update project end date
+    strcpy(deadline, updated_deadline);
+
+    return 0;
+}
+
+int delete_project()
+{
+    // declare all variables
+    struct p_details project;
+    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], projectDBS_path[MAX_PATH_LENGTH], tmp_projectDBS_path[MAX_PATH_LENGTH], taskDBS_path[MAX_PATH_LENGTH], tmp_taskDBS_path[MAX_PATH_LENGTH], project_file_path[MAX_PATH_LENGTH], project_file_name[PROJECT_FILE_NAME_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_DELETE_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO;
+    FILE *file_for_delete_project, *write_to_new_project_file, *file_for_delete_task, *write_to_new_task_file;
+
+    // set terminal for UTF8 and show header screen
+    init_console();
+    header_screen();
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+    // show search project screen
+    search_project_by_id_or_name_screen(x, y);
+
+    // take project id or name
+    move_cursor(x + PROJECT_INPUT_X, y + 5);
+    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
+    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
+
+    // get project database paths
+    get_path(projectDBS_path);
+    get_path(tmp_projectDBS_path);
+    strcat(projectDBS_path, PROJECT_DATABASE_FILE);
+    strcat(tmp_projectDBS_path, TEMP_PROJECT_DATABASE_FILE);
+
+    // open project databases
+    file_for_delete_project = fopen(projectDBS_path, FILE_MODE_READ);
+    if (file_for_delete_project == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
+
+    write_to_new_project_file = fopen(tmp_projectDBS_path, FILE_MODE_WRITE);
+    if (write_to_new_project_file == NULL)
+    {
+        fclose(file_for_delete_project);
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), file_for_delete_project) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        // check project id or name if found delete project
+        if (strcmp(project.id, project_id_or_name) == ZERO || strcmp(project.name, project_id_or_name) == ZERO)
+        {
+            project_found = VALID;
+
+            // get project file path
+            get_path(project_file_path);
+            strcat(project_file_path, PROJECTS_FOLDER);
+            strcat(project_file_path, "\\");
+
+            strcpy(project_file_name, project.name);
+            strlwr(project_file_name);
+
+            strcat(project_file_path, project_file_name);
+            strcat(project_file_path, PROJECT_FILE_EXTENSION);
+
+            // delete project file
+            if (remove(project_file_path) != ZERO)
+            {
+                fclose(file_for_delete_project);
+                fclose(write_to_new_project_file);
+                remove(tmp_projectDBS_path);
+                something_went_wrong_screen(SOMETHING_FAILED);
+                return 0;
+            }
+
+            continue;
+        }
+
+        // write remaining project data to temporary database
+        fprintf(write_to_new_project_file, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
+    }
+
+    // close project databases
+    if (fclose(file_for_delete_project) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(write_to_new_project_file) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // if project not found delete temporary database and return dashboard
+    if (project_found == ZERO)
+    {
+        if (remove(tmp_projectDBS_path) != ZERO)
+        {
+            something_went_wrong_screen(SOMETHING_FAILED);
+        }
+
+        project_not_found(x, y);
+        project_management_dashboard();
+        return 0;
+    }
+
+    // remove original project database and rename temporary database
+    if (remove(projectDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(tmp_projectDBS_path, projectDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    // get task database paths
+    get_path(taskDBS_path);
+    get_path(tmp_taskDBS_path);
+
+    strcat(taskDBS_path, TASK_DATABASE_FILE);
+    strcat(tmp_taskDBS_path, TEMP_TASK_DATABASE_FILE);
+
+    // open task databases
+    file_for_delete_task = fopen(taskDBS_path, FILE_MODE_READ);
+    if (file_for_delete_task == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
+
+    write_to_new_task_file = fopen(tmp_taskDBS_path, FILE_MODE_WRITE);
+    if (write_to_new_task_file == NULL)
+    {
+        fclose(file_for_delete_task);
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+        return 0;
+    }
+
+    // read task database
+    while (fgets(row, sizeof(row), file_for_delete_task) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        field = strtok(NULL, ",");
+        field = strtok(NULL, ",");
+
+        // check project id if task belongs to deleted project
+        if (strcmp(field, project.id) == ZERO)
+        {
+            continue;
+        }
+
+        // write remaining task data to temporary database
+        fprintf(write_to_new_task_file, "%s\n", row);
+    }
+
+    // close task databases
+    if (fclose(file_for_delete_task) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(write_to_new_task_file) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // remove original task database and rename temporary database
+    if (remove(taskDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(tmp_taskDBS_path, taskDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    project_deleted_successful(x, y);
+
+    return 0;
+}
+
+int view_projects()
+{
+    // declare all variables
+    struct p_details project;
+    char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO;
+    FILE *projectDBS_open;
+
+    // set terminal for UTF8 and show header screen
+    init_console();
+    header_screen();
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+    // get project database path
+    get_path(path);
+    strcat(path, PROJECT_DATABASE_FILE);
+
+    // open project database
+    projectDBS_open = fopen(path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        project_found = 1;
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        // clear screen and show project
+        clear_screen();
+        header_screen();
+
+        project_show_screen(x, y);
+
+        move_cursor(x + PROJECT_SHOW_X, y + PROJECT_ID_Y);
+        printf("%s", project.id);
+
+        move_cursor(x + PROJECT_SHOW_X, y + PROJECT_NAME_Y);
+        printf("%s", project.name);
+
+        move_cursor(x + PROJECT_SHOW_X, y + PROJECT_CATEGORY_Y);
+        printf("%s", project.category);
+
+        move_cursor(x + PROJECT_SHOW_X, y + PROJECT_DESCRIPTION_Y);
+        printf("%s", project.description);
+
+        move_cursor(x + PROJECT_SHOW_X, y + PROJECT_PRIORITY_Y);
+        printf("%s", project.priority);
+
+        move_cursor(x + PROJECT_SHOW_X, y + PROJECT_STATUS_Y);
+        printf("%s", project.status);
+
+        move_cursor(x + PROJECT_SHOW_X, y + PROJECT_START_DATE_Y);
+        printf("%s", project.start_date);
+
+        move_cursor(x + PROJECT_SHOW_X, y + PROJECT_END_DATE_Y);
+        printf("%s", project.end_date);
+
+        get_input;
+    }
+
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (project_found != 1)
+    {
+        project_not_found(x, y);
+    }
+
+    return 0;
+}
+
+int search_by_project_id_or_name()
+{
+    // declare all variables
+    struct p_details project;
+    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], projectDBS_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO;
+    FILE *projectDBS_open;
+
+    // set terminal for UTF8 and show header screen
+    init_console();
+    header_screen();
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+
+    // show search project screen
+    search_project_by_id_or_name_screen(x, y);
+
+    // take project id or name
+    move_cursor(x + PROJECT_INPUT_X, y + 5);
+    fgets(project_id_or_name, sizeof(project_id_or_name), stdin);
+    project_id_or_name[strcspn(project_id_or_name, "\n")] = '\0';
+
+    // get project database path
+    get_path(projectDBS_path);
+    strcat(projectDBS_path, PROJECT_DATABASE_FILE);
+
+    // open project database
+    projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        // check project id or name if found show project
+        if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
+        {
+            clear_screen();
+            header_screen();
+
+            project_show_screen(x, y);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_ID_Y);
+            printf("%s", project.id);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_NAME_Y);
+            printf("%s", project.name);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_CATEGORY_Y);
+            printf("%s", project.category);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_DESCRIPTION_Y);
+            printf("%s", project.description);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_PRIORITY_Y);
+            printf("%s", project.priority);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_STATUS_Y);
+            printf("%s", project.status);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_START_DATE_Y);
+            printf("%s", project.start_date);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_END_DATE_Y);
+            printf("%s", project.end_date);
+
+            get_input;
+
+            break;
+        }
+    }
+
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    return 0;
+}
+
+int search_project_by_status()
+{
+    // declare all variables
+    struct p_details project;
+    char status[PROJECT_STATUS_SIZE], projectDBS_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO, status_box_width = STATUS_BOX_WIDTH, status_box_height = STATUS_BOX_HEIGHT, status_x = ZERO, status_y = ZERO;
+    FILE *projectDBS_open;
+
+    // set terminal for UTF8 and show header screen
+    init_console();
+    header_screen();
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+    status_x = (terminal_width - status_box_width) / TWO;
+    status_y = (terminal_height - status_box_height) / TWO;
+
+    // show project status dashboard
+    project_status_dashboard(status, status_x, status_y);
+
+    // get project database path
+    get_path(projectDBS_path);
+    strcat(projectDBS_path, PROJECT_DATABASE_FILE);
+
+    // open project database
+    projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        // check project status if found show project
+        if (strcmp(status, project.status) == ZERO)
+        {
+            clear_screen();
+            header_screen();
+
+            project_show_screen(x, y);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_ID_Y);
+            printf("%s", project.id);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_NAME_Y);
+            printf("%s", project.name);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_CATEGORY_Y);
+            printf("%s", project.category);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_DESCRIPTION_Y);
+            printf("%s", project.description);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_PRIORITY_Y);
+            printf("%s", project.priority);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_STATUS_Y);
+            printf("%s", project.status);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_START_DATE_Y);
+            printf("%s", project.start_date);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_END_DATE_Y);
+            printf("%s", project.end_date);
+
+            get_input;
+        }
+    }
+
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    return 0;
+}
+
+int search_project_by_priority()
+{
+    // declare all variables
+    struct p_details project;
+    char priority[PROJECT_PRIORITY_SIZE], projectDBS_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_SHOW_BOX_HEIGHT, x = ZERO, y = ZERO, priority_box_width = PRIORITY_BOX_WIDTH, priority_box_height = PRIORITY_BOX_HEIGHT, priority_x = ZERO, priority_y = ZERO;
+    FILE *projectDBS_open;
+
+    // set terminal for UTF8 and show header screen
+    init_console();
+    header_screen();
+
+    // measure terminal height and width also x and y coordinate
+    terminal_width = get_console_width();
+    terminal_height = get_console_height();
+    x = (terminal_width - box_width) / TWO;
+    y = ((terminal_height - box_height) / TWO) + SCREEN_START_Y;
+    priority_x = (terminal_width - priority_box_width) / TWO;
+    priority_y = (terminal_height - priority_box_height) / TWO;
+
+    // show project priority dashboard
+    project_priority_dashboard(priority, priority_x, priority_y);
+
+    // get project database path
+    get_path(projectDBS_path);
+    strcat(projectDBS_path, PROJECT_DATABASE_FILE);
+
+    // open project database
+    projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        // check project priority if found show project
+        if (strcmp(priority, project.priority) == ZERO)
+        {
+            clear_screen();
+            header_screen();
+
+            project_show_screen(x, y);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_ID_Y);
+            printf("%s", project.id);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_NAME_Y);
+            printf("%s", project.name);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_CATEGORY_Y);
+            printf("%s", project.category);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_DESCRIPTION_Y);
+            printf("%s", project.description);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_PRIORITY_Y);
+            printf("%s", project.priority);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_STATUS_Y);
+            printf("%s", project.status);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_START_DATE_Y);
+            printf("%s", project.start_date);
+
+            move_cursor(x + PROJECT_SHOW_X, y + PROJECT_END_DATE_Y);
+            printf("%s", project.end_date);
+
+            get_input;
+        }
+    }
+
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    return 0;
+}
+
+int update_cancelled_project_tasks()
+{
+    // declare all variables
+    struct p_details project;
+    struct t_details task;
+    char projectDBS_path[TASK_PATH_BUFFER_SIZE], taskDBS_path[TASK_PATH_BUFFER_SIZE], tmp_task_path[TASK_PATH_BUFFER_SIZE], project_task_path[TASK_PATH_BUFFER_SIZE], tmp_project_task_path[TASK_PATH_BUFFER_SIZE], row[TASK_FILE_DATA_SIZE], *field;
+    FILE *projectDBS_open, *taskDBS_open, *tmp_task, *project_task_open, *tmp_project_task;
+
+    // get project database path
+    get_path(projectDBS_path);
+    strcat(projectDBS_path, PROJECT_DATABASE_FILE);
+
+    // open project database
+    projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        // check project status if project is cancelled update its tasks
+        if (strcmp(project.status, CANCELLED_PROJECT_STATUS) == ZERO)
+        {
+            // get project task file path
+            get_path(project_task_path);
+            strcat(project_task_path, PROJECT_FOLDER_NAME);
+            strcat(project_task_path, "\\");
+            strcat(project_task_path, strlwr(project.name));
+            strcat(project_task_path, TASK_FILE_EXTENSION);
+
+            // get temporary project task file path
+            get_path(tmp_project_task_path);
+            strcat(tmp_project_task_path, PROJECT_FOLDER_NAME);
+            strcat(tmp_project_task_path, "\\");
+            strcat(tmp_project_task_path, TEMP_TASK_DATABASE_FILE);
+
+            // open project task files
+            project_task_open = fopen(project_task_path, FILE_MODE_READ);
+            if (project_task_open == NULL)
+            {
+                something_went_wrong_screen(FILE_OPEN_ERROR);
+            }
+
+            tmp_project_task = fopen(tmp_project_task_path, FILE_MODE_WRITE);
+            if (tmp_project_task == NULL)
+            {
+                something_went_wrong_screen(FILE_OPEN_ERROR);
+            }
+
+            // read project task file
+            while (fgets(row, sizeof(row), project_task_open) != NULL)
+            {
+                row[strcspn(row, "\n")] = '\0';
+
+                // tokenize them
+                field = strtok(row, ",");
+                strcpy(task.task_id, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.project_id, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.name, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.description, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.priority, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.status, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.start_date, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.end_date, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.created_by, field);
+
+                // change task status to cancelled
+                strcpy(task.status, CANCELLED_TASK_STATUS);
+
+                // write task data to temporary file
+                fprintf(tmp_project_task, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
+            }
+
+            // close project task files
+            if (fclose(project_task_open) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+
+            if (fclose(tmp_project_task) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+
+            // remove original project task file and rename temporary file
+            if (remove(project_task_path) != ZERO)
+            {
+                something_went_wrong_screen(SOMETHING_FAILED);
+            }
+
+            if (rename(tmp_project_task_path, project_task_path) != ZERO)
+            {
+                something_went_wrong_screen(SOMETHING_FAILED);
+            }
+
+            // get task database path
+            get_path(taskDBS_path);
+            strcat(taskDBS_path, TASK_DATABASE_FILE);
+
+            // get temporary task database path
+            get_path(tmp_task_path);
+            strcat(tmp_task_path, TEMP_TASK_DATABASE_FILE);
+
+            // open task databases
+            taskDBS_open = fopen(taskDBS_path, FILE_MODE_READ);
+            if (taskDBS_open == NULL)
+            {
+                something_went_wrong_screen(FILE_OPEN_ERROR);
+            }
+
+            tmp_task = fopen(tmp_task_path, FILE_MODE_WRITE);
+            if (tmp_task == NULL)
+            {
+                something_went_wrong_screen(FILE_OPEN_ERROR);
+            }
+
+            // read task database
+            while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+            {
+                row[strcspn(row, "\n")] = '\0';
+
+                // tokenize them
+                field = strtok(row, ",");
+                task.unique_id = atoi(field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.task_id, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.project_id, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.name, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.description, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.priority, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.status, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.start_date, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.end_date, field);
+
+                field = strtok(NULL, ",");
+                strcpy(task.created_by, field);
+
+                // check project id if task belongs to cancelled project
+                if (strcmp(task.project_id, project.id) == ZERO)
+                {
+                    strcpy(task.status, CANCELLED_TASK_STATUS);
+                }
+
+                // write task data to temporary database
+                fprintf(tmp_task, "%d,%s,%s,%s,%s,%s,%s,%s,%s,%s\n", task.unique_id, task.task_id, task.project_id, task.name, task.description, task.priority, task.status, task.start_date, task.end_date, task.created_by);
+            }
+
+            // close task databases
+            if (fclose(taskDBS_open) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+
+            if (fclose(tmp_task) == EOF)
+            {
+                something_went_wrong_screen(FILE_CLOSE_ERROR);
+            }
+
+            // remove original task database and rename temporary database
+            if (remove(taskDBS_path) != ZERO)
+            {
+                something_went_wrong_screen(SOMETHING_FAILED);
+            }
+
+            if (rename(tmp_task_path, taskDBS_path) != ZERO)
+            {
+                something_went_wrong_screen(SOMETHING_FAILED);
+            }
+        }
+    }
+
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    return 0;
+}
+
+int update_project_status_by_tasks()
+{
+    // declare all variables
+    struct p_details project;
+    struct t_details task;
+    char projectDBS_path[MAX_PATH_LENGTH], tmp_projectDBS_path[MAX_PATH_LENGTH], taskDBS_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int total_tasks = ZERO, completed_tasks = ZERO;
+    FILE *projectDBS_open, *tmp_project, *taskDBS_open;
+
+    // get project database path
+    get_path(projectDBS_path);
+    strcat(projectDBS_path, PROJECT_DATABASE_FILE);
+
+    // get temporary project database path
+    get_path(tmp_projectDBS_path);
+    strcat(tmp_projectDBS_path, TEMP_PROJECT_DATABASE_FILE);
+
+    // get task database path
+    get_path(taskDBS_path);
+    strcat(taskDBS_path, TASK_DATABASE_FILE);
+
+    // open databases
+    projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    tmp_project = fopen(tmp_projectDBS_path, FILE_MODE_WRITE);
+    if (tmp_project == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    taskDBS_open = fopen(taskDBS_path, FILE_MODE_READ);
+    if (taskDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        total_tasks = ZERO;
+        completed_tasks = ZERO;
+
+        // read task database
+        while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+        {
+            row[strcspn(row, "\n")] = '\0';
+
+            // tokenize them
+            field = strtok(row, ",");
+            task.unique_id = atoi(field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.task_id, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.project_id, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.name, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.description, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.priority, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.status, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.start_date, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.end_date, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.created_by, field);
+
+            // check task belongs to current project
+            if (strcmp(task.project_id, project.id) == ZERO)
+            {
+                total_tasks++;
+
+                // check task is completed
+                if (strcmp(task.status, COMPLETED_TASK_STATUS) == ZERO)
+                {
+                    completed_tasks++;
+                }
+            }
+        }
+
+        // reset task database position
+        rewind(taskDBS_open);
+
+        // update project status if all tasks are completed
+        if (total_tasks > ZERO && total_tasks == completed_tasks)
+        {
+            strcpy(project.status, COMPLETED_PROJECT_STATUS);
+        }
+
+        // write project data to temporary database
+        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
+    }
+
+    // close databases
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(tmp_project) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // remove original project database and rename temporary database
+    if (remove(projectDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(tmp_projectDBS_path, projectDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    return 0;
+}
+
+int update_created_project_status()
+{
+    // declare all variables
+    struct p_details project;
+    struct t_details task;
+    char projectDBS_path[MAX_PATH_LENGTH], tmp_projectDBS_path[MAX_PATH_LENGTH], taskDBS_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int task_found = ZERO;
+    FILE *projectDBS_open, *tmp_project, *taskDBS_open;
+
+    // get project database path
+    get_path(projectDBS_path);
+    strcat(projectDBS_path, PROJECT_DATABASE_FILE);
+
+    // get temporary project database path
+    get_path(tmp_projectDBS_path);
+    strcat(tmp_projectDBS_path, TEMP_PROJECT_DATABASE_FILE);
+
+    // get task database path
+    get_path(taskDBS_path);
+    strcat(taskDBS_path, TASK_DATABASE_FILE);
+
+    // open databases
+    projectDBS_open = fopen(projectDBS_path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    tmp_project = fopen(tmp_projectDBS_path, FILE_MODE_WRITE);
+    if (tmp_project == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    taskDBS_open = fopen(taskDBS_path, FILE_MODE_READ);
+    if (taskDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.status, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(project.created_by, field);
+
+        task_found = ZERO;
+
+        // read task database
+        while (fgets(row, sizeof(row), taskDBS_open) != NULL)
+        {
+            row[strcspn(row, "\n")] = '\0';
+
+            // tokenize them
+            field = strtok(row, ",");
+            task.unique_id = atoi(field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.task_id, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.project_id, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.name, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.description, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.priority, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.status, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.start_date, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.end_date, field);
+
+            field = strtok(NULL, ",");
+            strcpy(task.created_by, field);
+
+            // check task belongs to current project
+            if (strcmp(task.project_id, project.id) == ZERO)
+            {
+                task_found = 1;
+                break;
+            }
+        }
+
+        // reset task database position
+        rewind(taskDBS_open);
+
+        // update project status if task found
+        if (strcmp(project.status, DEFAULT_PROJECT_STATUS) == ZERO &&
+            task_found == 1)
+        {
+            strcpy(project.status, IN_PROGRESS_PROJECT_STATUS);
+        }
+
+        // write project data to temporary database
+        fprintf(tmp_project, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", project.id, project.name, project.category, project.description, project.priority, project.status, project.start_date, project.end_date, project.created_by);
+    }
+
+    // close databases
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(tmp_project) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    if (fclose(taskDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // remove original project database and rename temporary database
+    if (remove(projectDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    if (rename(tmp_projectDBS_path, projectDBS_path) != ZERO)
+    {
+        something_went_wrong_screen(SOMETHING_FAILED);
+    }
+
+    return 0;
+}
+
+int generate_project_id(char id[])
+{
+    // declare all variables
+    struct p_details project;
+    int found = ZERO, num_id[PROJECT_ID_SIZE] = {ZERO}, project_id = ZERO, id_len = ZERO, tmp = ZERO, i = ZERO, j = ZERO, digit = ZERO;
+    char path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    FILE *projectDBS_open;
+
+    // initialize project id
+    strcpy(id, "P1001");
+
+    // get project database path
+    get_path(path);
+    strcat(path, PROJECT_DATABASE_FILE);
+
+    // open project database
+    projectDBS_open = fopen(path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        found = 1;
+
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(project.id, field);
+    }
+
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // if no data found in file return default id
+    if (found == ZERO)
+    {
+        return 0;
+    }
+
+    strcpy(id, project.id);
+
+    // get id length
+    id_len = strlen(id);
+
+    // copy id's char array to integer array
+    for (i = ZERO, j = 1; j < id_len; i++, j++)
+    {
+        num_id[i] = id[j] - '0';
+    }
+
+    // convert id's array to a number
+    for (i = ZERO; i < id_len - 1; i++)
+    {
+        digit = num_id[i];
+
+        for (j = i; j < id_len - TWO; j++)
+        {
+            digit *= 10;
+        }
+
+        project_id += digit;
+    }
+
+    // increment id by 1
+    project_id++;
+
+    tmp = project_id;
+    j = id_len - 1;
+
+    // convert number to char array
+    while (tmp != ZERO && j > ZERO)
+    {
+        id[j] = (tmp % 10) + '0';
+
+        tmp /= 10;
+        j--;
+    }
+
+    return 0;
+}
+
+int get_path(char path[])
+{
+    // declare variables
+    char *username;
+
+    // get username
+    username = get_user_name();
+
+    // create user database path
+    strcpy(path, DATABASE_DIR);
+    strcat(path, username);
+    strcat(path, "\\");
+
+    // free memory
+    free(username);
+
+    return 0;
+}
+
+int compare_project_priority(const void *a, const void *b)
+{
+    // declare variables
+    struct p_details *project_a = (struct p_details *)a, *project_b = (struct p_details *)b;
+    int priority_a = ZERO, priority_b = ZERO;
+
+    // check first project priority
+    if (strcmp(project_a->priority, "High") == ZERO)
+    {
+        priority_a = 3;
+    }
+    else if (strcmp(project_a->priority, "Medium") == ZERO)
+    {
+        priority_a = 2;
+    }
+    else if (strcmp(project_a->priority, "Low") == ZERO)
+    {
+        priority_a = 1;
+    }
+
+    // check second project priority
+    if (strcmp(project_b->priority, "High") == ZERO)
+    {
+        priority_b = 3;
+    }
+    else if (strcmp(project_b->priority, "Medium") == ZERO)
+    {
+        priority_b = 2;
+    }
+    else if (strcmp(project_b->priority, "Low") == ZERO)
+    {
+        priority_b = 1;
+    }
+
+    // compare project priority
+    return priority_b - priority_a;
+}
+
+int sort_projects()
+{
+    // update project and task statuses
+    update_cancelled_project_tasks();
+    update_created_project_status();
+    update_project_status_by_tasks();
+
+    // declare variables
+    struct p_details projects[PROJECT_ARRAY_SIZE];
+    char path[MAX_PATH_LENGTH], sort_path[MAX_PATH_LENGTH], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    int project_count = ZERO;
+    FILE *projectDBS_open, *sort_project_open;
+
+    // get project database path
+    get_path(path);
+    strcat(path, PROJECT_DATABASE_FILE);
+
+    // get sorted project path
+    get_path(sort_path);
+    strcat(sort_path, SORTED_PROJECT_FILE);
+
+    // open project database
+    projectDBS_open = fopen(path, FILE_MODE_READ);
+    if (projectDBS_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // read project database
+    while (fgets(row, sizeof(row), projectDBS_open) != NULL)
+    {
+        row[strcspn(row, "\n")] = '\0';
+
+        // tokenize them
+        field = strtok(row, ",");
+        strcpy(projects[project_count].id, field);
+
+        field = strtok(NULL, ",");
+        strcpy(projects[project_count].name, field);
+
+        field = strtok(NULL, ",");
+        strcpy(projects[project_count].category, field);
+
+        field = strtok(NULL, ",");
+        strcpy(projects[project_count].description, field);
+
+        field = strtok(NULL, ",");
+        strcpy(projects[project_count].priority, field);
+
+        field = strtok(NULL, ",");
+        strcpy(projects[project_count].status, field);
+
+        // skip cancelled and completed projects
+        if (strcmp(projects[project_count].status, CANCELLED_PROJECT_STATUS) == ZERO || strcmp(projects[project_count].status, COMPLETED_PROJECT_STATUS) == ZERO)
+        {
+            continue;
+        }
+
+        field = strtok(NULL, ",");
+        strcpy(projects[project_count].start_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(projects[project_count].end_date, field);
+
+        field = strtok(NULL, ",");
+        strcpy(projects[project_count].created_by, field);
+
+        project_count++;
+    }
+
+    // close project database
+    if (fclose(projectDBS_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    // sort projects by priority
+    qsort(projects, project_count, sizeof(struct p_details), compare_project_priority);
+
+    // open sorted project file
+    sort_project_open = fopen(sort_path, FILE_MODE_WRITE);
+    if (sort_project_open == NULL)
+    {
+        something_went_wrong_screen(FILE_OPEN_ERROR);
+    }
+
+    // write sorted projects to file
+    for (int i = ZERO; i < project_count; i++)
+    {
+        fprintf(sort_project_open, "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", projects[i].id, projects[i].name, projects[i].category, projects[i].description, projects[i].priority, projects[i].status, projects[i].start_date, projects[i].end_date, projects[i].created_by);
+    }
+
+    // close sorted project file
+    if (fclose(sort_project_open) == EOF)
+    {
+        something_went_wrong_screen(FILE_CLOSE_ERROR);
+    }
+
+    return 0;
+}
+
+// project main source code end
