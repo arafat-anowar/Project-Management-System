@@ -489,7 +489,7 @@ int delete_project()
 {
     // declare all variables
     struct p_details project;
-    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], projectDBS_path[MAX_PATH_LENGTH], tmp_projectDBS_path[MAX_PATH_LENGTH], taskDBS_path[MAX_PATH_LENGTH], tmp_taskDBS_path[MAX_PATH_LENGTH], project_file_path[MAX_PATH_LENGTH], project_file_name[PROJECT_FILE_NAME_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
+    char project_id_or_name[PROJECT_ID_OR_NAME_SIZE], projectDBS_path[MAX_PATH_LENGTH], tmp_projectDBS_path[MAX_PATH_LENGTH], taskDBS_path[MAX_PATH_LENGTH], tmp_taskDBS_path[MAX_PATH_LENGTH], project_file_path[MAX_PATH_LENGTH], project_file_name[PROJECT_FILE_NAME_SIZE], row[MAX_LENGTH_OF_DATA_IN_FILE], original_row[MAX_LENGTH_OF_DATA_IN_FILE], *field;
     int terminal_width = ZERO, terminal_height = ZERO, box_width = CONTAINER_WIDTH, box_height = PROJECT_DELETE_BOX_HEIGHT, x = ZERO, y = ZERO, project_found = ZERO;
     FILE *file_for_delete_project, *write_to_new_project_file, *file_for_delete_task, *write_to_new_task_file;
 
@@ -540,30 +540,93 @@ int delete_project()
 
         // tokenize them
         field = strtok(row, ",");
+
+        // check project id field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.id, field);
 
         field = strtok(NULL, ",");
+
+        // check project name field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.name, field);
 
         field = strtok(NULL, ",");
+
+        // check project category field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.category, field);
 
         field = strtok(NULL, ",");
+
+        // check project description field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.description, field);
 
         field = strtok(NULL, ",");
+
+        // check project priority field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.priority, field);
 
         field = strtok(NULL, ",");
+
+        // check project status field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.status, field);
 
         field = strtok(NULL, ",");
+
+        // check project start date field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.start_date, field);
 
         field = strtok(NULL, ",");
+
+        // check project end date field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.end_date, field);
 
         field = strtok(NULL, ",");
+
+        // check project created by field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.created_by, field);
 
         // check project id or name if found delete project
@@ -602,12 +665,17 @@ int delete_project()
     // close project databases
     if (fclose(file_for_delete_project) == EOF)
     {
+        fclose(write_to_new_project_file);
+        remove(tmp_projectDBS_path);
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+        return 0;
     }
 
     if (fclose(write_to_new_project_file) == EOF)
     {
+        remove(tmp_projectDBS_path);
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+        return 0;
     }
 
     // if project not found delete temporary database and return dashboard
@@ -626,12 +694,15 @@ int delete_project()
     // remove original project database and rename temporary database
     if (remove(projectDBS_path) != ZERO)
     {
+        remove(tmp_projectDBS_path);
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
 
     if (rename(tmp_projectDBS_path, projectDBS_path) != ZERO)
     {
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
 
     // get task database paths
@@ -662,10 +733,26 @@ int delete_project()
     {
         row[strcspn(row, "\n")] = '\0';
 
+        // keep original row before tokenize
+        strcpy(original_row, row);
+
         // tokenize them
         field = strtok(row, ",");
+
+        // check task id field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         field = strtok(NULL, ",");
-        field = strtok(NULL, ",");
+
+        // check project id field
+        if (field == NULL)
+        {
+            fprintf(write_to_new_task_file, "%s\n", original_row);
+            continue;
+        }
 
         // check project id if task belongs to deleted project
         if (strcmp(field, project.id) == ZERO)
@@ -674,29 +761,37 @@ int delete_project()
         }
 
         // write remaining task data to temporary database
-        fprintf(write_to_new_task_file, "%s\n", row);
+        fprintf(write_to_new_task_file, "%s\n", original_row);
     }
 
     // close task databases
     if (fclose(file_for_delete_task) == EOF)
     {
+        fclose(write_to_new_task_file);
+        remove(tmp_taskDBS_path);
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+        return 0;
     }
 
     if (fclose(write_to_new_task_file) == EOF)
     {
+        remove(tmp_taskDBS_path);
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+        return 0;
     }
 
     // remove original task database and rename temporary database
     if (remove(taskDBS_path) != ZERO)
     {
+        remove(tmp_taskDBS_path);
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
 
     if (rename(tmp_taskDBS_path, taskDBS_path) != ZERO)
     {
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
 
     project_deleted_successful(x, y);
