@@ -807,14 +807,29 @@ int delete_task()
 
         // tokenize data
         field = strtok(row, ",");
+
+        // check project id field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.id, field);
 
         field = strtok(NULL, ",");
+
+        // check project name field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(project.name, field);
 
+        // check project id or name
         if (strcmp(project_id_or_name, project.id) == ZERO || strcmp(project_id_or_name, project.name) == ZERO)
         {
-            project_found = 1;
+            project_found = VALID;
             break;
         }
     }
@@ -823,6 +838,7 @@ int delete_task()
     if (fclose(projectDBS_open) == EOF)
     {
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+        return 0;
     }
 
     if (project_found == ZERO)
@@ -880,6 +896,8 @@ int delete_task()
             {
                 something_went_wrong_screen(FILE_CLOSE_ERROR);
             }
+
+            remove(tmp_project_task_path);
         }
 
         return 0;
@@ -892,35 +910,99 @@ int delete_task()
 
         // tokenize data
         field = strtok(row, ",");
+
+        // check task id field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.task_id, field);
 
         field = strtok(NULL, ",");
+
+        // check project id field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.project_id, field);
 
         field = strtok(NULL, ",");
+
+        // check task name field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.name, field);
 
         field = strtok(NULL, ",");
+
+        // check task description field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.description, field);
 
         field = strtok(NULL, ",");
+
+        // check task priority field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.priority, field);
 
         field = strtok(NULL, ",");
+
+        // check task status field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.status, field);
 
         field = strtok(NULL, ",");
+
+        // check task start date field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.start_date, field);
 
         field = strtok(NULL, ",");
+
+        // check task end date field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.end_date, field);
 
         field = strtok(NULL, ",");
+
+        // check task created by field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.created_by, field);
 
+        // check task id or name if found delete task
         if ((strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO) && strcmp(task.project_id, project.id) == ZERO)
         {
-            task_found = 1;
+            task_found = VALID;
             continue;
         }
 
@@ -931,12 +1013,18 @@ int delete_task()
     // close database
     if (fclose(project_task_open) == EOF)
     {
+        fclose(tmp_project_task);
+        remove(tmp_project_task_path);
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+        return 0;
     }
+
     // close database
     if (fclose(tmp_project_task) == EOF)
     {
+        remove(tmp_project_task_path);
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+        return 0;
     }
 
     // if task not found delete temporary database and show error
@@ -954,12 +1042,16 @@ int delete_task()
     // remove original database
     if (remove(project_task_path) != ZERO)
     {
+        remove(tmp_project_task_path);
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
+
     // rename temporary database as original database
     if (rename(tmp_project_task_path, project_task_path) != ZERO)
     {
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
 
     // get task database path
@@ -994,6 +1086,8 @@ int delete_task()
             {
                 something_went_wrong_screen(FILE_CLOSE_ERROR);
             }
+
+            remove(tmp_task_path);
         }
 
         return 0;
@@ -1006,38 +1100,108 @@ int delete_task()
 
         // tokenize data
         field = strtok(row, ",");
+
+        // check unique id field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         task.unique_id = atoi(field);
 
         field = strtok(NULL, ",");
+
+        // check task id field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.task_id, field);
 
         field = strtok(NULL, ",");
+
+        // check project id field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.project_id, field);
 
         field = strtok(NULL, ",");
+
+        // check task name field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.name, field);
 
         field = strtok(NULL, ",");
+
+        // check task description field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.description, field);
 
         field = strtok(NULL, ",");
+
+        // check task priority field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.priority, field);
 
         field = strtok(NULL, ",");
+
+        // check task status field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.status, field);
 
         field = strtok(NULL, ",");
+
+        // check task start date field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.start_date, field);
 
         field = strtok(NULL, ",");
+
+        // check task end date field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.end_date, field);
 
         field = strtok(NULL, ",");
+
+        // check task created by field
+        if (field == NULL)
+        {
+            continue;
+        }
+
         strcpy(task.created_by, field);
 
+        // check task id or name if found delete task
         if ((strcmp(task.task_id, task_id_or_name) == ZERO || strcmp(task.name, task_id_or_name) == ZERO) && strcmp(task.project_id, project.id) == ZERO)
         {
-            task_found = 1;
             continue;
         }
 
@@ -1048,24 +1212,33 @@ int delete_task()
     // close database
     if (fclose(taskDBS_open) == EOF)
     {
+        fclose(tmp_task);
+        remove(tmp_task_path);
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+        return 0;
     }
+
     // close database
     if (fclose(tmp_task) == EOF)
     {
+        remove(tmp_task_path);
         something_went_wrong_screen(FILE_CLOSE_ERROR);
+        return 0;
     }
 
     // remove original database
-
     if (remove(taskDBS_path) != ZERO)
     {
+        remove(tmp_task_path);
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
+
     // rename temporary database as original database
     if (rename(tmp_task_path, taskDBS_path) != ZERO)
     {
         something_went_wrong_screen(SOMETHING_FAILED);
+        return 0;
     }
 
     task_deleted_successful(x, y);
